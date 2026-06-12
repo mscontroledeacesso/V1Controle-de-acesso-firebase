@@ -935,6 +935,34 @@
     background: var(--success);
   }
   .monitor-card:hover { border-color: rgba(61,186,124,.4); box-shadow: 0 4px 20px rgba(61,186,124,.1); }
+
+  /* ── Cards diferenciados por tipo ── */
+  .monitor-card.tipo-colaborador::before { background: var(--info); }
+  .monitor-card.tipo-colaborador { border-color: rgba(74,158,255,.3); }
+  .monitor-card.tipo-colaborador:hover { border-color: rgba(74,158,255,.55); box-shadow: 0 4px 20px rgba(74,158,255,.15); }
+  .monitor-card.tipo-prestador::before { background: #b07efc; }
+  .monitor-card.tipo-prestador { border-color: rgba(176,126,252,.25); }
+  .monitor-card.tipo-prestador:hover { border-color: rgba(176,126,252,.5); box-shadow: 0 4px 20px rgba(176,126,252,.12); }
+  .monitor-card.tipo-entrega::before { background: #ff9d6e; }
+  .monitor-card.tipo-entrega { border-color: rgba(255,157,110,.25); }
+  .monitor-card.tipo-entrega:hover { border-color: rgba(255,157,110,.5); box-shadow: 0 4px 20px rgba(255,157,110,.12); }
+  .monitor-card.tipo-coleta::before { background: #ffd700; }
+  .monitor-card.tipo-coleta { border-color: rgba(255,215,0,.25); }
+  .monitor-card.tipo-coleta:hover { border-color: rgba(255,215,0,.5); box-shadow: 0 4px 20px rgba(255,215,0,.12); }
+  .monitor-card.tipo-visitante::before { background: var(--muted); }
+
+  /* Badge de tipo no card do monitor */
+  .monitor-tipo-badge {
+    display: inline-flex; align-items: center; gap: .25rem;
+    font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: .18rem .5rem; border-radius: 20px; margin-top: .25rem;
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .monitor-tipo-badge.badge-colab  { background: rgba(74,158,255,.15); color: var(--info);    border: 1px solid rgba(74,158,255,.35); }
+  .monitor-tipo-badge.badge-prest  { background: rgba(176,126,252,.15); color: #c9a8fc;        border: 1px solid rgba(176,126,252,.35); }
+  .monitor-tipo-badge.badge-entrega{ background: rgba(255,157,110,.15); color: #ff9d6e;        border: 1px solid rgba(255,157,110,.35); }
+  .monitor-tipo-badge.badge-coleta { background: rgba(255,215,0,.12);   color: #ffd700;        border: 1px solid rgba(255,215,0,.3); }
+  .monitor-tipo-badge.badge-visita { background: rgba(122,128,153,.1);   color: var(--muted);   border: 1px solid var(--border); }
   .monitor-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; margin-bottom: .85rem; }
   .monitor-avatar {
     width: 42px; height: 42px; border-radius: 10px;
@@ -2265,6 +2293,18 @@
             <input type="text" id="colab-departamento" placeholder="Ex: Operações, RH, Administrativo..." oninput="this.value=this.value.toUpperCase()">
           </div>
           <div class="form-group">
+            <label>Empresa</label>
+            <div style="display:flex;gap:.4rem;">
+              <select id="colab-empresa" style="flex:1;">
+                <option value="">Selecione a empresa...</option>
+              </select>
+              <button type="button" onclick="cfgMiniAbrir('empresa','add','colab-empresa')"
+                style="padding:.5rem .7rem;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.35);border-radius:8px;color:var(--info);cursor:pointer;font-size:.82rem;white-space:nowrap;transition:background .15s;"
+                onmouseover="this.style.background='rgba(74,158,255,.25)'" onmouseout="this.style.background='rgba(74,158,255,.12)'"
+                title="Adicionar nova empresa">+ Nova</button>
+            </div>
+          </div>
+          <div class="form-group">
             <label>Telefone</label>
             <input type="text" id="colab-telefone" placeholder="(19) 99999-9999" maxlength="15">
           </div>
@@ -2284,7 +2324,7 @@
     <div class="filter-bar">
       <div class="search-wrap" style="flex:1;min-width:200px;">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-colaboradores" placeholder="Buscar por nome, CPF, departamento..." oninput="renderColaboradores()">
+        <input type="text" id="search-colaboradores" placeholder="Buscar por nome, CPF, departamento, empresa..." oninput="renderColaboradores()">
       </div>
       <button class="btn btn-outline" onclick="exportColaboradoresCSV()" style="font-size:.8rem;padding:.5rem 1rem;">⬇ CSV</button>
     </div>
@@ -2297,6 +2337,7 @@
             <th>Nome</th>
             <th>CPF</th>
             <th>Departamento</th>
+            <th>Empresa</th>
             <th>Telefone</th>
             <th>Status Hoje</th>
             <th style="width:100px;">Ações</th>
@@ -3131,6 +3172,14 @@ function refreshAllDropdowns() {
   updateSelect('rel-empresa', empresaOpts, 'Todas as empresas');
   updateSelect('rel-cargo', cargoOpts, 'Todos os cargos');
 
+  // Colaborador form — empresa (preservar valor atual ao atualizar)
+  const colabEmpSel = document.getElementById('colab-empresa');
+  if (colabEmpSel) {
+    const curVal = colabEmpSel.value;
+    colabEmpSel.innerHTML = '<option value="">Selecione a empresa...</option>' +
+      empresaOpts.map(e => `<option value="${e}" ${e===curVal?'selected':''}>${e}</option>`).join('');
+  }
+
   // Also update modal dropdowns if open
   const mCargo = document.getElementById('m-cargo-sel');
   if (mCargo) { const cv = mCargo.value; mCargo.innerHTML = `<option value="">Selecione...</option>` + cargoOpts.map(o => `<option ${o===cv?'selected':''}>${o}</option>`).join(''); }
@@ -3428,6 +3477,37 @@ function personEmoji(cargo) {
   return '🪪';
 }
 
+function getMonitorTipo(r) {
+  // Identifica o tipo do registro para estilização do card
+  const cargo  = (r.cargo  || '').toUpperCase();
+  const motivo = (r.motivo || '').toUpperCase();
+  // 1) Tipo explícito salvo no registro (colaboradores via quickEntradaColab)
+  if ((r.tipo || '').toUpperCase() === 'COLABORADOR') return 'colaborador';
+  // 2) Verifica se é um colaborador cadastrado (por nome ou CPF)
+  const isColab = db.colaboradores.some(c =>
+    c.nome.toUpperCase() === (r.nome || '').toUpperCase() ||
+    (c.cpf && c.cpf === r.cpf)
+  );
+  if (isColab) return 'colaborador';
+  // 3) Motivo/Cargo
+  if (motivo.includes('PREST') || cargo.includes('PREST') || motivo.includes('MANUTENÇÃO') || cargo.includes('MANUTENÇÃO')) return 'prestador';
+  if (motivo.includes('ENTREGA') || cargo.includes('ENTREGA') || cargo.includes('ENTREGADOR')) return 'entrega';
+  if (motivo.includes('COLETA') || cargo.includes('COLETA')) return 'coleta';
+  return 'visitante';
+}
+
+function monitorTipoBadge(tipo) {
+  const map = {
+    colaborador: { cls: 'badge-colab',   icon: '👷', label: 'Colaborador' },
+    prestador:   { cls: 'badge-prest',   icon: '🛠️', label: 'Prestador'   },
+    entrega:     { cls: 'badge-entrega', icon: '📦', label: 'Entrega'     },
+    coleta:      { cls: 'badge-coleta',  icon: '🔄', label: 'Coleta'      },
+    visitante:   { cls: 'badge-visita',  icon: '👤', label: 'Visitante'   },
+  };
+  const t = map[tipo] || map.visitante;
+  return `<span class="monitor-tipo-badge ${t.cls}">${t.icon} ${t.label}</span>`;
+}
+
 function renderMonitor() {
   const grid = document.getElementById('monitor-grid');
   const q = (document.getElementById('monitor-search')||{value:''}).value.toLowerCase();
@@ -3447,8 +3527,13 @@ function renderMonitor() {
   if (filtEmp) dentro = dentro.filter(r => (r.empresa||'').toUpperCase() === filtEmp.toUpperCase());
   if (filtCargo) dentro = dentro.filter(r => (r.cargo||'').toUpperCase() === filtCargo.toUpperCase());
 
-  // Sort by entry time
-  dentro.sort((a,b) => (a.entrada||'').localeCompare(b.entrada||''));
+  // Sort: colaboradores primeiro, depois por horário de entrada
+  dentro.sort((a,b) => {
+    const ta = getMonitorTipo(a), tb = getMonitorTipo(b);
+    if (ta === 'colaborador' && tb !== 'colaborador') return -1;
+    if (tb === 'colaborador' && ta !== 'colaborador') return 1;
+    return (a.entrada||'').localeCompare(b.entrada||'');
+  });
 
   const total = getWithinNow().length;
   const badge = document.getElementById('monitor-count-badge');
@@ -3470,13 +3555,19 @@ function renderMonitor() {
     return;
   }
 
-  grid.innerHTML = dentro.map(r => `
-    <div class="monitor-card" id="mc-${r._id}">
+  grid.innerHTML = dentro.map(r => {
+    const tipo = getMonitorTipo(r);
+    const tipoCls = 'tipo-' + tipo;
+    return `
+    <div class="monitor-card ${tipoCls}" id="mc-${r._id}">
       <div class="monitor-card-header">
         <div class="monitor-avatar">${personEmoji(r.cargo)}</div>
         <div class="monitor-name-block">
           <div class="monitor-person-name" title="${r.nome}">${r.nome}</div>
-          <div class="monitor-person-sub">${r.cargo || '—'} · ${r.empresa || '—'}</div>
+          <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-top:.2rem;">
+            ${monitorTipoBadge(tipo)}
+          </div>
+          <div class="monitor-person-sub" style="margin-top:.2rem;">${r.cargo || '—'} · ${r.empresa || '—'}</div>
         </div>
         <div class="monitor-time-badge">⏰ ${r.entrada}</div>
       </div>
@@ -3507,7 +3598,8 @@ function renderMonitor() {
         <button class="monitor-btn-saida" onclick="monitorSaida('${r._id}')">🚪 Registrar Saída</button>
         <button class="monitor-btn-edit" onclick="editRow('dados','${r._id}')">✏️</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // Auto-refresh elapsed times every 60s
@@ -5309,6 +5401,14 @@ function abrirFormColaborador(id) {
   const titleEl = document.getElementById('colab-form-title');
   const editIdEl = document.getElementById('colab-edit-id');
 
+  // Popular select de empresa
+  const colabEmpSel = document.getElementById('colab-empresa');
+  if (colabEmpSel) {
+    const empresaOpts = db.empresa.map(x => x.nome).sort();
+    colabEmpSel.innerHTML = '<option value="">Selecione a empresa...</option>' +
+      empresaOpts.map(e => `<option value="${e}">${e}</option>`).join('');
+  }
+
   if (id) {
     // Modo edição
     const r = db.colaboradores.find(x => x._id === id);
@@ -5319,13 +5419,15 @@ function abrirFormColaborador(id) {
     document.getElementById('colab-cpf').value = r.cpf || '';
     document.getElementById('colab-departamento').value = r.departamento || '';
     document.getElementById('colab-telefone').value = r.telefone || '';
+    if (colabEmpSel) colabEmpSel.value = r.empresa || '';
   } else {
     // Modo novo
     titleEl.textContent = '👤 Novo Colaborador';
     editIdEl.value = '';
-    ['colab-nome','colab-cpf','colab-departamento','colab-telefone'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = '';
+    ['colab-nome','colab-cpf','colab-departamento','colab-telefone'].forEach(fid => {
+      const el = document.getElementById(fid); if (el) el.value = '';
     });
+    if (colabEmpSel) colabEmpSel.value = '';
   }
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   setTimeout(() => { const el = document.getElementById('colab-nome'); if (el) el.focus(); }, 200);
@@ -5334,8 +5436,8 @@ function abrirFormColaborador(id) {
 function fecharFormColaborador() {
   const panel = document.getElementById('colab-form-panel');
   if (panel) panel.style.display = 'none';
-  ['colab-nome','colab-cpf','colab-departamento','colab-telefone'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.value = '';
+  ['colab-nome','colab-cpf','colab-departamento','colab-telefone','colab-empresa'].forEach(fid => {
+    const el = document.getElementById(fid); if (el) el.value = '';
   });
   const editId = document.getElementById('colab-edit-id');
   if (editId) editId.value = '';
@@ -5348,6 +5450,7 @@ async function salvarColaborador() {
   const cpf          = (document.getElementById('colab-cpf').value || '').trim();
   const departamento = (document.getElementById('colab-departamento').value || '').trim().toUpperCase();
   const telefone     = (document.getElementById('colab-telefone').value || '').trim();
+  const empresa      = (document.getElementById('colab-empresa').value || '').trim().toUpperCase();
   const editId       = (document.getElementById('colab-edit-id').value || '').trim();
 
   const btn = document.getElementById('btn-save-colab');
@@ -5355,13 +5458,13 @@ async function salvarColaborador() {
 
   try {
     if (editId) {
-      await db_fire.collection('colaboradores').doc(editId).update({ nome, cpf, departamento, telefone });
+      await db_fire.collection('colaboradores').doc(editId).update({ nome, cpf, departamento, telefone, empresa });
       showToast('✅ Colaborador atualizado!');
     } else {
       // Verifica duplicata por nome
       const dup = db.colaboradores.find(x => x.nome === nome);
       if (dup) { showToast('⚠ Colaborador já cadastrado com este nome!', 'error'); return; }
-      await addToFirestore('colaboradores', { nome, cpf, departamento, telefone });
+      await addToFirestore('colaboradores', { nome, cpf, departamento, telefone, empresa });
       showToast('✅ Colaborador cadastrado!');
     }
     fecharFormColaborador();
@@ -5390,7 +5493,8 @@ function renderColaboradores() {
     if (!q) return true;
     return (r.nome||'').toLowerCase().includes(q) ||
            (r.cpf||'').toLowerCase().includes(q) ||
-           (r.departamento||'').toLowerCase().includes(q);
+           (r.departamento||'').toLowerCase().includes(q) ||
+           (r.empresa||'').toLowerCase().includes(q);
   });
 
   const cnt = document.getElementById('cnt-colaboradores');
@@ -5405,7 +5509,7 @@ function renderColaboradores() {
   if (!tbody) return;
 
   if (!data.length) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👷</div><div class="empty-text">Nenhum colaborador cadastrado.</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">👷</div><div class="empty-text">Nenhum colaborador cadastrado.</div></div></td></tr>`;
     const pgEl = document.getElementById('pg-colaboradores');
     if (pgEl) pgEl.innerHTML = '';
     return;
@@ -5428,6 +5532,7 @@ function renderColaboradores() {
       </td>
       <td class="td-mono">${r.cpf || '—'}</td>
       <td>${r.departamento || '—'}</td>
+      <td>${r.empresa || '—'}</td>
       <td class="td-mono">${r.telefone || '—'}</td>
       <td>${statusHtml}</td>
       <td>
@@ -5508,8 +5613,8 @@ function quickEntradaColab(id) {
 function exportColaboradoresCSV() {
   const data = db.colaboradores;
   if (!data.length) { showToast('Nenhum colaborador para exportar.', 'error'); return; }
-  const headers = ['NOME','CPF','DEPARTAMENTO','TELEFONE'];
-  const keys    = ['nome','cpf','departamento','telefone'];
+  const headers = ['NOME','CPF','DEPARTAMENTO','EMPRESA','TELEFONE'];
+  const keys    = ['nome','cpf','departamento','empresa','telefone'];
   const csv = [headers.join(';'), ...data.map(r => keys.map(k => `"${(r[k]||'').replace(/"/g,'""')}"`).join(';'))].join('\n');
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8' }));
