@@ -509,6 +509,38 @@
   .tab-btn.active .tab-count {
     background: rgba(245,166,35,.15); color: var(--accent);
   }
+  /* Colaboradores tab — azul info */
+  .tab-btn.colab-tab.active { color: var(--info); border-bottom-color: var(--info); }
+  .tab-btn.colab-tab.active .tab-count { background: rgba(74,158,255,.15); color: var(--info); }
+
+  /* ── Colaboradores panel ── */
+  .colab-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .68rem; font-weight: 700; letter-spacing: .04em;
+    padding: .15rem .5rem; border-radius: 20px;
+    background: rgba(74,158,255,.15); color: var(--info);
+    border: 1px solid rgba(74,158,255,.3);
+  }
+  .hsd-badge-colab {
+    font-size: .66rem; font-weight: 700; letter-spacing: .04em;
+    padding: .15rem .45rem; border-radius: 20px;
+    background: rgba(74,158,255,.15); color: var(--info);
+    border: 1px solid rgba(74,158,255,.3);
+    white-space: nowrap;
+  }
+  #panel-colaboradores .form-card::before {
+    background: linear-gradient(90deg, var(--info), transparent);
+  }
+  .nfb-btn-colab {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem; font-weight: 700;
+    padding: .65rem 1.25rem;
+    background: rgba(74,158,255,.12);
+    border: 1px solid rgba(74,158,255,.4); color: var(--info);
+    border-radius: 10px; cursor: pointer; transition: all .18s;
+    display: flex; align-items: center; gap: .4rem;
+  }
+  .nfb-btn-colab:hover { background: rgba(74,158,255,.25); transform: translateY(-1px); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
@@ -1526,6 +1558,10 @@
       📡 Monitor ao Vivo
       <span class="tab-count" id="cnt-monitor" style="background:rgba(61,186,124,.15);color:var(--success);">0</span>
     </button>
+    <button class="tab-btn colab-tab" onclick="switchTab('colaboradores', this)">
+      👷 Colaboradores
+      <span class="tab-count" id="cnt-colaboradores" style="background:rgba(74,158,255,.15);color:var(--info);">0</span>
+    </button>
     <button class="tab-btn" onclick="switchTab('config', this)">
       ⚙️ Configurações
     </button>
@@ -2193,6 +2229,85 @@
 
   </div>
 
+  <!-- ══ ABA COLABORADORES ══ -->
+  <div id="panel-colaboradores" class="tab-panel">
+    <div class="section-header">
+      <div>
+        <div class="section-title">👷 <span>Colaboradores</span></div>
+        <div class="section-sub">Funcionários da empresa — cadastro, responsáveis e controle de acesso</div>
+      </div>
+      <button class="btn" id="btn-novo-colab" onclick="abrirFormColaborador()"
+        style="background:linear-gradient(135deg,var(--info),#2576d4);color:#fff;border:none;padding:.65rem 1.4rem;border-radius:8px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.5rem;font-size:.85rem;">
+        + Novo Colaborador
+      </button>
+    </div>
+
+    <div class="stats-row" id="stats-colaboradores"></div>
+
+    <!-- Formulário de cadastro (toggle) -->
+    <div id="colab-form-panel" style="display:none;">
+      <div class="form-card" style="border-color:rgba(74,158,255,.45);margin-bottom:1.5rem;">
+        <div class="form-card-title" style="color:var(--info);display:flex;align-items:center;justify-content:space-between;">
+          <span id="colab-form-title">👤 Novo Colaborador</span>
+          <button onclick="fecharFormColaborador()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1;" title="Fechar">✕</button>
+        </div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label>Nome Completo <span class="req">*</span></label>
+            <input type="text" id="colab-nome" placeholder="Nome do colaborador" oninput="this.value=this.value.toUpperCase()" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>CPF</label>
+            <input type="text" id="colab-cpf" placeholder="000.000.000-00" maxlength="14">
+          </div>
+          <div class="form-group">
+            <label>Departamento</label>
+            <input type="text" id="colab-departamento" placeholder="Ex: Operações, RH, Administrativo..." oninput="this.value=this.value.toUpperCase()">
+          </div>
+          <div class="form-group">
+            <label>Telefone</label>
+            <input type="text" id="colab-telefone" placeholder="(19) 99999-9999" maxlength="15">
+          </div>
+        </div>
+        <input type="hidden" id="colab-edit-id" value="">
+        <div class="btn-row">
+          <button class="btn" id="btn-save-colab" onclick="salvarColaborador()"
+            style="background:linear-gradient(135deg,var(--info),#2576d4);color:#fff;border:none;">
+            💾 Salvar Colaborador
+          </button>
+          <button class="btn btn-outline" onclick="fecharFormColaborador()">✕ Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de filtro -->
+    <div class="filter-bar">
+      <div class="search-wrap" style="flex:1;min-width:200px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-colaboradores" placeholder="Buscar por nome, CPF, departamento..." oninput="renderColaboradores()">
+      </div>
+      <button class="btn btn-outline" onclick="exportColaboradoresCSV()" style="font-size:.8rem;padding:.5rem 1rem;">⬇ CSV</button>
+    </div>
+
+    <!-- Tabela -->
+    <div class="table-wrap">
+      <table id="tbl-colaboradores">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Departamento</th>
+            <th>Telefone</th>
+            <th>Status Hoje</th>
+            <th style="width:100px;">Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-colaboradores"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pg-colaboradores"></div>
+  </div>
+
 </main>
 
 <!-- ══ MODAL (edit) ══ -->
@@ -2345,7 +2460,10 @@
   </div>
   <div class="nfb-buttons">
     <button class="nfb-btn-confirm" onclick="notFoundIrParaCadastro()">
-      ✏️ Cadastrar agora
+      ✏️ Cadastrar Visitante
+    </button>
+    <button class="nfb-btn-colab" onclick="notFoundIrParaColaborador()">
+      👷 É Colaborador
     </button>
     <button class="nfb-btn-cancel" onclick="closeNotFoundBalloon()">
       Cancelar
@@ -2396,7 +2514,7 @@ const db_fire = firebase.firestore();
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
-let db = { cadastro: [], dados: [], cargo: [], empresa: [], funcao: [], motivo: [], responsavel: [] };
+let db = { cadastro: [], dados: [], cargo: [], empresa: [], funcao: [], motivo: [], responsavel: [], colaboradores: [] };
 let filtered = { cadastro: [], dados: [] };
 let sortState = { cadastro: { col: -1, asc: true }, dados: { col: -1, asc: true } };
 const PAGE_SIZE = 12;
@@ -2659,6 +2777,18 @@ function initFirebase() {
       renderConfigList('responsavel');
       refreshAllDropdowns();
     }, err => console.error('responsavel', err));
+
+  // Listener para colaboradores (funcionários)
+  unsubscribers['colaboradores'] = db_fire.collection('colaboradores')
+    .orderBy('nome', 'asc')
+    .onSnapshot(snapshot => {
+      db.colaboradores = snapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
+      renderColaboradores();
+      renderStatsColaboradores();
+      refreshAllDropdowns();
+      const cnt = document.getElementById('cnt-colaboradores');
+      if (cnt) cnt.textContent = db.colaboradores.length;
+    }, err => console.error('colaboradores', err));
 }
 
 function setOnline() {
@@ -3014,10 +3144,12 @@ function refreshAllDropdowns() {
   renderConfigList('motivo');
   renderConfigList('responsavel');
 
-  // Selects de responsável
-  const responsavelOpts = (db.responsavel && db.responsavel.length)
-    ? db.responsavel.map(x => x.nome).sort()
-    : [];
+  // Selects de responsável — combina config_responsavel + colaboradores
+  const responsavelOpts = (() => {
+    const fromConfig = (db.responsavel && db.responsavel.length) ? db.responsavel.map(x => x.nome) : [];
+    const fromColab  = (db.colaboradores && db.colaboradores.length) ? db.colaboradores.map(x => x.nome) : [];
+    return [...new Set([...fromConfig, ...fromColab])].sort();
+  })();
   updateSelect('c-responsavel-sel', responsavelOpts, 'Selecione o responsável...');
   updateSelect('ceb-responsavel-sel', responsavelOpts, 'Selecione o responsável...');
   updateSelect('rvw-responsavel-sel', responsavelOpts, 'Selecione o responsável...');
@@ -3096,8 +3228,8 @@ function globalSearch(val) {
   const isNumericInput = qClean.length > 0 && /^[\d.\-\s\/]+$/.test(val.trim());
   const detectedType = searchMode === 'nome' ? 'nome' : (isNumericInput ? 'cpf' : 'nome');
 
-  // Filtro por modo
-  const results = db.cadastro.filter(r => {
+  // Filtro por modo — visitantes (cadastro)
+  const visitResults = db.cadastro.filter(r => {
     if (searchMode === 'nome') {
       return (r.nome||'').toLowerCase().includes(q);
     }
@@ -3105,7 +3237,17 @@ function globalSearch(val) {
     return (r.nome||'').toLowerCase().includes(q) ||
            (r.rg||'').toLowerCase().includes(q) ||
            (r.cpf||'').toLowerCase().replace(/\D/g,'').includes(qClean);
-  }).slice(0, 10);
+  }).slice(0, 8).map(r => ({...r, _srcType: 'visitante'}));
+
+  // Filtro colaboradores
+  const colabResults = db.colaboradores.filter(r => {
+    if (searchMode === 'nome') return (r.nome||'').toLowerCase().includes(q);
+    return (r.nome||'').toLowerCase().includes(q) ||
+           (r.cpf||'').toLowerCase().replace(/\D/g,'').includes(qClean);
+  }).slice(0, 5).map(r => ({...r, _srcType: 'colaborador'}));
+
+  // Colaboradores primeiro, depois visitantes, limitado a 10
+  const results = [...colabResults, ...visitResults].slice(0, 10);
 
   globalHighlight = -1;
 
@@ -3130,22 +3272,39 @@ function globalSearch(val) {
   const hoje = todayStr();
 
   dd.innerHTML = results.map((r, i) => {
+    const isColab = r._srcType === 'colaborador';
+    const hoje = todayStr();
     const accessToday = db.dados.filter(d =>
       (d.nome||'').toUpperCase() === (r.nome||'').toUpperCase() && d.data === hoje
     ).sort((a,b) => (b._createdAt?.seconds||0) - (a._createdAt?.seconds||0));
     const last = accessToday[0];
     const isDentro = last && last.entrada && !last.saida;
 
+    const badgeHtml = isColab
+      ? `<span class="hsd-badge-colab">👷 FUNCIONÁRIO</span>`
+      : '';
+    const metaStr = isColab
+      ? [r.cpf ? 'CPF: '+r.cpf : '', r.departamento ? r.departamento : ''].filter(Boolean).join(' · ')
+      : [r.rg ? 'RG: '+r.rg : '', r.cpf ? 'CPF: '+r.cpf : '', r.cargo||'', r.empresa||''].filter(Boolean).join(' · ');
+
+    const onClickAttr = isColab
+      ? `onclick="openActionBalloon('${r._id}',event,'colaborador')"`
+      : `onclick="openActionBalloon('${r._id}',event,'visitante')"`;
+    const onEntrada = isColab
+      ? `onclick="globalRegEntradaColab('${r._id}',event)"`
+      : `onclick="globalRegEntrada('${r._id}',event)"`;
+    const onSaida = `onclick="globalRegSaida('${last?last._id:''}',event)"`;
+
     return `
-    <div class="hsd-item" data-idx="${i}" onclick="openActionBalloon('${r._id}',event)" style="cursor:pointer;">
+    <div class="hsd-item" data-idx="${i}" ${onClickAttr} style="cursor:pointer;">
       <div class="hsd-dot ${isDentro ? 'hsd-dot-in' : 'hsd-dot-out'}"></div>
       <div class="hsd-info">
-        <div class="hsd-name">${r.nome} ${isDentro ? '<span style="color:var(--success);font-size:.7rem;">● DENTRO</span>' : ''}</div>
-        <div class="hsd-meta">${[r.rg ? 'RG: '+r.rg : '', r.cpf ? 'CPF: '+r.cpf : '', r.cargo||'', r.empresa||''].filter(Boolean).join(' · ')}</div>
+        <div class="hsd-name">${r.nome} ${badgeHtml} ${isDentro ? '<span style="color:var(--success);font-size:.7rem;">● DENTRO</span>' : ''}</div>
+        <div class="hsd-meta">${metaStr}</div>
       </div>
       <div class="hsd-actions">
-        <button class="hsd-btn-in" ${isDentro ? 'disabled' : ''} onclick="globalRegEntrada('${r._id}',event)">🟢 Entrada</button>
-        <button class="hsd-btn-out" ${!isDentro ? 'disabled' : ''} onclick="globalRegSaida('${last?last._id:''}',event)">🚪 Saída</button>
+        <button class="hsd-btn-in" ${isDentro ? 'disabled' : ''} ${onEntrada}>🟢 Entrada</button>
+        <button class="hsd-btn-out" ${!isDentro ? 'disabled' : ''} ${onSaida}>🚪 Saída</button>
       </div>
     </div>`;
   }).join('');
@@ -3169,6 +3328,31 @@ async function globalRegEntrada(cadastroId, e) {
       });
       showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
       // Limpar campo de busca e fechar dropdown
+      const headerInput = document.getElementById('header-search');
+      const dd = document.getElementById('header-search-dropdown');
+      if (headerInput) headerInput.value = '';
+      if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+      clearTimeout(window._gsDebounce);
+      clearTimeout(window._nfbGlobalTimer);
+    } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+  });
+}
+
+async function globalRegEntradaColab(colaboradorId, e) {
+  e.stopPropagation();
+  pedirConfirmacaoEntradaColab(colaboradorId, async () => {
+    const r = db.colaboradores.find(x => x._id === colaboradorId);
+    if (!r) return;
+    const entrada = new Date().toTimeString().slice(0,5);
+    const responsavel = _pendingEntradaResponsavel || '';
+    try {
+      await addToFirestore('dados', {
+        data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
+        cargo: 'FUNCIONÁRIO', empresa: 'M.S SEGURANÇA E SERVIÇOS',
+        placa: '', placaTrailer: '', entrada, saida: '',
+        responsavel, tipo: 'COLABORADOR',
+      });
+      showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
       const headerInput = document.getElementById('header-search');
       const dd = document.getElementById('header-search-dropdown');
       if (headerInput) headerInput.value = '';
@@ -4060,6 +4244,9 @@ function cancelConfirmEntrada() {
   document.getElementById('confirm-entrada-overlay').classList.remove('open');
   const respEl = document.getElementById('ceb-responsavel-sel');
   if (respEl) respEl.value = '';
+  // Restaurar botão editar
+  const editBtn = document.querySelector('.ceb-btn-edit');
+  if (editBtn) editBtn.style.display = '';
   _pendingEntradaCadastroId = null;
   _pendingEntradaCallback   = null;
   _pendingEntradaResponsavel = null;
@@ -4078,6 +4265,37 @@ function cebEditarCadastro() {
   _editarParaEntrarId = id;
 
   editRow('cadastro', id); // abre o modal de edição
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIRMAÇÃO DE ENTRADA — Colaboradores
+// ═══════════════════════════════════════════════════════════════
+function pedirConfirmacaoEntradaColab(colaboradorId, callbackFn) {
+  const r = db.colaboradores.find(x => x._id === colaboradorId);
+  if (!r) return;
+
+  _pendingEntradaCadastroId = colaboradorId;
+  _pendingEntradaCallback   = callbackFn;
+
+  document.getElementById('ceb-nome').textContent = r.nome;
+  document.getElementById('ceb-meta').textContent =
+    [r.departamento ? 'Depto: '+r.departamento : '', r.cpf ? 'CPF: '+r.cpf : '']
+      .filter(Boolean).join(' · ');
+
+  function atualizarHora() {
+    document.getElementById('ceb-time').textContent =
+      new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+  atualizarHora();
+  clearInterval(_cebClockInterval);
+  _cebClockInterval = setInterval(atualizarHora, 1000);
+
+  // Esconder botão "Editar Cadastro" pois colaborador tem aba própria
+  const editBtn = document.querySelector('.ceb-btn-edit');
+  if (editBtn) editBtn.style.display = 'none';
+
+  document.getElementById('confirm-entrada-balloon').classList.add('open');
+  document.getElementById('confirm-entrada-overlay').classList.add('open');
 }
 
 document.addEventListener('keydown', function(e) {
@@ -4137,11 +4355,15 @@ async function balloonRegistrarEntrada() {
 let _acbCadastroId   = null;
 let _acbLastDadoId   = null;
 let _acbIsDentro     = false;
+let _acbTipo         = 'visitante'; // 'visitante' | 'colaborador'
 
-function openActionBalloon(cadastroId, e) {
+function openActionBalloon(id, e, tipo) {
   if (e) e.stopPropagation();
+  tipo = tipo || 'visitante';
+  _acbTipo = tipo;
 
-  const r = db.cadastro.find(x => x._id === cadastroId);
+  const source = tipo === 'colaborador' ? db.colaboradores : db.cadastro;
+  const r = source.find(x => x._id === id);
   if (!r) return;
 
   // Fechar dropdown
@@ -4156,12 +4378,15 @@ function openActionBalloon(cadastroId, e) {
   const last = accessToday[0];
   const isDentro = !!(last && last.entrada && !last.saida);
 
-  _acbCadastroId = cadastroId;
+  _acbCadastroId = id;
   _acbLastDadoId = last ? last._id : null;
   _acbIsDentro   = isDentro;
 
   // Preencher balão
   document.getElementById('acb-name').textContent = r.nome;
+  // Badge tipo
+  const titleEl = document.querySelector('#action-balloon .acb-title');
+  if (titleEl) titleEl.innerHTML = tipo === 'colaborador' ? '👷 Funcionário' : '🪪 Acesso Rápido';
 
   const badge = document.getElementById('acb-status-badge');
   if (isDentro) {
@@ -4172,25 +4397,29 @@ function openActionBalloon(cadastroId, e) {
     badge.className = 'acb-status-badge acb-status-outside';
   }
 
-  const metaParts = [
-    r.cpf ? 'CPF: ' + r.cpf : '',
-    r.rg  ? 'RG: '  + r.rg  : '',
-    r.cargo   || '',
-    r.empresa || '',
-  ].filter(Boolean);
+  const metaParts = tipo === 'colaborador'
+    ? [r.cpf ? 'CPF: '+r.cpf : '', r.departamento ? 'Depto: '+r.departamento : '', r.telefone||''].filter(Boolean)
+    : [r.cpf ? 'CPF: '+r.cpf : '', r.rg ? 'RG: '+r.rg : '', r.cargo||'', r.empresa||''].filter(Boolean);
   document.getElementById('acb-meta').textContent = metaParts.join(' · ') || '—';
 
   const btnEntrada = document.getElementById('acb-btn-entrada');
   const hintEl     = document.getElementById('acb-hint');
+  const editarBtn  = document.querySelector('.acb-btn-editar');
+
   if (isDentro) {
     btnEntrada.disabled = true;
     btnEntrada.textContent = '✅ Já está dentro';
-    hintEl.textContent = 'Esta pessoa já está com entrada registrada hoje. Você pode editar o cadastro se necessário.';
+    hintEl.textContent = 'Esta pessoa já está com entrada registrada hoje.';
   } else {
     btnEntrada.disabled = false;
     btnEntrada.innerHTML = '🟢 Fazer Entrada Agora';
-    hintEl.textContent = 'Confirme a entrada diretamente ou edite o cadastro antes de liberar o acesso.';
+    hintEl.textContent = tipo === 'colaborador'
+      ? 'Confirme a entrada do funcionário.'
+      : 'Confirme a entrada diretamente ou edite o cadastro antes de liberar o acesso.';
   }
+
+  // Esconder "Editar Cadastro" para colaboradores (tem aba própria)
+  if (editarBtn) editarBtn.style.display = tipo === 'colaborador' ? 'none' : '';
 
   document.getElementById('action-balloon').classList.add('open');
   document.getElementById('action-balloon-overlay').classList.add('open');
@@ -4202,33 +4431,53 @@ function closeActionBalloon() {
   _acbCadastroId = null;
   _acbLastDadoId = null;
   _acbIsDentro   = false;
+  _acbTipo       = 'visitante';
 }
 
 async function actionBalloonEntrada() {
   if (!_acbCadastroId || _acbIsDentro) return;
-  // Capturar o id ANTES de closeActionBalloon() zerá-lo
-  const cadastroId = _acbCadastroId;
+  const id   = _acbCadastroId;
+  const tipo = _acbTipo;
   closeActionBalloon();
-  // Limpar campo de busca
   const headerInput = document.getElementById('header-search');
   if (headerInput) headerInput.value = '';
   clearTimeout(window._gsDebounce);
   clearTimeout(window._nfbGlobalTimer);
-  pedirConfirmacaoEntrada(cadastroId, async () => {
-    const r = db.cadastro.find(x => x._id === cadastroId);
-    if (!r) return;
-    const entrada = new Date().toTimeString().slice(0,5);
-    const responsavel = _pendingEntradaResponsavel || '';
-    try {
-      await addToFirestore('dados', {
-        data: todayStr(), nome: r.nome, rg: r.rg||'', cpf: r.cpf||'',
-        cargo: r.cargo||'', empresa: r.empresa||'',
-        placa: '', placaTrailer: '', entrada, saida: '',
-        responsavel,
-      });
-      showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
-    } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
-  });
+
+  if (tipo === 'colaborador') {
+    // Colaboradores: pedir confirmação usando função específica
+    pedirConfirmacaoEntradaColab(id, async () => {
+      const r = db.colaboradores.find(x => x._id === id);
+      if (!r) return;
+      const entrada = new Date().toTimeString().slice(0,5);
+      const responsavel = _pendingEntradaResponsavel || '';
+      try {
+        await addToFirestore('dados', {
+          data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
+          cargo: 'FUNCIONÁRIO', empresa: 'M.S SEGURANÇA E SERVIÇOS',
+          placa: '', placaTrailer: '', entrada, saida: '',
+          responsavel, tipo: 'COLABORADOR',
+        });
+        showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
+      } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+    });
+  } else {
+    pedirConfirmacaoEntrada(id, async () => {
+      const r = db.cadastro.find(x => x._id === id);
+      if (!r) return;
+      const entrada = new Date().toTimeString().slice(0,5);
+      const responsavel = _pendingEntradaResponsavel || '';
+      try {
+        await addToFirestore('dados', {
+          data: todayStr(), nome: r.nome, rg: r.rg||'', cpf: r.cpf||'',
+          cargo: r.cargo||'', empresa: r.empresa||'',
+          placa: '', placaTrailer: '', entrada, saida: '',
+          responsavel,
+        });
+        showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
+      } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+    });
+  }
 }
 
 function actionBalloonEditar() {
@@ -5045,6 +5294,260 @@ function renderFirebaseInfoBox() {
   } else {
     box.innerHTML = `<div style="color:#7a8099;font-size:.83rem;">Nenhum projeto configurado.</div>`;
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COLABORADORES — CRUD & RENDER
+// ═══════════════════════════════════════════════════════════════
+const COLAB_PAGE_SIZE = 15;
+let colabPage = 1;
+
+function abrirFormColaborador(id) {
+  const panel = document.getElementById('colab-form-panel');
+  if (!panel) return;
+  panel.style.display = 'block';
+  const titleEl = document.getElementById('colab-form-title');
+  const editIdEl = document.getElementById('colab-edit-id');
+
+  if (id) {
+    // Modo edição
+    const r = db.colaboradores.find(x => x._id === id);
+    if (!r) return;
+    titleEl.textContent = '✏️ Editar Colaborador';
+    editIdEl.value = id;
+    document.getElementById('colab-nome').value = r.nome || '';
+    document.getElementById('colab-cpf').value = r.cpf || '';
+    document.getElementById('colab-departamento').value = r.departamento || '';
+    document.getElementById('colab-telefone').value = r.telefone || '';
+  } else {
+    // Modo novo
+    titleEl.textContent = '👤 Novo Colaborador';
+    editIdEl.value = '';
+    ['colab-nome','colab-cpf','colab-departamento','colab-telefone'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.value = '';
+    });
+  }
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => { const el = document.getElementById('colab-nome'); if (el) el.focus(); }, 200);
+}
+
+function fecharFormColaborador() {
+  const panel = document.getElementById('colab-form-panel');
+  if (panel) panel.style.display = 'none';
+  ['colab-nome','colab-cpf','colab-departamento','colab-telefone'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const editId = document.getElementById('colab-edit-id');
+  if (editId) editId.value = '';
+}
+
+async function salvarColaborador() {
+  const nome = (document.getElementById('colab-nome').value || '').trim().toUpperCase();
+  if (!nome) { showToast('Preencha o Nome Completo', 'error'); return; }
+
+  const cpf          = (document.getElementById('colab-cpf').value || '').trim();
+  const departamento = (document.getElementById('colab-departamento').value || '').trim().toUpperCase();
+  const telefone     = (document.getElementById('colab-telefone').value || '').trim();
+  const editId       = (document.getElementById('colab-edit-id').value || '').trim();
+
+  const btn = document.getElementById('btn-save-colab');
+  btn.disabled = true; btn.textContent = '⏳ Salvando...';
+
+  try {
+    if (editId) {
+      await db_fire.collection('colaboradores').doc(editId).update({ nome, cpf, departamento, telefone });
+      showToast('✅ Colaborador atualizado!');
+    } else {
+      // Verifica duplicata por nome
+      const dup = db.colaboradores.find(x => x.nome === nome);
+      if (dup) { showToast('⚠ Colaborador já cadastrado com este nome!', 'error'); return; }
+      await addToFirestore('colaboradores', { nome, cpf, departamento, telefone });
+      showToast('✅ Colaborador cadastrado!');
+    }
+    fecharFormColaborador();
+  } catch(e) {
+    showToast('❌ Erro: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = '💾 Salvar Colaborador';
+  }
+}
+
+async function excluirColaborador(id) {
+  if (!confirm('Excluir este colaborador?')) return;
+  try {
+    await deleteFromFirestore('colaboradores', id);
+    showToast('Colaborador removido.');
+  } catch(e) {
+    showToast('❌ Erro: ' + e.message, 'error');
+  }
+}
+
+function renderColaboradores() {
+  const q = ((document.getElementById('search-colaboradores') || {}).value || '').toLowerCase();
+  const hoje = todayStr();
+
+  let data = db.colaboradores.filter(r => {
+    if (!q) return true;
+    return (r.nome||'').toLowerCase().includes(q) ||
+           (r.cpf||'').toLowerCase().includes(q) ||
+           (r.departamento||'').toLowerCase().includes(q);
+  });
+
+  const cnt = document.getElementById('cnt-colaboradores');
+  if (cnt) cnt.textContent = db.colaboradores.length;
+
+  const total = data.length;
+  const pg = colabPage;
+  const start = (pg - 1) * COLAB_PAGE_SIZE;
+  const slice = data.slice(start, start + COLAB_PAGE_SIZE);
+
+  const tbody = document.getElementById('tbody-colaboradores');
+  if (!tbody) return;
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👷</div><div class="empty-text">Nenhum colaborador cadastrado.</div></div></td></tr>`;
+    const pgEl = document.getElementById('pg-colaboradores');
+    if (pgEl) pgEl.innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = slice.map(r => {
+    // Status hoje
+    const accessToday = db.dados.filter(d =>
+      (d.nome||'').toUpperCase() === r.nome.toUpperCase() && d.data === hoje
+    ).sort((a,b) => (b._createdAt?.seconds||0) - (a._createdAt?.seconds||0));
+    const last = accessToday[0];
+    const isDentro = !!(last && last.entrada && !last.saida);
+    const statusHtml = isDentro
+      ? `<span class="badge badge-open">● Dentro</span>`
+      : (last && last.saida ? `<span class="badge badge-out">✓ Saiu ${last.saida}</span>` : `<span style="color:var(--muted);font-size:.8rem;">—</span>`);
+    return `<tr>
+      <td class="td-name">
+        ${r.nome}
+        <span class="colab-badge" style="margin-left:.4rem;">👷</span>
+      </td>
+      <td class="td-mono">${r.cpf || '—'}</td>
+      <td>${r.departamento || '—'}</td>
+      <td class="td-mono">${r.telefone || '—'}</td>
+      <td>${statusHtml}</td>
+      <td>
+        <button class="action-btn" title="Entrada rápida" onclick="quickEntradaColab('${r._id}')" style="color:var(--success);">🟢</button>
+        <button class="action-btn" title="Editar" onclick="abrirFormColaborador('${r._id}')">✏️</button>
+        <button class="action-btn del" title="Excluir" onclick="excluirColaborador('${r._id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Paginação
+  const totalPages = Math.ceil(total / COLAB_PAGE_SIZE);
+  const pgWrap = document.getElementById('pg-colaboradores');
+  if (pgWrap) {
+    if (totalPages <= 1) { pgWrap.innerHTML = ''; }
+    else {
+      let btns = '';
+      for (let i = 1; i <= totalPages; i++) {
+        btns += `<button class="page-btn ${i===pg?'active':''}" onclick="colabGoPage(${i})">${i}</button>`;
+      }
+      pgWrap.innerHTML = `
+        <div class="page-info">Exibindo ${start+1}–${Math.min(pg*COLAB_PAGE_SIZE,total)} de ${total} colaboradores</div>
+        <div class="page-btns">
+          <button class="page-btn" onclick="colabGoPage(${pg-1})" ${pg===1?'disabled':''}>‹</button>
+          ${btns}
+          <button class="page-btn" onclick="colabGoPage(${pg+1})" ${pg===totalPages?'disabled':''}>›</button>
+        </div>`;
+    }
+  }
+}
+
+function colabGoPage(pg) {
+  const max = Math.ceil(db.colaboradores.length / COLAB_PAGE_SIZE);
+  if (pg < 1 || pg > max) return;
+  colabPage = pg;
+  renderColaboradores();
+}
+
+function renderStatsColaboradores() {
+  const el = document.getElementById('stats-colaboradores');
+  if (!el) return;
+  const hoje = todayStr();
+  const total = db.colaboradores.length;
+  const dentro = db.dados.filter(r =>
+    r.data === hoje && r.entrada && !r.saida &&
+    db.colaboradores.some(c => c.nome.toUpperCase() === (r.nome||'').toUpperCase())
+  ).length;
+  const saiuHoje = db.dados.filter(r =>
+    r.data === hoje && r.entrada && r.saida &&
+    db.colaboradores.some(c => c.nome.toUpperCase() === (r.nome||'').toUpperCase())
+  ).length;
+  el.innerHTML = `
+    <div class="stat-card"><div class="stat-value" style="color:var(--info);">${total}</div><div class="stat-label">Colaboradores</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--success);">${dentro}</div><div class="stat-label">Dentro Agora</div></div>
+    <div class="stat-card"><div class="stat-value">${saiuHoje}</div><div class="stat-label">Saíram Hoje</div></div>
+    <div class="stat-card"><div class="stat-value">${[...new Set(db.colaboradores.map(r=>r.departamento).filter(Boolean))].length}</div><div class="stat-label">Departamentos</div></div>
+  `;
+}
+
+function quickEntradaColab(id) {
+  pedirConfirmacaoEntradaColab(id, async () => {
+    const r = db.colaboradores.find(x => x._id === id);
+    if (!r) return;
+    const entrada = new Date().toTimeString().slice(0,5);
+    const responsavel = _pendingEntradaResponsavel || '';
+    try {
+      await addToFirestore('dados', {
+        data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
+        cargo: 'FUNCIONÁRIO', empresa: 'M.S SEGURANÇA E SERVIÇOS',
+        placa: '', placaTrailer: '', entrada, saida: '',
+        responsavel, tipo: 'COLABORADOR',
+      });
+      showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
+    } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+  });
+}
+
+function exportColaboradoresCSV() {
+  const data = db.colaboradores;
+  if (!data.length) { showToast('Nenhum colaborador para exportar.', 'error'); return; }
+  const headers = ['NOME','CPF','DEPARTAMENTO','TELEFONE'];
+  const keys    = ['nome','cpf','departamento','telefone'];
+  const csv = [headers.join(';'), ...data.map(r => keys.map(k => `"${(r[k]||'').replace(/"/g,'""')}"`).join(';'))].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8' }));
+  a.download = `colaboradores_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('📥 CSV exportado!');
+}
+
+function notFoundIrParaColaborador() {
+  closeNotFoundBalloon();
+  const headerInput = document.getElementById('header-search');
+  if (headerInput) headerInput.value = '';
+  clearTimeout(window._gsDebounce);
+  clearTimeout(window._nfbGlobalTimer);
+
+  // Ir para aba Colaboradores
+  const colabTabBtn = document.querySelector('.tab-btn.colab-tab');
+  if (colabTabBtn && !colabTabBtn.classList.contains('active')) colabTabBtn.click();
+
+  // Abrir formulário
+  abrirFormColaborador();
+
+  // Preencher campo com o valor pesquisado
+  setTimeout(() => {
+    const map = { nome: 'colab-nome', cpf: 'colab-cpf' };
+    const fieldId = map[_nfbPrefillType];
+    if (fieldId) {
+      const field = document.getElementById(fieldId);
+      if (field) {
+        field.value = _nfbPrefillType === 'nome' ? _nfbPrefillValue.toUpperCase() : _nfbPrefillValue;
+        field.focus();
+        field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        field.style.borderColor = 'var(--info)';
+        field.style.boxShadow = '0 0 0 3px rgba(74,158,255,.25)';
+        setTimeout(() => { field.style.borderColor = ''; field.style.boxShadow = ''; }, 2500);
+      }
+    }
+  }, 250);
 }
 
 initFirebase();
