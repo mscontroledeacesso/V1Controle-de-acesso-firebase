@@ -3387,27 +3387,24 @@ async function globalRegEntrada(cadastroId, e) {
 
 async function globalRegEntradaColab(colaboradorId, e) {
   e.stopPropagation();
-  pedirConfirmacaoEntradaColab(colaboradorId, async () => {
-    const r = db.colaboradores.find(x => x._id === colaboradorId);
-    if (!r) return;
-    const entrada = new Date().toTimeString().slice(0,5);
-    const responsavel = _pendingEntradaResponsavel || '';
-    try {
-      await addToFirestore('dados', {
-        data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
-        cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
-        placa: '', placaTrailer: '', entrada, saida: '',
-        responsavel, tipo: 'COLABORADOR',
-      });
-      showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
-      const headerInput = document.getElementById('header-search');
-      const dd = document.getElementById('header-search-dropdown');
-      if (headerInput) headerInput.value = '';
-      if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
-      clearTimeout(window._gsDebounce);
-      clearTimeout(window._nfbGlobalTimer);
-    } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
-  });
+  const r = db.colaboradores.find(x => x._id === colaboradorId);
+  if (!r) return;
+  const entrada = new Date().toTimeString().slice(0,5);
+  try {
+    await addToFirestore('dados', {
+      data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
+      cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
+      placa: '', placaTrailer: '', entrada, saida: '',
+      responsavel: '', tipo: 'COLABORADOR',
+    });
+    showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
+    const headerInput = document.getElementById('header-search');
+    const dd = document.getElementById('header-search-dropdown');
+    if (headerInput) headerInput.value = '';
+    if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+    clearTimeout(window._gsDebounce);
+    clearTimeout(window._nfbGlobalTimer);
+  } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
 }
 
 async function globalRegSaida(dadoId, e) {
@@ -4535,22 +4532,19 @@ async function actionBalloonEntrada() {
   clearTimeout(window._nfbGlobalTimer);
 
   if (tipo === 'colaborador') {
-    // Colaboradores: pedir confirmação usando função específica
-    pedirConfirmacaoEntradaColab(id, async () => {
-      const r = db.colaboradores.find(x => x._id === id);
-      if (!r) return;
-      const entrada = new Date().toTimeString().slice(0,5);
-      const responsavel = _pendingEntradaResponsavel || '';
-      try {
-        await addToFirestore('dados', {
-          data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
-          cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
-          placa: '', placaTrailer: '', entrada, saida: '',
-          responsavel, tipo: 'COLABORADOR',
-        });
-        showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
-      } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
-    });
+    // Colaboradores: entrada direta, sem balão de confirmação
+    const r = db.colaboradores.find(x => x._id === id);
+    if (!r) return;
+    const entrada = new Date().toTimeString().slice(0,5);
+    try {
+      await addToFirestore('dados', {
+        data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
+        cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
+        placa: '', placaTrailer: '', entrada, saida: '',
+        responsavel: '', tipo: 'COLABORADOR',
+      });
+      showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
+    } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
   } else {
     pedirConfirmacaoEntrada(id, async () => {
       const r = db.cadastro.find(x => x._id === id);
@@ -5590,22 +5584,19 @@ function renderStatsColaboradores() {
   `;
 }
 
-function quickEntradaColab(id) {
-  pedirConfirmacaoEntradaColab(id, async () => {
-    const r = db.colaboradores.find(x => x._id === id);
-    if (!r) return;
-    const entrada = new Date().toTimeString().slice(0,5);
-    const responsavel = _pendingEntradaResponsavel || '';
-    try {
-      await addToFirestore('dados', {
-        data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
-        cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
-        placa: '', placaTrailer: '', entrada, saida: '',
-        responsavel, tipo: 'COLABORADOR',
-      });
-      showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
-    } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
-  });
+async function quickEntradaColab(id) {
+  const r = db.colaboradores.find(x => x._id === id);
+  if (!r) return;
+  const entrada = new Date().toTimeString().slice(0,5);
+  try {
+    await addToFirestore('dados', {
+      data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
+      cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
+      placa: '', placaTrailer: '', entrada, saida: '',
+      responsavel: '', tipo: 'COLABORADOR',
+    });
+    showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
+  } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
 }
 
 function exportColaboradoresCSV() {
