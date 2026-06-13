@@ -1196,6 +1196,60 @@
   .search-by-wrap { display: flex; gap: .5rem; align-items: center; flex: 1; min-width: 260px; }
   .search-by-select { flex: 0 0 auto; min-width: 110px; font-size: .8rem; padding: .55rem .7rem; }
 
+  /* ── Filtros Colaboradores ── */
+  .colab-filter-bar {
+    display: flex;
+    gap: .65rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .colab-filter-select {
+    min-width: 150px;
+    flex: 1 1 140px;
+    max-width: 220px;
+  }
+  .colab-filter-clear {
+    font-size: .8rem;
+    padding: .5rem .85rem;
+    border-color: rgba(224,85,85,.4);
+    color: var(--danger);
+  }
+  .colab-filter-clear:hover {
+    border-color: var(--danger);
+    background: rgba(224,85,85,.08);
+  }
+  .colab-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: .25rem .65rem;
+    border-radius: 20px;
+    background: rgba(74,158,255,.12);
+    color: var(--info);
+    border: 1px solid rgba(74,158,255,.3);
+    white-space: nowrap;
+  }
+  .colab-chip-x {
+    background: none;
+    border: none;
+    color: var(--info);
+    cursor: pointer;
+    font-size: .75rem;
+    line-height: 1;
+    padding: 0;
+    opacity: .7;
+    transition: opacity .15s;
+  }
+  .colab-chip-x:hover { opacity: 1; }
+  @media (max-width: 700px) {
+    .colab-filter-select { max-width: 100%; }
+    .colab-filter-bar { gap: .5rem; }
+  }
+
   /* ── Responsive ── */
   @media (max-width: 700px) {
     header { padding: 0 .75rem; }
@@ -2704,14 +2758,35 @@
       </div>
     </div>
 
-    <!-- Barra de filtro -->
-    <div class="filter-bar">
-      <div class="search-wrap" style="flex:1;min-width:200px;">
+    <!-- Barra de filtro dinâmica -->
+    <div class="colab-filter-bar">
+      <div class="search-wrap" style="flex:2;min-width:180px;">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-colaboradores" placeholder="Buscar por nome, CPF, departamento, empresa..." oninput="renderColaboradores()">
+        <input type="text" id="search-colaboradores"
+          placeholder="Buscar por nome, CPF, departamento..."
+          oninput="colabPage=1;renderColaboradores()">
       </div>
-      <button class="btn btn-outline" onclick="exportColaboradoresCSV()" style="font-size:.8rem;padding:.5rem 1rem;">⬇ CSV</button>
+      <select id="filt-colab-empresa" class="filter-select colab-filter-select"
+        onchange="colabPage=1;renderColaboradores()">
+        <option value="">🏢 Todas as empresas</option>
+      </select>
+      <select id="filt-colab-depto" class="filter-select colab-filter-select"
+        onchange="colabPage=1;renderColaboradores()">
+        <option value="">🗂 Todos os deptos</option>
+      </select>
+      <select id="filt-colab-status" class="filter-select colab-filter-select"
+        onchange="colabPage=1;renderColaboradores()">
+        <option value="">📍 Qualquer status</option>
+        <option value="dentro">● Dentro agora</option>
+        <option value="saiu">✓ Saiu hoje</option>
+        <option value="ausente">— Sem registro hoje</option>
+      </select>
+      <button class="btn btn-outline colab-filter-clear" id="btn-colab-clear-filters"
+        onclick="limparFiltrosColab()" title="Limpar filtros" style="display:none;flex-shrink:0;">✕ Limpar</button>
+      <button class="btn btn-outline" onclick="exportColaboradoresCSV()"
+        style="font-size:.8rem;padding:.5rem 1rem;flex-shrink:0;">⬇ CSV</button>
     </div>
+    <div id="colab-filter-chips" style="display:none;margin-bottom:.85rem;gap:.4rem;flex-wrap:wrap;align-items:center;"></div>
 
     <!-- Tabela -->
     <div class="table-wrap">
@@ -3208,6 +3283,7 @@ function initFirebase() {
     .orderBy('nome', 'asc')
     .onSnapshot(snapshot => {
       db.colaboradores = snapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
+      atualizarFiltrosColab();
       renderColaboradores();
       renderStatsColaboradores();
       refreshAllDropdowns();
@@ -5861,17 +5937,103 @@ async function excluirColaborador(id) {
   }
 }
 
+// ── Preenche os selects de empresa e departamento com valores únicos
+function atualizarFiltrosColab() {
+  const empSel  = document.getElementById('filt-colab-empresa');
+  const depSel  = document.getElementById('filt-colab-depto');
+  if (!empSel || !depSel) return;
+
+  const curEmp = empSel.value;
+  const curDep = depSel.value;
+
+  const empresas = [...new Set(db.colaboradores.map(r => r.empresa).filter(Boolean))].sort();
+  const deptos   = [...new Set(db.colaboradores.map(r => r.departamento).filter(Boolean))].sort();
+
+  empSel.innerHTML = '<option value="">🏢 Todas as empresas</option>' +
+    empresas.map(e => `<option value="${e}" ${e===curEmp?'selected':''}>${e}</option>`).join('');
+  depSel.innerHTML = '<option value="">🗂 Todos os deptos</option>' +
+    deptos.map(d => `<option value="${d}" ${d===curDep?'selected':''}>${d}</option>`).join('');
+}
+
+function limparFiltrosColab() {
+  const ids = ['search-colaboradores','filt-colab-empresa','filt-colab-depto','filt-colab-status'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  colabPage = 1;
+  renderColaboradores();
+}
+
 function renderColaboradores() {
-  const q = ((document.getElementById('search-colaboradores') || {}).value || '').toLowerCase();
-  const hoje = todayStr();
+  atualizarFiltrosColab();
+
+  const q       = ((document.getElementById('search-colaboradores') || {}).value || '').toLowerCase().trim();
+  const fEmp    = (document.getElementById('filt-colab-empresa')    || {}).value || '';
+  const fDep    = (document.getElementById('filt-colab-depto')      || {}).value || '';
+  const fStatus = (document.getElementById('filt-colab-status')     || {}).value || '';
+  const hoje    = todayStr();
+
+  // Mapa de status hoje para cada colaborador
+  const statusMap = {};
+  db.dados.filter(d => d.data === hoje).forEach(d => {
+    const key = (d.nome||'').toUpperCase();
+    if (!statusMap[key] || (d._createdAt?.seconds||0) > (statusMap[key]._createdAt?.seconds||0)) {
+      statusMap[key] = d;
+    }
+  });
 
   let data = db.colaboradores.filter(r => {
-    if (!q) return true;
-    return (r.nome||'').toLowerCase().includes(q) ||
-           (r.cpf||'').toLowerCase().includes(q) ||
-           (r.departamento||'').toLowerCase().includes(q) ||
-           (r.empresa||'').toLowerCase().includes(q);
+    // busca textual
+    if (q && !(
+      (r.nome||'').toLowerCase().includes(q) ||
+      (r.cpf||'').toLowerCase().includes(q) ||
+      (r.departamento||'').toLowerCase().includes(q) ||
+      (r.empresa||'').toLowerCase().includes(q)
+    )) return false;
+    // filtro empresa
+    if (fEmp && (r.empresa||'') !== fEmp) return false;
+    // filtro departamento
+    if (fDep && (r.departamento||'') !== fDep) return false;
+    // filtro status hoje
+    if (fStatus) {
+      const last = statusMap[(r.nome||'').toUpperCase()];
+      const isDentro = !!(last && last.entrada && !last.saida);
+      const isSaiu   = !!(last && last.entrada && last.saida);
+      if (fStatus === 'dentro'  && !isDentro) return false;
+      if (fStatus === 'saiu'    && !isSaiu)   return false;
+      if (fStatus === 'ausente' && (isDentro || isSaiu)) return false;
+    }
+    return true;
   });
+
+  // Botão limpar + chips
+  const hasFilter = q || fEmp || fDep || fStatus;
+  const clearBtn  = document.getElementById('btn-colab-clear-filters');
+  if (clearBtn) clearBtn.style.display = hasFilter ? 'flex' : 'none';
+
+  const chipsEl = document.getElementById('colab-filter-chips');
+  if (chipsEl) {
+    if (hasFilter) {
+      chipsEl.style.display = 'flex';
+      const chips = [];
+      if (q)       chips.push({ label: `"${q}"`,         clear: ()=>{ document.getElementById('search-colaboradores').value=''; colabPage=1; renderColaboradores(); } });
+      if (fEmp)    chips.push({ label: `Empresa: ${fEmp}`, clear: ()=>{ document.getElementById('filt-colab-empresa').value=''; colabPage=1; renderColaboradores(); } });
+      if (fDep)    chips.push({ label: `Depto: ${fDep}`,  clear: ()=>{ document.getElementById('filt-colab-depto').value=''; colabPage=1; renderColaboradores(); } });
+      if (fStatus) {
+        const lbl = { dentro:'Dentro agora', saiu:'Saiu hoje', ausente:'Sem registro' };
+        chips.push({ label: lbl[fStatus]||fStatus, clear: ()=>{ document.getElementById('filt-colab-status').value=''; colabPage=1; renderColaboradores(); } });
+      }
+      chipsEl.innerHTML =
+        '<span style="font-size:.68rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;">Filtros ativos:</span>' +
+        chips.map((c,i) =>
+          `<span class="colab-chip">${c.label}<button class="colab-chip-x" onclick="(${c.clear.toString()})()" title="Remover filtro">✕</button></span>`
+        ).join('');
+    } else {
+      chipsEl.style.display = 'none';
+      chipsEl.innerHTML = '';
+    }
+  }
 
   const cnt = document.getElementById('cnt-colaboradores');
   if (cnt) cnt.textContent = db.colaboradores.length;
