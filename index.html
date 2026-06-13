@@ -1196,6 +1196,72 @@
   .search-by-wrap { display: flex; gap: .5rem; align-items: center; flex: 1; min-width: 260px; }
   .search-by-select { flex: 0 0 auto; min-width: 110px; font-size: .8rem; padding: .55rem .7rem; }
 
+  /* ── Export grupo colaboradores ── */
+  .colab-export-group {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: .28rem .45rem;
+  }
+  .colab-export-label {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    padding: 0 .2rem 0 .1rem;
+  }
+  .colab-export-btn {
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .38rem .7rem;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    transition: all .16s;
+    white-space: nowrap;
+    letter-spacing: .03em;
+  }
+  .colab-export-pdf {
+    background: rgba(224,85,85,.13);
+    color: #ff8a80;
+    border: 1px solid rgba(224,85,85,.3) !important;
+  }
+  .colab-export-pdf:hover {
+    background: rgba(224,85,85,.26);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(224,85,85,.25);
+  }
+  .colab-export-excel {
+    background: rgba(33,115,70,.15);
+    color: #52c27e;
+    border: 1px solid rgba(33,115,70,.35) !important;
+  }
+  .colab-export-excel:hover {
+    background: rgba(33,115,70,.28);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(33,115,70,.25);
+  }
+  .colab-export-csv {
+    background: rgba(74,158,255,.12);
+    color: var(--info);
+    border: 1px solid rgba(74,158,255,.3) !important;
+  }
+  .colab-export-csv:hover {
+    background: rgba(74,158,255,.24);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(74,158,255,.2);
+  }
+  @media (max-width: 640px) {
+    .colab-export-group { width: 100%; justify-content: flex-start; }
+    .colab-export-btn { flex: 1; justify-content: center; }
+  }
+
   /* ── Filtros Colaboradores ── */
   .colab-filter-bar {
     display: flex;
@@ -2783,8 +2849,16 @@
       </select>
       <button class="btn btn-outline colab-filter-clear" id="btn-colab-clear-filters"
         onclick="limparFiltrosColab()" title="Limpar filtros" style="display:none;flex-shrink:0;">✕ Limpar</button>
-      <button class="btn btn-outline" onclick="exportColaboradoresCSV()"
-        style="font-size:.8rem;padding:.5rem 1rem;flex-shrink:0;">⬇ CSV</button>
+      <!-- Grupo de exports -->
+      <div class="colab-export-group">
+        <span class="colab-export-label">Histórico:</span>
+        <button class="btn colab-export-btn colab-export-pdf" onclick="exportColabHistoricoPDF()"
+          title="Exportar histórico de acessos em PDF">📄 PDF</button>
+        <button class="btn colab-export-btn colab-export-excel" onclick="exportColabHistoricoExcel()"
+          title="Exportar histórico de acessos em Excel">📗 Excel</button>
+        <button class="btn colab-export-btn colab-export-csv" onclick="exportColaboradoresCSV()"
+          title="Exportar cadastro de colaboradores em CSV">📊 CSV</button>
+      </div>
     </div>
     <div id="colab-filter-chips" style="display:none;margin-bottom:.85rem;gap:.4rem;flex-wrap:wrap;align-items:center;"></div>
 
@@ -6143,6 +6217,204 @@ async function quickEntradaColab(id) {
     });
     showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
   } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+}
+
+// ══════════════════════════════════════════════════════
+// COLABORADORES — Export histórico de acessos (PDF / Excel)
+// ══════════════════════════════════════════════════════
+
+// Monta os registros de acesso filtrados pelos colaboradores visíveis na tabela atual
+function _getColabHistoricoData() {
+  // Pega os nomes dos colaboradores atualmente filtrados (todos, sem paginação)
+  const q       = ((document.getElementById('search-colaboradores') || {}).value || '').toLowerCase().trim();
+  const fEmp    = (document.getElementById('filt-colab-empresa')    || {}).value || '';
+  const fDep    = (document.getElementById('filt-colab-depto')      || {}).value || '';
+  const fStatus = (document.getElementById('filt-colab-status')     || {}).value || '';
+  const hoje    = todayStr();
+
+  const statusMap = {};
+  db.dados.filter(d => d.data === hoje).forEach(d => {
+    const key = (d.nome||'').toUpperCase();
+    if (!statusMap[key] || (d._createdAt?.seconds||0) > (statusMap[key]._createdAt?.seconds||0))
+      statusMap[key] = d;
+  });
+
+  const filtrados = db.colaboradores.filter(r => {
+    if (q && !((r.nome||'').toLowerCase().includes(q) || (r.cpf||'').toLowerCase().includes(q) ||
+               (r.departamento||'').toLowerCase().includes(q) || (r.empresa||'').toLowerCase().includes(q))) return false;
+    if (fEmp && (r.empresa||'') !== fEmp) return false;
+    if (fDep && (r.departamento||'') !== fDep) return false;
+    if (fStatus) {
+      const last = statusMap[(r.nome||'').toUpperCase()];
+      const isDentro = !!(last && last.entrada && !last.saida);
+      const isSaiu   = !!(last && last.entrada && last.saida);
+      if (fStatus === 'dentro'  && !isDentro) return false;
+      if (fStatus === 'saiu'    && !isSaiu)   return false;
+      if (fStatus === 'ausente' && (isDentro || isSaiu)) return false;
+    }
+    return true;
+  });
+
+  const nomes = new Set(filtrados.map(r => r.nome.toUpperCase()));
+
+  // Cruza com db.dados: todos os registros de acesso desses colaboradores
+  const historico = db.dados
+    .filter(d => nomes.has((d.nome||'').toUpperCase()))
+    .sort((a, b) => {
+      // ordenar por data desc, depois entrada desc
+      if ((b.data||'') !== (a.data||'')) return (b.data||'').localeCompare(a.data||'');
+      return (b.entrada||'').localeCompare(a.entrada||'');
+    });
+
+  return { historico, totalColab: filtrados.length };
+}
+
+function exportColabHistoricoPDF() {
+  const { historico, totalColab } = _getColabHistoricoData();
+  if (!historico.length) {
+    showToast('Nenhum registro de acesso encontrado para os colaboradores filtrados.', 'error');
+    return;
+  }
+
+  const hoje = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+  const rows = historico.map(r => {
+    const status = r.entrada && r.saida
+      ? `<span style="color:#27ae60;font-weight:700;">✓ Concluído</span>`
+      : (r.entrada && !r.saida ? `<span style="color:#f5a623;font-weight:700;">● Dentro</span>` : '—');
+    const duracao = (() => {
+      if (!r.entrada || !r.saida) return '—';
+      const [eh,em] = r.entrada.split(':').map(Number);
+      const [sh,sm] = r.saida.split(':').map(Number);
+      const diff = (sh*60+sm) - (eh*60+em);
+      if (diff < 0) return '—';
+      return `${Math.floor(diff/60)}h${String(diff%60).padStart(2,'0')}`;
+    })();
+    return `<tr>
+      <td>${r.data||'—'}</td>
+      <td><strong>${r.nome||'—'}</strong></td>
+      <td>${r.cargo||r.departamento||'—'}</td>
+      <td>${r.empresa||'—'}</td>
+      <td style="font-family:monospace;font-size:12px;">${r.entrada||'—'}</td>
+      <td style="font-family:monospace;font-size:12px;">${r.saida||'—'}</td>
+      <td style="font-family:monospace;font-size:11px;">${duracao}</td>
+      <td>${status}</td>
+      <td style="font-size:10px;color:#555;">${r.responsavel||'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Histórico de Acessos — Colaboradores</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 11px; color: #1a1a2e; background: #fff; padding: 20px; }
+    .header { display: flex; align-items: flex-start; justify-content: space-between; border-bottom: 3px solid #f5a623; padding-bottom: 10px; margin-bottom: 14px; }
+    .header-left h1 { font-size: 16px; color: #1a1a2e; letter-spacing: .04em; }
+    .header-left h1 span { color: #f5a623; }
+    .header-left p { font-size: 10px; color: #666; margin-top: 3px; }
+    .header-right { text-align: right; font-size: 10px; color: #666; }
+    .header-right .badge { display: inline-block; background: #1a1a2e; color: #f5a623; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .05em; }
+    .meta-row { display: flex; gap: 20px; margin-bottom: 14px; }
+    .meta-card { background: #f4f4f8; border-radius: 6px; padding: 7px 14px; }
+    .meta-card .val { font-size: 18px; font-weight: 700; color: #1a1a2e; }
+    .meta-card .lbl { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: .06em; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #1a1a2e; }
+    thead th { color: #f5a623; text-align: left; padding: 7px 8px; font-size: 9.5px; text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; }
+    tbody tr:nth-child(even) { background: #f8f8fb; }
+    tbody tr:hover { background: #fff3e0; }
+    td { padding: 6px 8px; border-bottom: 1px solid #e8e8ee; vertical-align: middle; }
+    .footer { margin-top: 18px; text-align: center; font-size: 9px; color: #aaa; border-top: 1px solid #eee; padding-top: 8px; }
+    @media print { @page { margin: 1cm; size: landscape; } body { padding: 0; } }
+  </style></head><body>
+  <div class="header">
+    <div class="header-left">
+      <h1>🔐 CONTROLE DE ACESSO — <span>HISTÓRICO DE COLABORADORES</span></h1>
+      <p>M.S Segurança e Serviços · Gerado em: ${hoje}</p>
+    </div>
+    <div class="header-right">
+      <div class="badge">COLABORADORES</div>
+    </div>
+  </div>
+  <div class="meta-row">
+    <div class="meta-card"><div class="val">${totalColab}</div><div class="lbl">Colaboradores</div></div>
+    <div class="meta-card"><div class="val">${historico.length}</div><div class="lbl">Registros de acesso</div></div>
+    <div class="meta-card"><div class="val">${historico.filter(r=>r.entrada&&r.saida).length}</div><div class="lbl">Acessos concluídos</div></div>
+    <div class="meta-card"><div class="val">${historico.filter(r=>r.entrada&&!r.saida).length}</div><div class="lbl">Dentro agora</div></div>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Data</th><th>Colaborador</th><th>Cargo / Função</th><th>Empresa</th>
+      <th>Entrada</th><th>Saída</th><th>Duração</th><th>Status</th><th>Responsável</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="footer">PJ Tecnologia e Sistemas · Controle de Acesso V14 · ${historico.length} registros exportados</div>
+  </body></html>`);
+  win.document.close();
+  win.focus();
+  setTimeout(() => win.print(), 600);
+  showToast(`📄 PDF de histórico aberto — ${historico.length} registros!`);
+}
+
+function exportColabHistoricoExcel() {
+  if (typeof XLSX === 'undefined') {
+    showToast('⚠ Biblioteca Excel não carregada. Tente novamente.', 'error'); return;
+  }
+  const { historico, totalColab } = _getColabHistoricoData();
+  if (!historico.length) {
+    showToast('Nenhum registro de acesso encontrado para os colaboradores filtrados.', 'error');
+    return;
+  }
+
+  const headers = ['DATA','COLABORADOR','CARGO / FUNÇÃO','EMPRESA','ENTRADA','SAÍDA','DURAÇÃO','STATUS','RESPONSÁVEL'];
+
+  const rows = historico.map(r => {
+    const duracao = (() => {
+      if (!r.entrada || !r.saida) return '';
+      const [eh,em] = r.entrada.split(':').map(Number);
+      const [sh,sm] = r.saida.split(':').map(Number);
+      const diff = (sh*60+sm) - (eh*60+em);
+      if (diff < 0) return '';
+      return `${Math.floor(diff/60)}h${String(diff%60).padStart(2,'0')}`;
+    })();
+    const status = r.entrada && r.saida ? 'Concluído' : (r.entrada && !r.saida ? 'Dentro' : 'Sem registro');
+    return [
+      r.data||'',
+      r.nome||'',
+      r.cargo||r.departamento||'',
+      r.empresa||'',
+      r.entrada||'',
+      r.saida||'',
+      duracao,
+      status,
+      r.responsavel||''
+    ];
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  ws['!cols'] = [10,28,22,22,9,9,10,12,22].map(wch => ({ wch }));
+
+  // Linha de resumo no topo (antes dos dados) — inserida como comentário na célula A1
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Histórico Colaboradores');
+
+  // Aba de resumo
+  const resumo = [
+    ['RESUMO — HISTÓRICO DE ACESSOS (COLABORADORES)'],
+    ['Gerado em', new Date().toLocaleString('pt-BR')],
+    ['Total colaboradores filtrados', totalColab],
+    ['Total registros de acesso', historico.length],
+    ['Acessos concluídos (entrada+saída)', historico.filter(r=>r.entrada&&r.saida).length],
+    ['Dentro agora (sem saída)', historico.filter(r=>r.entrada&&!r.saida).length],
+  ];
+  const wsR = XLSX.utils.aoa_to_sheet(resumo);
+  wsR['!cols'] = [{ wch: 40 }, { wch: 22 }];
+  XLSX.utils.book_append_sheet(wb, wsR, 'Resumo');
+
+  XLSX.writeFile(wb, `historico_colaboradores_${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast(`📗 Excel exportado — ${historico.length} registros de acesso!`);
 }
 
 function exportColaboradoresCSV() {
