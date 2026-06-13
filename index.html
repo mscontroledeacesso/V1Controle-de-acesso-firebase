@@ -1210,71 +1210,366 @@
   }
 
   /* ══════════════════════════════
-     ABA RELATÓRIOS — Export Cards
+     ABA RELATÓRIOS — Redesign V14
   ══════════════════════════════ */
-  .rel-export-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+
+  /* ── Page header da aba ── */
+  .rel-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
     gap: 1rem;
+  }
+  .rel-page-title-group {}
+  .rel-page-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.9rem;
+    letter-spacing: .07em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    line-height: 1;
+  }
+  .rel-page-title .rel-title-accent { color: var(--accent); }
+  .rel-page-subtitle {
+    font-size: .78rem;
+    color: var(--muted);
+    margin-top: .3rem;
+    letter-spacing: .03em;
+  }
+
+  /* ── Seção agrupadora ── */
+  .rel-section {
+    margin-bottom: 2rem;
+  }
+  .rel-section-label {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
     margin-bottom: 1rem;
   }
+  .rel-section-label-text {
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .rel-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Grid de cards de export ── */
+  .rel-export-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .85rem;
+  }
+  @media (max-width: 900px) {
+    .rel-export-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .rel-export-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Card base ── */
   .rel-export-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    transition: transform .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: default;
+  }
+  .rel-export-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(0,0,0,.45);
+    border-color: transparent;
+  }
+
+  /* ── Faixa colorida topo do card ── */
+  .rel-card-stripe {
+    height: 4px;
+    width: 100%;
+    border-radius: 14px 14px 0 0;
+  }
+  .rel-card-pdf   .rel-card-stripe { background: linear-gradient(90deg, #e05555 0%, #ff8a80 100%); }
+  .rel-card-csv   .rel-card-stripe { background: linear-gradient(90deg, #3dba7c 0%, #2de096 100%); }
+  .rel-card-excel .rel-card-stripe { background: linear-gradient(90deg, #217346 0%, #52c27e 100%); }
+
+  /* ── Brilho de hover colorido ── */
+  .rel-export-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity .2s;
+    pointer-events: none;
+    border-radius: 14px;
+  }
+  .rel-card-pdf::after   { background: radial-gradient(ellipse at top left, rgba(224,85,85,.07) 0%, transparent 70%); }
+  .rel-card-csv::after   { background: radial-gradient(ellipse at top left, rgba(61,186,124,.07) 0%, transparent 70%); }
+  .rel-card-excel::after { background: radial-gradient(ellipse at top left, rgba(33,115,70,.07) 0%, transparent 70%); }
+  .rel-export-card:hover::after { opacity: 1; }
+
+  /* ── Corpo do card ── */
+  .rel-card-body {
+    padding: 1.1rem 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: .85rem;
+  }
+
+  /* ── Ícone + info em linha ── */
+  .rel-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: .85rem;
+  }
+  .rel-card-icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+  }
+  .rel-card-pdf   .rel-card-icon-wrap { background: rgba(224,85,85,.12); border: 1px solid rgba(224,85,85,.2); }
+  .rel-card-csv   .rel-card-icon-wrap { background: rgba(61,186,124,.12); border: 1px solid rgba(61,186,124,.2); }
+  .rel-card-excel .rel-card-icon-wrap { background: rgba(33,115,70,.14); border: 1px solid rgba(33,115,70,.25); }
+
+  .rel-card-info { flex: 1; min-width: 0; }
+  .rel-card-title {
+    font-weight: 700;
+    font-size: .88rem;
+    color: var(--text);
+    margin-bottom: .22rem;
+    line-height: 1.25;
+  }
+  .rel-card-desc {
+    font-size: .72rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  /* ── Botão dentro do card ── */
+  .rel-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    padding: .6rem 1rem;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    transition: all .18s;
+    white-space: nowrap;
+    width: 100%;
+  }
+  .rel-btn:hover { transform: translateY(-1px); filter: brightness(1.12); box-shadow: 0 4px 16px rgba(0,0,0,.35); }
+  .rel-btn:active { transform: translateY(0); filter: brightness(.96); }
+
+  .rel-btn-pdf {
+    background: linear-gradient(135deg, #d64343 0%, #b02020 100%);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(224,85,85,.3);
+  }
+  .rel-btn-csv {
+    background: linear-gradient(135deg, #34a86c 0%, #1e8050 100%);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(61,186,124,.3);
+  }
+  .rel-btn-excel {
+    background: linear-gradient(135deg, #1f6b3e 0%, #145229 100%);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(33,115,70,.35);
+  }
+  .rel-btn-icon { font-size: .95rem; }
+
+  /* ── Tags de tipo no card ── */
+  .rel-card-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    font-size: .6rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: .18rem .5rem;
+    border-radius: 20px;
+  }
+  .rel-card-pdf   .rel-card-tag { background: rgba(224,85,85,.12); color: #ff8a80; border: 1px solid rgba(224,85,85,.25); }
+  .rel-card-csv   .rel-card-tag { background: rgba(61,186,124,.12); color: #3dba7c; border: 1px solid rgba(61,186,124,.25); }
+  .rel-card-excel .rel-card-tag { background: rgba(33,115,70,.14); color: #52c27e; border: 1px solid rgba(33,115,70,.3); }
+
+  /* ── Painel de filtros redesenhado ── */
+  .rel-filter-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .rel-filter-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.015);
+  }
+  .rel-filter-panel-title {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+  }
+  .rel-filter-panel-body {
+    padding: 1.25rem 1.4rem;
+  }
+  .rel-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: .85rem 1rem;
+    margin-bottom: 1.1rem;
+  }
+  .rel-filter-label {
+    font-size: .68rem;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .38rem;
+  }
+  .rel-filter-actions {
+    display: flex;
+    gap: .65rem;
+    flex-wrap: wrap;
+    padding-top: .85rem;
+    border-top: 1px solid var(--border);
+  }
+  .rel-filter-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: .6rem 1.15rem;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    transition: all .18s;
+    white-space: nowrap;
+  }
+  .rel-filter-btn:hover { transform: translateY(-1px); filter: brightness(1.1); box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+
+  /* ── Stats redesenhados ── */
+  .rel-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .85rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 900px) {
+    .rel-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .rel-stats-grid { grid-template-columns: repeat(2, 1fr); gap: .65rem; }
+  }
+  .rel-stat-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: transform .18s, box-shadow .18s;
+    padding: 1.1rem 1.25rem;
     position: relative;
     overflow: hidden;
+    transition: transform .18s, box-shadow .18s;
   }
-  .rel-export-card::before {
+  .rel-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+  .rel-stat-card::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; height: 3px;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
   }
-  .rel-card-pdf::before { background: linear-gradient(90deg, #e05555, #ff7c7c); }
-  .rel-card-csv::before { background: linear-gradient(90deg, #3dba7c, #2de096); }
-  .rel-card-excel::before { background: linear-gradient(90deg, #217346, #34a15a); }
-  .rel-export-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
-  .rel-card-icon { font-size: 2rem; flex-shrink: 0; }
-  .rel-card-info { flex: 1; min-width: 0; }
-  .rel-card-title { font-weight: 700; font-size: .9rem; color: var(--text); margin-bottom: .2rem; }
-  .rel-card-desc { font-size: .75rem; color: var(--muted); }
-
-  /* ── Export Buttons ── */
-  .rel-btn {
-    font-family: 'DM Sans', sans-serif;
-    font-size: .82rem; font-weight: 700;
+  .rel-stat-card:nth-child(1)::before { background: linear-gradient(90deg, #f5a623, transparent); }
+  .rel-stat-card:nth-child(2)::before { background: linear-gradient(90deg, #3dba7c, transparent); }
+  .rel-stat-card:nth-child(3)::before { background: linear-gradient(90deg, #4a9eff, transparent); }
+  .rel-stat-card:nth-child(4)::before { background: linear-gradient(90deg, #a855f7, transparent); }
+  .rel-stat-icon {
+    font-size: 1.3rem;
+    margin-bottom: .5rem;
+    opacity: .75;
+  }
+  .rel-stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
     letter-spacing: .04em;
-    padding: .6rem 1.1rem;
-    border: none; border-radius: 8px;
-    cursor: pointer; display: flex;
-    align-items: center; gap: .4rem;
-    transition: all .18s; white-space: nowrap;
-    flex-shrink: 0;
+    line-height: 1;
+    margin-bottom: .3rem;
   }
-  .rel-btn:hover { transform: translateY(-1px); filter: brightness(1.1); box-shadow: 0 4px 14px rgba(0,0,0,.3); }
-  .rel-btn:active { transform: translateY(0); }
+  .rel-stat-label {
+    font-size: .68rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .rel-stat-card:nth-child(1) .rel-stat-value { color: var(--accent); }
+  .rel-stat-card:nth-child(2) .rel-stat-value { color: var(--success); }
+  .rel-stat-card:nth-child(3) .rel-stat-value { color: var(--info); }
+  .rel-stat-card:nth-child(4) .rel-stat-value { color: #a855f7; }
 
-  .rel-btn-pdf {
-    background: linear-gradient(135deg, #e05555 0%, #c0392b 100%);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(224,85,85,.35);
+  /* ── Chart container ── */
+  .rel-chart-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.4rem;
+    overflow: hidden;
   }
-  .rel-btn-csv {
-    background: linear-gradient(135deg, #3dba7c 0%, #27ae60 100%);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(61,186,124,.35);
+  .rel-chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: .5rem;
   }
-  .rel-btn-excel {
-    background: linear-gradient(135deg, #217346 0%, #1a5c38 100%);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(33,115,70,.4);
+  .rel-chart-title {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: .4rem;
   }
-  .rel-btn-icon { font-size: 1rem; }
 
   /* ══════════════════════════════
      BALÃO CONFIRMAÇÃO DE ENTRADA
@@ -1952,133 +2247,222 @@
   </div>
   <!-- ══ ABA 5: RELATÓRIOS ══ -->
   <div id="panel-relatorios" class="tab-panel">
-    <div class="section-header">
-      <div>
-        <div class="section-title">📈 <span>Relatórios</span></div>
-        <div class="section-sub">Exporte, filtre e analise os dados do sistema</div>
+
+    <!-- Cabeçalho da aba -->
+    <div class="rel-page-header">
+      <div class="rel-page-title-group">
+        <div class="rel-page-title">📈 <span class="rel-title-accent">Relatórios</span></div>
+        <div class="rel-page-subtitle">Exporte, filtre e analise os dados do sistema</div>
       </div>
     </div>
 
-    <!-- CARDS DE EXPORT -->
-    <div class="rel-export-grid">
-
-      <!-- PDF CADASTRO -->
-      <div class="rel-export-card rel-card-pdf">
-        <div class="rel-card-icon">📄</div>
-        <div class="rel-card-info">
-          <div class="rel-card-title">Cadastros em PDF</div>
-          <div class="rel-card-desc">Relatório completo de cadastros de visitantes</div>
-        </div>
-        <button class="rel-btn rel-btn-pdf" onclick="exportRelatorioPDF('cadastro')">
-          <span class="rel-btn-icon">⬇</span> Exportar PDF
-        </button>
+    <!-- ── Seção PDF ── -->
+    <div class="rel-section">
+      <div class="rel-section-label">
+        <span class="rel-section-label-text">📄 Exportar em PDF</span>
       </div>
+      <div class="rel-export-grid" style="grid-template-columns: repeat(2,1fr);">
 
-      <!-- PDF ACESSOS -->
-      <div class="rel-export-card rel-card-pdf">
-        <div class="rel-card-icon">📋</div>
-        <div class="rel-card-info">
-          <div class="rel-card-title">Acessos em PDF</div>
-          <div class="rel-card-desc">Histórico de entradas e saídas em PDF</div>
+        <!-- PDF CADASTRO -->
+        <div class="rel-export-card rel-card-pdf">
+          <div class="rel-card-stripe"></div>
+          <div class="rel-card-body">
+            <div class="rel-card-top">
+              <div class="rel-card-icon-wrap">📄</div>
+              <div class="rel-card-info">
+                <div class="rel-card-title">Cadastros em PDF</div>
+                <div class="rel-card-desc">Relatório completo de cadastros de visitantes</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+              <span class="rel-card-tag">Visitantes</span>
+              <button class="rel-btn rel-btn-pdf" style="width:auto;padding:.52rem 1rem;" onclick="exportRelatorioPDF('cadastro')">
+                <span class="rel-btn-icon">⬇</span> Exportar PDF
+              </button>
+            </div>
+          </div>
         </div>
-        <button class="rel-btn rel-btn-pdf" onclick="exportRelatorioPDF('dados')">
-          <span class="rel-btn-icon">⬇</span> Exportar PDF
-        </button>
-      </div>
 
-      <!-- CSV CADASTRO -->
-      <div class="rel-export-card rel-card-csv">
-        <div class="rel-card-icon">📊</div>
-        <div class="rel-card-info">
-          <div class="rel-card-title">Cadastros em CSV</div>
-          <div class="rel-card-desc">Dados de cadastros para planilhas</div>
+        <!-- PDF ACESSOS -->
+        <div class="rel-export-card rel-card-pdf">
+          <div class="rel-card-stripe"></div>
+          <div class="rel-card-body">
+            <div class="rel-card-top">
+              <div class="rel-card-icon-wrap">📋</div>
+              <div class="rel-card-info">
+                <div class="rel-card-title">Acessos em PDF</div>
+                <div class="rel-card-desc">Histórico de entradas e saídas em PDF</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+              <span class="rel-card-tag">Acessos</span>
+              <button class="rel-btn rel-btn-pdf" style="width:auto;padding:.52rem 1rem;" onclick="exportRelatorioPDF('dados')">
+                <span class="rel-btn-icon">⬇</span> Exportar PDF
+              </button>
+            </div>
+          </div>
         </div>
-        <button class="rel-btn rel-btn-csv" onclick="exportCSV('cadastro')">
-          <span class="rel-btn-icon">⬇</span> Exportar CSV
-        </button>
-      </div>
-
-      <!-- CSV ACESSOS -->
-      <div class="rel-export-card rel-card-csv">
-        <div class="rel-card-icon">📑</div>
-        <div class="rel-card-info">
-          <div class="rel-card-title">Acessos em CSV</div>
-          <div class="rel-card-desc">Histórico de acessos para planilhas</div>
-        </div>
-        <button class="rel-btn rel-btn-csv" onclick="exportCSV('dados')">
-          <span class="rel-btn-icon">⬇</span> Exportar CSV
-        </button>
-      </div>
-
-      <!-- EXCEL CADASTRO -->
-      <div class="rel-export-card rel-card-excel">
-        <div class="rel-card-icon">📗</div>
-        <div class="rel-card-info">
-          <div class="rel-card-title">Cadastros em Excel</div>
-          <div class="rel-card-desc">Planilha Excel (.xlsx) com cadastros</div>
-        </div>
-        <button class="rel-btn rel-btn-excel" onclick="exportExcel('cadastro')">
-          <span class="rel-btn-icon">⬇</span> Exportar Excel
-        </button>
-      </div>
-
-      <!-- EXCEL ACESSOS -->
-      <div class="rel-export-card rel-card-excel">
-        <div class="rel-card-icon">📘</div>
-        <div class="rel-card-info">
-          <div class="rel-card-title">Acessos em Excel</div>
-          <div class="rel-card-desc">Planilha Excel (.xlsx) com todos os acessos</div>
-        </div>
-        <button class="rel-btn rel-btn-excel" onclick="exportExcel('dados')">
-          <span class="rel-btn-icon">⬇</span> Exportar Excel
-        </button>
       </div>
     </div>
 
-    <!-- FILTROS DO RELATÓRIO -->
-    <div class="form-card" style="margin-top:2rem;">
-      <div class="form-card-title">🔎 Filtros do Relatório de Acessos</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Data Inicial</label>
-          <input type="date" id="rel-data-inicio">
-        </div>
-        <div class="form-group">
-          <label>Data Final</label>
-          <input type="date" id="rel-data-fim">
-        </div>
-        <div class="form-group">
-          <label>Empresa</label>
-          <select id="rel-empresa">
-            <option value="">Todas as empresas</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Cargo</label>
-          <select id="rel-cargo">
-            <option value="">Todos os cargos</option>
-          </select>
-        </div>
+    <!-- ── Seção CSV ── -->
+    <div class="rel-section">
+      <div class="rel-section-label">
+        <span class="rel-section-label-text">📊 Exportar em CSV</span>
       </div>
-      <div class="btn-row" style="flex-wrap:wrap;gap:.75rem;margin-top:1.25rem;">
-        <button class="rel-btn rel-btn-pdf" style="flex:0 0 auto;" onclick="exportRelatorioFiltradoPDF()">
-          <span class="rel-btn-icon">📄</span> PDF Filtrado
-        </button>
-        <button class="rel-btn rel-btn-csv" style="flex:0 0 auto;" onclick="exportRelatorioFiltradoCSV()">
-          <span class="rel-btn-icon">📊</span> CSV Filtrado
-        </button>
-        <button class="rel-btn rel-btn-excel" style="flex:0 0 auto;" onclick="exportRelatorioFiltradoExcel()">
-          <span class="rel-btn-icon">📗</span> Excel Filtrado
-        </button>
+      <div class="rel-export-grid" style="grid-template-columns: repeat(2,1fr);">
+
+        <!-- CSV CADASTRO -->
+        <div class="rel-export-card rel-card-csv">
+          <div class="rel-card-stripe"></div>
+          <div class="rel-card-body">
+            <div class="rel-card-top">
+              <div class="rel-card-icon-wrap">📊</div>
+              <div class="rel-card-info">
+                <div class="rel-card-title">Cadastros em CSV</div>
+                <div class="rel-card-desc">Dados de cadastros para planilhas</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+              <span class="rel-card-tag">Visitantes</span>
+              <button class="rel-btn rel-btn-csv" style="width:auto;padding:.52rem 1rem;" onclick="exportCSV('cadastro')">
+                <span class="rel-btn-icon">⬇</span> Exportar CSV
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CSV ACESSOS -->
+        <div class="rel-export-card rel-card-csv">
+          <div class="rel-card-stripe"></div>
+          <div class="rel-card-body">
+            <div class="rel-card-top">
+              <div class="rel-card-icon-wrap">📑</div>
+              <div class="rel-card-info">
+                <div class="rel-card-title">Acessos em CSV</div>
+                <div class="rel-card-desc">Histórico de acessos para planilhas</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+              <span class="rel-card-tag">Acessos</span>
+              <button class="rel-btn rel-btn-csv" style="width:auto;padding:.52rem 1rem;" onclick="exportCSV('dados')">
+                <span class="rel-btn-icon">⬇</span> Exportar CSV
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- RESUMO ESTATÍSTICO -->
-    <div class="form-card" style="margin-top:1.5rem;">
-      <div class="form-card-title">📊 Resumo Estatístico</div>
-      <div class="stats-row" id="stats-relatorios"></div>
-      <canvas id="rel-chart-bar" style="max-height:260px;margin-top:1rem;"></canvas>
+    <!-- ── Seção Excel ── -->
+    <div class="rel-section">
+      <div class="rel-section-label">
+        <span class="rel-section-label-text">📗 Exportar em Excel</span>
+      </div>
+      <div class="rel-export-grid" style="grid-template-columns: repeat(2,1fr);">
+
+        <!-- EXCEL CADASTRO -->
+        <div class="rel-export-card rel-card-excel">
+          <div class="rel-card-stripe"></div>
+          <div class="rel-card-body">
+            <div class="rel-card-top">
+              <div class="rel-card-icon-wrap">📗</div>
+              <div class="rel-card-info">
+                <div class="rel-card-title">Cadastros em Excel</div>
+                <div class="rel-card-desc">Planilha Excel (.xlsx) com cadastros</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+              <span class="rel-card-tag">Visitantes</span>
+              <button class="rel-btn rel-btn-excel" style="width:auto;padding:.52rem 1rem;" onclick="exportExcel('cadastro')">
+                <span class="rel-btn-icon">⬇</span> Exportar Excel
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXCEL ACESSOS -->
+        <div class="rel-export-card rel-card-excel">
+          <div class="rel-card-stripe"></div>
+          <div class="rel-card-body">
+            <div class="rel-card-top">
+              <div class="rel-card-icon-wrap">📘</div>
+              <div class="rel-card-info">
+                <div class="rel-card-title">Acessos em Excel</div>
+                <div class="rel-card-desc">Planilha Excel (.xlsx) com todos os acessos</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;">
+              <span class="rel-card-tag">Acessos</span>
+              <button class="rel-btn rel-btn-excel" style="width:auto;padding:.52rem 1rem;" onclick="exportExcel('dados')">
+                <span class="rel-btn-icon">⬇</span> Exportar Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- ── Painel de Filtros redesenhado ── -->
+    <div class="rel-filter-panel">
+      <div class="rel-filter-panel-header">
+        <div class="rel-filter-panel-title">🔎 Filtros do Relatório de Acessos</div>
+      </div>
+      <div class="rel-filter-panel-body">
+        <div class="rel-filter-grid">
+          <div>
+            <div class="rel-filter-label">Data Inicial</div>
+            <input type="date" id="rel-data-inicio">
+          </div>
+          <div>
+            <div class="rel-filter-label">Data Final</div>
+            <input type="date" id="rel-data-fim">
+          </div>
+          <div>
+            <div class="rel-filter-label">Empresa</div>
+            <select id="rel-empresa">
+              <option value="">Todas as empresas</option>
+            </select>
+          </div>
+          <div>
+            <div class="rel-filter-label">Cargo</div>
+            <select id="rel-cargo">
+              <option value="">Todos os cargos</option>
+            </select>
+          </div>
+        </div>
+        <div class="rel-filter-actions">
+          <button class="rel-filter-btn rel-btn-pdf" onclick="exportRelatorioFiltradoPDF()">
+            <span>📄</span> PDF Filtrado
+          </button>
+          <button class="rel-filter-btn rel-btn-csv" onclick="exportRelatorioFiltradoCSV()">
+            <span>📊</span> CSV Filtrado
+          </button>
+          <button class="rel-filter-btn rel-btn-excel" onclick="exportRelatorioFiltradoExcel()">
+            <span>📗</span> Excel Filtrado
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Resumo Estatístico redesenhado ── -->
+    <div class="rel-section">
+      <div class="rel-section-label">
+        <span class="rel-section-label-text">📊 Resumo Estatístico</span>
+      </div>
+
+      <!-- Stats cards dinâmicos (preenchidos por renderStats via id stats-relatorios) -->
+      <div class="rel-stats-grid" id="stats-relatorios"></div>
+
+      <!-- Gráfico -->
+      <div class="rel-chart-wrap">
+        <div class="rel-chart-header">
+          <div class="rel-chart-title">📈 Acessos por Empresa</div>
+        </div>
+        <canvas id="rel-chart-bar" style="max-height:240px;"></canvas>
+      </div>
+    </div>
+
   </div>
 <!-- MINI-MODAL CONFIG (Adicionar/Editar Empresa ou Motivo a partir do Cadastro) -->
 <div id="cfg-mini-modal-overlay" onclick="cfgMiniFechar()"></div>
@@ -4737,10 +5121,10 @@ function renderRelatoriosStats() {
   const dentroPessoal = db.dados.filter(r => r.data === hoje && r.entrada && !r.saida).length;
 
   document.getElementById('stats-relatorios').innerHTML = `
-    <div class="stat-card"><div class="stat-value">${totalCad}</div><div class="stat-label">Total Cadastros</div></div>
-    <div class="stat-card"><div class="stat-value">${totalAcessos}</div><div class="stat-label">Total Acessos</div></div>
-    <div class="stat-card"><div class="stat-value">${acessosHoje}</div><div class="stat-label">Acessos Hoje</div></div>
-    <div class="stat-card"><div class="stat-value">${dentroPessoal}</div><div class="stat-label">Dentro Agora</div></div>
+    <div class="rel-stat-card"><div class="rel-stat-icon">🗂️</div><div class="rel-stat-value">${totalCad}</div><div class="rel-stat-label">Total Cadastros</div></div>
+    <div class="rel-stat-card"><div class="rel-stat-icon">🚪</div><div class="rel-stat-value">${totalAcessos}</div><div class="rel-stat-label">Total Acessos</div></div>
+    <div class="rel-stat-card"><div class="rel-stat-icon">📅</div><div class="rel-stat-value">${acessosHoje}</div><div class="rel-stat-label">Acessos Hoje</div></div>
+    <div class="rel-stat-card"><div class="rel-stat-icon">🟢</div><div class="rel-stat-value">${dentroPessoal}</div><div class="rel-stat-label">Dentro Agora</div></div>
   `;
 
   // Simple bar chart - acessos por empresa (top 8)
@@ -4754,8 +5138,8 @@ function renderRelatoriosStats() {
   const canvas = document.getElementById('rel-chart-bar');
   if (!canvas || !sorted.length) return;
   const ctx = canvas.getContext('2d');
-  const w = canvas.parentElement.clientWidth - 32;
-  canvas.width = w; canvas.height = 200;
+  const w = canvas.parentElement.clientWidth - 40;
+  canvas.width = w; canvas.height = 220;
   const barW = Math.min(60, (w - 40) / sorted.length - 8);
   const maxVal = sorted[0][1];
   const padL = 20, padB = 45, padT = 20;
