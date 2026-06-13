@@ -2375,7 +2375,7 @@
   <div class="ceb-name" id="ceb-nome"></div>
   <div class="ceb-meta" id="ceb-meta"></div>
   <div class="ceb-time" id="ceb-time"></div>
-  <div id="ceb-responsavel-wrap" style="margin-bottom:1.1rem;text-align:left;">
+  <div style="margin-bottom:1.1rem;text-align:left;">
     <label style="font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.4rem;">👤 Responsável pela Liberação <span style="color:var(--danger);">*</span></label>
     <select id="ceb-responsavel-sel"
       style="width:100%;background:var(--surface);border:1px solid rgba(245,166,35,.5);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.55rem .9rem;outline:none;">
@@ -3395,7 +3395,7 @@ async function globalRegEntradaColab(colaboradorId, e) {
     try {
       await addToFirestore('dados', {
         data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
-        cargo: 'FUNCIONÁRIO', empresa: 'M.S SEGURANÇA E SERVIÇOS',
+        cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
         placa: '', placaTrailer: '', entrada, saida: '',
         responsavel, tipo: 'COLABORADOR',
       });
@@ -4284,7 +4284,6 @@ let _pendingEntradaCadastroId = null;
 let _pendingEntradaCallback   = null;
 let _pendingEntradaResponsavel = null;
 let _cebClockInterval         = null;
-let _cebIsColab               = false; // flag: true quando for colaborador
 
 function pedirConfirmacaoEntrada(cadastroId, callbackFn) {
   const r = db.cadastro.find(x => x._id === cadastroId);
@@ -4292,29 +4291,11 @@ function pedirConfirmacaoEntrada(cadastroId, callbackFn) {
 
   _pendingEntradaCadastroId = cadastroId;
   _pendingEntradaCallback   = callbackFn;
-  _cebIsColab = false; // modo visitante
 
   document.getElementById('ceb-nome').textContent = r.nome;
   document.getElementById('ceb-meta').textContent =
     [r.cargo, r.empresa, r.rg ? 'RG: '+r.rg : '', r.cpf ? 'CPF: '+r.cpf : '']
       .filter(Boolean).join(' · ');
-
-  // Garantir visual padrão (visitante)
-  const balloon = document.getElementById('confirm-entrada-balloon');
-  balloon.style.borderColor = 'rgba(61,186,124,.45)';
-  balloon.style.boxShadow = '0 24px 64px rgba(0,0,0,.7), 0 0 0 1px rgba(61,186,124,.1)';
-  const titleEl = balloon.querySelector('.ceb-title');
-  if (titleEl) { titleEl.textContent = 'Confirmar Entrada'; titleEl.style.color = 'var(--success)'; }
-  const iconEl = balloon.querySelector('.ceb-icon');
-  if (iconEl) iconEl.textContent = '🟢';
-
-  // Mostrar campo de responsável (pode estar oculto de uso anterior com colaborador)
-  const respWrap = document.getElementById('ceb-responsavel-wrap');
-  if (respWrap) respWrap.style.display = '';
-
-  // Mostrar botão Editar
-  const editBtn = document.querySelector('.ceb-btn-edit');
-  if (editBtn) editBtn.style.display = '';
 
   // Relógio ao vivo no balão
   function atualizarHora() {
@@ -4330,15 +4311,11 @@ function pedirConfirmacaoEntrada(cadastroId, callbackFn) {
 }
 
 async function confirmarEntrada() {
-  // Colaboradores não precisam de responsável
-  let responsavel = '';
-  if (!_cebIsColab) {
-    responsavel = (document.getElementById('ceb-responsavel-sel').value || '').trim();
-    if (!responsavel) {
-      showToast('Selecione o Responsável pela Liberação', 'error');
-      document.getElementById('ceb-responsavel-sel').focus();
-      return;
-    }
+  const responsavel = (document.getElementById('ceb-responsavel-sel').value || '').trim();
+  if (!responsavel) {
+    showToast('Selecione o Responsável pela Liberação', 'error');
+    document.getElementById('ceb-responsavel-sel').focus();
+    return;
   }
   // Guardar responsável para uso no callback
   _pendingEntradaResponsavel = responsavel;
@@ -4349,7 +4326,6 @@ async function confirmarEntrada() {
   _pendingEntradaCadastroId = null;
   _pendingEntradaCallback   = null;
   _pendingEntradaResponsavel = null;
-  _cebIsColab = false;
 }
 
 function cancelConfirmEntrada() {
@@ -4361,21 +4337,9 @@ function cancelConfirmEntrada() {
   // Restaurar botão editar
   const editBtn = document.querySelector('.ceb-btn-edit');
   if (editBtn) editBtn.style.display = '';
-  // Restaurar campo de responsável
-  const respWrap = document.getElementById('ceb-responsavel-wrap');
-  if (respWrap) respWrap.style.display = '';
-  // Restaurar visual padrão (visitante)
-  const balloon = document.getElementById('confirm-entrada-balloon');
-  balloon.style.borderColor = '';
-  balloon.style.boxShadow = '';
-  const titleEl = balloon.querySelector('.ceb-title');
-  if (titleEl) { titleEl.textContent = 'Confirmar Entrada'; titleEl.style.color = ''; }
-  const iconEl = balloon.querySelector('.ceb-icon');
-  if (iconEl) iconEl.textContent = '🟢';
   _pendingEntradaCadastroId = null;
   _pendingEntradaCallback   = null;
   _pendingEntradaResponsavel = null;
-  _cebIsColab = false;
 }
 
 function cebEditarCadastro() {
@@ -4402,7 +4366,6 @@ function pedirConfirmacaoEntradaColab(colaboradorId, callbackFn) {
 
   _pendingEntradaCadastroId = colaboradorId;
   _pendingEntradaCallback   = callbackFn;
-  _cebIsColab = true; // flag: modo colaborador
 
   document.getElementById('ceb-nome').textContent = r.nome;
   document.getElementById('ceb-meta').textContent =
@@ -4417,24 +4380,9 @@ function pedirConfirmacaoEntradaColab(colaboradorId, callbackFn) {
   clearInterval(_cebClockInterval);
   _cebClockInterval = setInterval(atualizarHora, 1000);
 
-  // Esconder campo de responsável — colaborador não precisa de autorização
-  const respWrap = document.getElementById('ceb-responsavel-wrap');
-  if (respWrap) respWrap.style.display = 'none';
-
   // Esconder botão "Editar Cadastro" pois colaborador tem aba própria
   const editBtn = document.querySelector('.ceb-btn-edit');
   if (editBtn) editBtn.style.display = 'none';
-
-  // Visual azul para colaborador
-  const balloon = document.getElementById('confirm-entrada-balloon');
-  balloon.style.borderColor = 'rgba(74,158,255,.55)';
-  balloon.style.boxShadow = '0 24px 64px rgba(0,0,0,.7), 0 0 0 1px rgba(74,158,255,.15)';
-
-  const titleEl = balloon.querySelector('.ceb-title');
-  if (titleEl) { titleEl.textContent = 'Confirmar Entrada'; titleEl.style.color = 'var(--info)'; }
-
-  const iconEl = balloon.querySelector('.ceb-icon');
-  if (iconEl) iconEl.textContent = '👷';
 
   document.getElementById('confirm-entrada-balloon').classList.add('open');
   document.getElementById('confirm-entrada-overlay').classList.add('open');
@@ -4596,7 +4544,7 @@ async function actionBalloonEntrada() {
       try {
         await addToFirestore('dados', {
           data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
-          cargo: 'FUNCIONÁRIO', empresa: 'M.S SEGURANÇA E SERVIÇOS',
+          cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
           placa: '', placaTrailer: '', entrada, saida: '',
           responsavel, tipo: 'COLABORADOR',
         });
@@ -5651,7 +5599,7 @@ function quickEntradaColab(id) {
     try {
       await addToFirestore('dados', {
         data: todayStr(), nome: r.nome, rg: '', cpf: r.cpf||'',
-        cargo: 'FUNCIONÁRIO', empresa: 'M.S SEGURANÇA E SERVIÇOS',
+        cargo: r.departamento || 'FUNCIONÁRIO', empresa: r.empresa || '',
         placa: '', placaTrailer: '', entrada, saida: '',
         responsavel, tipo: 'COLABORADOR',
       });
