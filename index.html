@@ -37,7 +37,7 @@
 
   /* ── Header ── */
   header {
-    background: var(--surface);
+    background: #211c12;
     border-bottom: 2px solid var(--accent);
     padding: 0 1.5rem;
     display: flex;
@@ -47,7 +47,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 24px rgba(60,45,20,.14);
+    box-shadow: 0 4px 24px rgba(0,0,0,.35);
     gap: 1rem;
   }
   .logo { display: flex; align-items: center; gap: .75rem; flex-shrink: 0; }
@@ -86,24 +86,24 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.15rem;
     letter-spacing: .07em;
-    color: var(--text);
+    color: #f3ead8;
     white-space: nowrap;
   }
-  .logo-ms-name span { color: #4a9eff; }
+  .logo-ms-name span { color: #6db4ff; }
   .logo-ms-tagline {
     font-size: .62rem;
     font-weight: 500;
     letter-spacing: .09em;
     text-transform: uppercase;
-    color: var(--muted);
-    opacity: .8;
+    color: #b6a988;
+    opacity: .9;
     white-space: nowrap;
   }
   .logo-ms-system {
     font-family: 'Bebas Neue', sans-serif;
     font-size: .85rem;
     letter-spacing: .1em;
-    color: var(--muted);
+    color: #b6a988;
     margin-top: 1px;
     white-space: nowrap;
   }
@@ -1873,6 +1873,45 @@
     align-items: center;
     gap: .4rem;
   }
+  .rel-chart-total {
+    font-size: .68rem;
+    color: var(--muted);
+    background: var(--highlight);
+    padding: .2rem .6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  /* ── Ranking de empresas (barras horizontais responsivas) ── */
+  .emp-rank-list { display: flex; flex-direction: column; gap: .65rem; }
+  .emp-rank-empty { font-size: .8rem; color: var(--muted); text-align: center; padding: 1.5rem 0; }
+  .emp-rank-row { display: grid; grid-template-columns: 1.4fr 3fr auto; align-items: center; gap: .75rem; }
+  .emp-rank-pos {
+    font-family: 'DM Mono', monospace; font-size: .68rem; font-weight: 700;
+    color: var(--muted); width: 1.1rem; flex-shrink: 0;
+  }
+  .emp-rank-name {
+    display: flex; align-items: center; gap: .4rem;
+    font-size: .78rem; font-weight: 600; color: var(--text);
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  .emp-rank-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .emp-rank-track {
+    height: 11px; border-radius: 8px; background: var(--highlight);
+    overflow: hidden; position: relative;
+  }
+  .emp-rank-fill {
+    height: 100%; border-radius: 8px;
+    transition: width .5s ease;
+  }
+  .emp-rank-val {
+    font-family: 'DM Mono', monospace; font-size: .76rem; font-weight: 700;
+    color: var(--text); text-align: right; min-width: 2.6rem;
+  }
+  .emp-rank-pct { font-size: .64rem; color: var(--muted); font-weight: 500; }
+  @media (max-width: 640px) {
+    .emp-rank-row { grid-template-columns: 1fr; gap: .25rem; }
+    .emp-rank-val { text-align: left; }
+  }
 
   /* ══════════════════════════════
      BALÃO CONFIRMAÇÃO DE ENTRADA
@@ -2785,12 +2824,13 @@
       <!-- Stats cards dinâmicos (preenchidos por renderStats via id stats-relatorios) -->
       <div class="rel-stats-grid" id="stats-relatorios"></div>
 
-      <!-- Gráfico -->
+      <!-- Card: Acessos por Empresa (ranking responsivo) -->
       <div class="rel-chart-wrap">
         <div class="rel-chart-header">
           <div class="rel-chart-title">📈 Acessos por Empresa</div>
+          <div class="rel-chart-total" id="rel-chart-total">0 acessos</div>
         </div>
-        <canvas id="rel-chart-bar" style="max-height:240px;"></canvas>
+        <div class="emp-rank-list" id="rel-chart-bar"></div>
       </div>
     </div>
 
@@ -5544,7 +5584,7 @@ function renderRelatoriosStats() {
     </div>
   `;
 
-  // Simple bar chart - acessos por empresa (top 8)
+  // Card "Acessos por Empresa" — ranking top 8, responsivo (sem canvas)
   const empresaCount = {};
   db.dados.forEach(r => {
     const emp = r.empresa || 'Sem Empresa';
@@ -5552,50 +5592,36 @@ function renderRelatoriosStats() {
   });
   const sorted = Object.entries(empresaCount).sort((a,b) => b[1]-a[1]).slice(0, 8);
 
-  const canvas = document.getElementById('rel-chart-bar');
-  if (!canvas || !sorted.length) return;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.parentElement.clientWidth - 40;
-  canvas.width = w; canvas.height = 220;
-  const barW = Math.min(60, (w - 40) / sorted.length - 8);
-  const maxVal = sorted[0][1];
-  const padL = 20, padB = 45, padT = 20;
-  const chartH = canvas.height - padB - padT;
+  const rankWrap = document.getElementById('rel-chart-bar');
+  const totalLbl = document.getElementById('rel-chart-total');
+  if (totalLbl) totalLbl.textContent = totalAcessos + (totalAcessos === 1 ? ' acesso' : ' acessos');
+  if (!rankWrap) return;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!sorted.length) {
+    rankWrap.innerHTML = `<div class="emp-rank-empty">Nenhum acesso registrado ainda.</div>`;
+    return;
+  }
+
   const colors = ['#e8891a','#3dba7c','#4a9eff','#e05555','#b88ef5','#ff9d6e','#2de096','#ffd700'];
+  const maxVal = sorted[0][1];
 
-  sorted.forEach(([emp, cnt], i) => {
-    const x = padL + i * ((w - padL) / sorted.length) + ((w - padL) / sorted.length - barW) / 2;
-    const barH = Math.round((cnt / maxVal) * chartH);
-    const y = padT + chartH - barH;
+  rankWrap.innerHTML = sorted.map(([emp, cnt], i) => {
     const col = colors[i % colors.length];
-
-    ctx.fillStyle = col + '33';
-    ctx.fillRect(x, padT, barW, chartH);
-
-    const grad = ctx.createLinearGradient(x, y, x, y + barH);
-    grad.addColorStop(0, col);
-    grad.addColorStop(1, col + '88');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]) : ctx.rect(x, y, barW, barH);
-    ctx.fill();
-
-    ctx.fillStyle = '#2a2418';
-    ctx.font = 'bold 11px DM Mono, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(cnt, x + barW / 2, y - 5);
-
-    ctx.fillStyle = '#8a7e68';
-    ctx.font = '10px DM Sans, sans-serif';
-    ctx.save();
-    ctx.translate(x + barW / 2, canvas.height - 5);
-    ctx.rotate(-0.45);
-    const label = emp.length > 12 ? emp.slice(0, 11) + '…' : emp;
-    ctx.fillText(label, 0, 0);
-    ctx.restore();
-  });
+    const pct = Math.round((cnt / maxVal) * 100);
+    const pctTotal = totalAcessos ? Math.round((cnt / totalAcessos) * 100) : 0;
+    return `
+      <div class="emp-rank-row">
+        <div class="emp-rank-name" title="${emp}">
+          <span class="emp-rank-pos">#${i+1}</span>
+          <span class="emp-rank-dot" style="background:${col};"></span>
+          <span>${emp}</span>
+        </div>
+        <div class="emp-rank-track">
+          <div class="emp-rank-fill" style="width:${pct}%;background:linear-gradient(90deg,${col},${col}99);"></div>
+        </div>
+        <div class="emp-rank-val">${cnt}<span class="emp-rank-pct"> · ${pctTotal}%</span></div>
+      </div>`;
+  }).join('');
 }
 
 
@@ -5725,11 +5751,20 @@ function _printTable(type, data, titulo) {
     .rcard-grid span { color: #999; font-size: 8px; text-transform: uppercase; letter-spacing: .03em; display: block; }
     .rcard-grid i { color: #c0392b; font-style: normal; }
     @media print {
-      @page { margin: 0.8cm; size: A4; }
+      @page { margin: 0.8cm; size: A4 landscape; }
+      .rgrid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media screen and (min-width: 1100px) {
+      .rgrid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media screen and (max-width: 1099px) and (min-width: 700px) {
       .rgrid { grid-template-columns: repeat(3, 1fr); }
     }
     @media screen and (max-width: 700px) {
       .rgrid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media screen and (max-width: 460px) {
+      .rgrid { grid-template-columns: 1fr; }
     }
   </style>
   </head><body>
@@ -6690,7 +6725,14 @@ function exportColabHistoricoPDF() {
     tbody tr:hover { background: #fff3e0; }
     td { padding: 6px 8px; border-bottom: 1px solid #e8e8ee; vertical-align: middle; }
     .footer { margin-top: 18px; text-align: center; font-size: 9px; color: #aaa; border-top: 1px solid #eee; padding-top: 8px; }
-    @media print { @page { margin: 1cm; size: landscape; } body { padding: 0; } }
+    @media print { @page { margin: 1cm; size: A4 landscape; } body { padding: 0; } }
+    @media screen and (max-width: 900px) {
+      body { padding: 10px; font-size: 10px; }
+      .header { flex-direction: column; gap: 8px; }
+      .header-right { text-align: left; }
+      .meta-row { flex-wrap: wrap; gap: 10px; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
   </style></head><body>
   <div class="header">
     <div class="header-left">
