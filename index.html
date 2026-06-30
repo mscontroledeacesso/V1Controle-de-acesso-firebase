@@ -480,38 +480,54 @@
   /* ── Main ── */
   main { max-width: 1340px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
 
-  /* ── Tabs ── */
+  /* ── Tabs (barra de botões em caixinha, estilo toolbar) ── */
   .tabs {
-    display: flex; gap: .25rem;
+    display: flex; gap: .5rem;
     margin-bottom: 2rem;
-    border-bottom: 2px solid var(--border);
-    flex-wrap: wrap;
+    padding: .6rem;
+    background: var(--highlight);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow-x: auto;
   }
   .tab-btn {
     font-family: 'DM Sans', sans-serif;
-    font-size: .85rem; font-weight: 600;
-    letter-spacing: .04em; text-transform: uppercase;
-    padding: .75rem 1.25rem;
-    background: transparent; border: none;
+    font-size: .68rem; font-weight: 700;
+    letter-spacing: .02em; text-transform: none;
+    padding: .6rem .5rem .55rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px;
     color: var(--muted); cursor: pointer;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: color .2s, border-color .2s;
-    display: flex; align-items: center; gap: .5rem;
+    transition: all .18s;
+    display: flex; flex-direction: column; align-items: center; gap: .3rem;
+    min-width: 84px; flex: 0 0 auto;
+    position: relative;
   }
-  .tab-btn:hover { color: var(--text); }
-  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-btn .tab-icon { font-size: 1.25rem; line-height: 1; }
+  .tab-btn:hover { color: var(--text); border-color: var(--accent); transform: translateY(-1px); }
+  .tab-btn.active {
+    color: var(--accent); border-color: var(--accent);
+    background: rgba(245,166,35,.1);
+    box-shadow: 0 0 0 1px rgba(245,166,35,.25) inset;
+  }
   .tab-btn .tab-count {
-    background: var(--highlight); color: var(--muted);
-    font-size: .68rem; padding: .12rem .42rem;
-    border-radius: 10px; font-weight: 500;
+    position: absolute; top: -7px; right: -7px;
+    background: var(--accent); color: #fff;
+    font-size: .62rem; min-width: 18px; height: 18px; padding: 0 .3rem;
+    border-radius: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--highlight);
   }
-  .tab-btn.active .tab-count {
-    background: rgba(245,166,35,.15); color: var(--accent);
-  }
+  .tab-btn.active .tab-count { background: var(--accent); color: #fff; }
   /* Colaboradores tab — azul info */
-  .tab-btn.colab-tab.active { color: var(--info); border-bottom-color: var(--info); }
-  .tab-btn.colab-tab.active .tab-count { background: rgba(74,158,255,.15); color: var(--info); }
+  .tab-btn.colab-tab.active { color: var(--info); border-color: var(--info); background: rgba(74,158,255,.1); box-shadow: 0 0 0 1px rgba(74,158,255,.25) inset; }
+  .tab-btn.colab-tab.active .tab-count { background: var(--info); color: #fff; }
+  @media (max-width: 720px) {
+    main { margin: 1rem auto; padding: 0 .75rem 3rem; }
+    .tabs { gap: .35rem; padding: .5rem; }
+    .tab-btn { min-width: 72px; font-size: .62rem; padding: .5rem .35rem .45rem; }
+    .tab-btn .tab-icon { font-size: 1.1rem; }
+  }
 
   /* ── Colaboradores panel ── */
   .colab-badge {
@@ -2161,26 +2177,32 @@
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('dados', this)">
-      📊 Registro de Acessos
+      <span class="tab-icon">📊</span>
+      <span>Acessos</span>
       <span class="tab-count" id="cnt-dados">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('monitor', this)">
-      📡 Monitor ao Vivo
-      <span class="tab-count" id="cnt-monitor" style="background:rgba(61,186,124,.15);color:var(--success);">0</span>
+      <span class="tab-icon">📡</span>
+      <span>Monitor</span>
+      <span class="tab-count" id="cnt-monitor" style="background:var(--success);">0</span>
     </button>
     <button class="tab-btn colab-tab" onclick="switchTab('colaboradores', this)">
-      👷 Colaboradores
-      <span class="tab-count" id="cnt-colaboradores" style="background:rgba(74,158,255,.15);color:var(--info);">0</span>
+      <span class="tab-icon">👷</span>
+      <span>Colab.</span>
+      <span class="tab-count" id="cnt-colaboradores" style="background:var(--info);">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('config', this)">
-      ⚙️ Configurações
+      <span class="tab-icon">⚙️</span>
+      <span>Config</span>
     </button>
     <button class="tab-btn" onclick="switchTab('relatorios', this)">
-      📈 Relatórios
+      <span class="tab-icon">📈</span>
+      <span>Relatórios</span>
     </button>
     <button class="tab-btn" onclick="switchTab('historico', this)">
-      🗄️ Histórico
-      <span class="tab-count" id="cnt-historico" style="background:rgba(74,158,255,.15);color:var(--info);">0</span>
+      <span class="tab-icon">🗄️</span>
+      <span>Histórico</span>
+      <span class="tab-count" id="cnt-historico" style="background:var(--info);">0</span>
     </button>
   </div>
 
