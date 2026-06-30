@@ -176,7 +176,8 @@
     background: var(--highlight);
   }
   .header-search-dropdown {
-    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 200;
+    position: absolute; top: calc(100% + 4px); left: 0; z-index: 200;
+    width: max-content; min-width: 100%; max-width: min(480px, 92vw);
     background: var(--card); border: 1px solid var(--accent);
     border-radius: 10px; max-height: 220px; overflow-y: auto;
     box-shadow: 0 12px 32px rgba(60,45,20,.16);
@@ -203,7 +204,7 @@
   .hsd-info { display: contents; }
   .hsd-name {
     font-weight: 600; font-size: .85rem; color: var(--text);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    white-space: nowrap;
     flex: 1; min-width: 0;
   }
   .hsd-badge-colab {
@@ -222,7 +223,8 @@
   .hsd-no-results { padding: 1rem; text-align: center; color: var(--muted); font-size: .85rem; }
   @media (max-width: 700px) {
     .header-search-dropdown {
-      position: fixed; top: 66px; left: .6rem; right: .6rem;
+      position: fixed; top: 66px; left: .6rem;
+      width: max-content; min-width: calc(100vw - 1.2rem); max-width: calc(100vw - 1.2rem);
       max-height: 70vh; border-radius: 12px;
     }
     .hsd-name { font-size: .92rem; }
