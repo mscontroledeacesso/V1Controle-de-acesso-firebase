@@ -6072,13 +6072,16 @@ function renderHistAcessos() {
 
   // Ordenação
   const { col, asc } = histSortState.acessos;
+  const toISO = s => { const p = (s||'').split('/'); return p.length===3 ? `${p[2]}-${p[1]}-${p[0]}` : (s||''); };
   data.sort((a, b) => {
     let va = (a[col] || '').toString().toLowerCase();
     let vb = (b[col] || '').toString().toLowerCase();
     if (col === 'data') {
-      // dd/mm/yyyy → yyyy-mm-dd
-      const toISO = s => { const p = s.split('/'); return p.length===3 ? `${p[2]}-${p[1]}-${p[0]}` : s; };
-      va = toISO(va); vb = toISO(vb);
+      // dd/mm/yyyy → yyyy-mm-dd. Critério secundário: horário de entrada,
+      // para que, no mesmo dia, a entrada/saída mais recente fique sempre no topo.
+      const va2 = toISO(va) + ' ' + (a.entrada || '00:00');
+      const vb2 = toISO(vb) + ' ' + (b.entrada || '00:00');
+      return asc ? va2.localeCompare(vb2) : vb2.localeCompare(va2);
     }
     return asc ? va.localeCompare(vb) : vb.localeCompare(va);
   });
