@@ -918,6 +918,41 @@
     gap: 1rem;
     margin-top: 1rem;
   }
+  @media (max-width: 680px) {
+    .monitor-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── Seções separadas: Colaboradores vs Visitantes/Terceiros ── */
+  .monitor-section { margin-top: 1.75rem; }
+  .monitor-section:first-of-type { margin-top: 0; }
+  .monitor-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: .6rem;
+    margin-bottom: .9rem;
+    padding-bottom: .65rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .monitor-section-title {
+    display: flex; align-items: center; gap: .55rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem; letter-spacing: .06em;
+  }
+  .monitor-section-title .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .monitor-section.sec-colab .monitor-section-title .dot { background: var(--info); box-shadow: 0 0 8px var(--info); }
+  .monitor-section.sec-terceiros .monitor-section-title .dot { background: #ff9d6e; box-shadow: 0 0 8px #ff9d6e; }
+  .monitor-section-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: .95rem;
+    padding: .25rem .7rem;
+    border-radius: 16px;
+  }
+  .monitor-section.sec-colab .monitor-section-count { background: rgba(74,158,255,.13); color: var(--info); border: 1px solid rgba(74,158,255,.3); }
+  .monitor-section.sec-terceiros .monitor-section-count { background: rgba(255,157,110,.13); color: #ff9d6e; border: 1px solid rgba(255,157,110,.3); }
+  .monitor-section-actions { display: flex; gap: .5rem; }
+  .monitor-section-empty {
+    background: var(--card); border: 1px dashed var(--border); border-radius: 12px;
+    padding: 1.25rem; text-align: center; color: var(--muted); font-size: .85rem;
+  }
   .monitor-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -1623,46 +1658,94 @@
   .rel-stat-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.1rem 1.25rem;
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem 1rem;
     position: relative;
     overflow: hidden;
-    transition: transform .18s, box-shadow .18s;
+    transition: transform .2s, box-shadow .2s;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
   }
-  .rel-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+  .rel-stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+
+  /* Barra colorida top */
   .rel-stat-card::before {
     content: '';
     position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
   }
-  .rel-stat-card:nth-child(1)::before { background: linear-gradient(90deg, #f5a623, transparent); }
-  .rel-stat-card:nth-child(2)::before { background: linear-gradient(90deg, #3dba7c, transparent); }
-  .rel-stat-card:nth-child(3)::before { background: linear-gradient(90deg, #4a9eff, transparent); }
-  .rel-stat-card:nth-child(4)::before { background: linear-gradient(90deg, #a855f7, transparent); }
-  .rel-stat-icon {
-    font-size: 1.3rem;
-    margin-bottom: .5rem;
-    opacity: .75;
+  .rel-stat-card:nth-child(1)::before { background: linear-gradient(90deg, #f5a623, #e8891a88); }
+  .rel-stat-card:nth-child(2)::before { background: linear-gradient(90deg, #3dba7c, #3dba7c88); }
+  .rel-stat-card:nth-child(3)::before { background: linear-gradient(90deg, #4a9eff, #4a9eff88); }
+  .rel-stat-card:nth-child(4)::before { background: linear-gradient(90deg, #a855f7, #a855f788); }
+
+  /* Ícone badge no canto */
+  .rel-stat-icon-wrap {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .rel-stat-card:nth-child(1) .rel-stat-icon-wrap { background: rgba(245,166,35,.13); }
+  .rel-stat-card:nth-child(2) .rel-stat-icon-wrap { background: rgba(61,186,124,.13); }
+  .rel-stat-card:nth-child(3) .rel-stat-icon-wrap { background: rgba(74,158,255,.13); }
+  .rel-stat-card:nth-child(4) .rel-stat-icon-wrap { background: rgba(168,85,247,.13); }
+
+  .rel-stat-label {
+    font-size: .65rem;
+    color: var(--muted);
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-top: .4rem;
   }
   .rel-stat-value {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem;
+    font-size: 2.4rem;
     letter-spacing: .04em;
     line-height: 1;
-    margin-bottom: .3rem;
-  }
-  .rel-stat-label {
-    font-size: .68rem;
-    color: var(--muted);
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
+    margin-bottom: .1rem;
   }
   .rel-stat-card:nth-child(1) .rel-stat-value { color: var(--accent); }
   .rel-stat-card:nth-child(2) .rel-stat-value { color: var(--success); }
   .rel-stat-card:nth-child(3) .rel-stat-value { color: var(--info); }
   .rel-stat-card:nth-child(4) .rel-stat-value { color: #a855f7; }
+
+  /* Barra de progresso inferior */
+  .rel-stat-bar-track {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-top: .6rem;
+    overflow: hidden;
+  }
+  .rel-stat-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width .6s cubic-bezier(.4,0,.2,1);
+  }
+  .rel-stat-card:nth-child(1) .rel-stat-bar-fill { background: linear-gradient(90deg, #f5a623, #e8891a); }
+  .rel-stat-card:nth-child(2) .rel-stat-bar-fill { background: linear-gradient(90deg, #3dba7c, #2de096); }
+  .rel-stat-card:nth-child(3) .rel-stat-bar-fill { background: linear-gradient(90deg, #4a9eff, #0080ff); }
+  .rel-stat-card:nth-child(4) .rel-stat-bar-fill { background: linear-gradient(90deg, #a855f7, #c084fc); }
+
+  /* Sub-texto de tendência */
+  .rel-stat-sub {
+    font-size: .7rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    margin-top: .15rem;
+  }
+  .rel-stat-sub.up { color: var(--success); }
+  .rel-stat-sub.zero { color: var(--muted); }
 
   /* ── Chart container ── */
   .rel-chart-wrap {
@@ -2205,11 +2288,28 @@
       </select>
     </div>
 
-    <div class="monitor-grid" id="monitor-grid">
-      <div class="monitor-empty">
-        <div class="monitor-empty-icon">📡</div>
-        <div class="monitor-empty-text">Carregando dados...</div>
+    <!-- ── SEÇÃO: COLABORADORES ── -->
+    <div class="monitor-section sec-colab">
+      <div class="monitor-section-header">
+        <div class="monitor-section-title"><span class="dot"></span>👷 Colaboradores</div>
+        <div class="monitor-section-actions">
+          <span class="monitor-section-count" id="monitor-count-colab">0 dentro</span>
+          <button class="btn btn-danger" onclick="confirmSaidaGrupo('colaborador')" style="font-size:.75rem;padding:.4rem .8rem;" id="btn-saida-colab">🚪 Saída em Grupo</button>
+        </div>
       </div>
+      <div class="monitor-grid" id="monitor-grid-colab"></div>
+    </div>
+
+    <!-- ── SEÇÃO: VISITANTES / COLETAS / ENTREGAS / PRESTADORES ── -->
+    <div class="monitor-section sec-terceiros">
+      <div class="monitor-section-header">
+        <div class="monitor-section-title"><span class="dot"></span>👤 Visitantes, Coletas, Entregas e Prestadores</div>
+        <div class="monitor-section-actions">
+          <span class="monitor-section-count" id="monitor-count-terceiros">0 dentro</span>
+          <button class="btn btn-danger" onclick="confirmSaidaGrupo('terceiros')" style="font-size:.75rem;padding:.4rem .8rem;" id="btn-saida-terceiros">🚪 Saída em Grupo</button>
+        </div>
+      </div>
+      <div class="monitor-grid" id="monitor-grid-terceiros"></div>
     </div>
   </div>
 
@@ -2337,6 +2437,32 @@
         " onmouseover="this.style.background='rgba(220,53,69,.22)'" onmouseout="this.style.background='rgba(220,53,69,.12)'">
           🔄 Trocar Projeto Firebase
         </button>
+        <button id="btn-copiar-creds" onclick="copiarCredenciais()" style="
+          padding:.6rem 1.2rem;
+          background:rgba(0,200,248,.1);
+          border:1px solid rgba(0,200,248,.35);
+          border-radius:6px;
+          color:#00c8f8;
+          font-size:.85rem;
+          cursor:pointer;
+          transition:background .2s;
+        " onmouseover="this.style.background='rgba(0,200,248,.2)'" onmouseout="this.style.background='rgba(0,200,248,.1)'">
+          📋 Copiar Credenciais
+        </button>
+      </div>
+      <!-- Modal credenciais -->
+      <div id="creds-modal-overlay" onclick="fecharCredsModal()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);z-index:9000;"></div>
+      <div id="creds-modal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9001;background:#13161e;border:1px solid rgba(0,200,248,.3);border-radius:16px;padding:1.75rem;width:min(94vw,520px);box-shadow:0 24px 64px rgba(0,0,0,.75);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.08em;color:#00c8f8;">🔑 CREDENCIAIS FIREBASE</div>
+          <button onclick="fecharCredsModal()" style="background:none;border:none;color:#7a8099;font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
+        <div style="font-size:.75rem;color:#7a8099;margin-bottom:.85rem;">Cole diretamente no código como bloco <code style="color:#00c8f8;background:rgba(0,200,248,.08);padding:0 .3em;border-radius:3px;">firebaseConfig</code></div>
+        <pre id="creds-pre" style="background:#0d0f14;border:1px solid #252b3a;border-radius:10px;padding:1rem 1.1rem;font-family:'DM Mono',monospace;font-size:.78rem;color:#e8eaf0;white-space:pre;overflow-x:auto;line-height:1.65;margin-bottom:1rem;"></pre>
+        <div style="display:flex;gap:.65rem;">
+          <button onclick="executarCopiaCredenciais()" id="btn-exec-copiar" style="flex:1;padding:.65rem;background:rgba(0,200,248,.14);border:1px solid rgba(0,200,248,.4);border-radius:8px;color:#00c8f8;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .2s;" onmouseover="this.style.background='rgba(0,200,248,.25)'" onmouseout="this.style.background='rgba(0,200,248,.14)'">📋 Copiar</button>
+          <button onclick="fecharCredsModal()" style="padding:.65rem 1.2rem;background:rgba(255,255,255,.05);border:1px solid #252b3a;border-radius:8px;color:#7a8099;font-size:.88rem;cursor:pointer;">Fechar</button>
+        </div>
       </div>
       <div id="firebase-reset-confirm" style="display:none;margin-top:1rem;padding:1rem;background:rgba(220,53,69,.08);border:1px solid rgba(220,53,69,.3);border-radius:8px;">
         <div style="color:#f08090;font-size:.88rem;margin-bottom:.75rem;">
@@ -4038,7 +4164,10 @@ function monitorTipoBadge(tipo) {
 }
 
 function renderMonitor() {
-  const grid = document.getElementById('monitor-grid');
+  const gridColab = document.getElementById('monitor-grid-colab');
+  const gridTerc  = document.getElementById('monitor-grid-terceiros');
+  if (!gridColab || !gridTerc) return;
+
   const q = (document.getElementById('monitor-search')||{value:''}).value.toLowerCase();
   const filtEmp = (document.getElementById('monitor-filt-empresa')||{value:''}).value;
   const filtCargo = (document.getElementById('monitor-filt-cargo')||{value:''}).value;
@@ -4056,35 +4185,33 @@ function renderMonitor() {
   if (filtEmp) dentro = dentro.filter(r => (r.empresa||'').toUpperCase() === filtEmp.toUpperCase());
   if (filtCargo) dentro = dentro.filter(r => (r.cargo||'').toUpperCase() === filtCargo.toUpperCase());
 
-  // Sort: colaboradores primeiro, depois por horário de entrada
-  dentro.sort((a,b) => {
-    const ta = getMonitorTipo(a), tb = getMonitorTipo(b);
-    if (ta === 'colaborador' && tb !== 'colaborador') return -1;
-    if (tb === 'colaborador' && ta !== 'colaborador') return 1;
-    return (a.entrada||'').localeCompare(b.entrada||'');
-  });
+  dentro.sort((a,b) => (a.entrada||'').localeCompare(b.entrada||''));
 
-  const total = getWithinNow().length;
+  const colaboradores = dentro.filter(r => getMonitorTipo(r) === 'colaborador');
+  const terceiros      = dentro.filter(r => getMonitorTipo(r) !== 'colaborador');
+
+  const totalGeral = getWithinNow().length;
+  const totalColabGeral = getWithinNow().filter(r => getMonitorTipo(r) === 'colaborador').length;
+  const totalTercGeral  = totalGeral - totalColabGeral;
+
   const badge = document.getElementById('monitor-count-badge');
-  if (badge) badge.textContent = `${total} dentro`;
+  if (badge) badge.textContent = `${totalGeral} dentro`;
   const cntEl = document.getElementById('cnt-monitor');
-  if (cntEl) cntEl.textContent = total;
+  if (cntEl) cntEl.textContent = totalGeral;
+
+  const cColab = document.getElementById('monitor-count-colab');
+  if (cColab) cColab.textContent = `${totalColabGeral} dentro`;
+  const cTerc = document.getElementById('monitor-count-terceiros');
+  if (cTerc) cTerc.textContent = `${totalTercGeral} dentro`;
 
   const btnTodos = document.getElementById('btn-saida-todos');
-  if (btnTodos) btnTodos.disabled = total === 0;
+  if (btnTodos) btnTodos.disabled = totalGeral === 0;
+  const btnColab = document.getElementById('btn-saida-colab');
+  if (btnColab) btnColab.disabled = totalColabGeral === 0;
+  const btnTerc = document.getElementById('btn-saida-terceiros');
+  if (btnTerc) btnTerc.disabled = totalTercGeral === 0;
 
-  if (dentro.length === 0) {
-    const isEmpty = getWithinNow().length === 0;
-    grid.innerHTML = `
-      <div class="monitor-empty">
-        <div class="monitor-empty-icon">${isEmpty ? '🏁' : '🔍'}</div>
-        <div class="monitor-empty-text">${isEmpty ? 'Nenhuma pessoa dentro agora' : 'Nenhum resultado para o filtro'}</div>
-        <div class="monitor-empty-sub">${isEmpty ? 'As entradas de hoje aparecerão aqui em tempo real.' : 'Tente outro filtro.'}</div>
-      </div>`;
-    return;
-  }
-
-  grid.innerHTML = dentro.map(r => {
+  const cardHtml = (r) => {
     const tipo = getMonitorTipo(r);
     const tipoCls = 'tipo-' + tipo;
     return `
@@ -4128,7 +4255,23 @@ function renderMonitor() {
         <button class="monitor-btn-edit" onclick="editRow('dados','${r._id}')">✏️</button>
       </div>
     </div>`;
-  }).join('');
+  };
+
+  // Render Colaboradores
+  if (colaboradores.length === 0) {
+    const isEmpty = totalColabGeral === 0;
+    gridColab.innerHTML = `<div class="monitor-section-empty">${isEmpty ? '🏁 Nenhum colaborador dentro agora' : '🔍 Nenhum resultado para o filtro'}</div>`;
+  } else {
+    gridColab.innerHTML = colaboradores.map(cardHtml).join('');
+  }
+
+  // Render Terceiros (Visitantes/Coletas/Entregas/Prestadores)
+  if (terceiros.length === 0) {
+    const isEmpty = totalTercGeral === 0;
+    gridTerc.innerHTML = `<div class="monitor-section-empty">${isEmpty ? '🏁 Nenhum visitante/terceiro dentro agora' : '🔍 Nenhum resultado para o filtro'}</div>`;
+  } else {
+    gridTerc.innerHTML = terceiros.map(cardHtml).join('');
+  }
 }
 
 // Auto-refresh elapsed times every 60s
@@ -4139,6 +4282,22 @@ setInterval(() => {
     if (el) el.textContent = elapsedTime(r.entrada);
   });
 }, 60000);
+
+async function confirmSaidaGrupo(grupo) {
+  const dentro = getWithinNow().filter(r => {
+    const isColab = getMonitorTipo(r) === 'colaborador';
+    return grupo === 'colaborador' ? isColab : !isColab;
+  });
+  if (!dentro.length) { showToast('Nenhuma pessoa nesse grupo está dentro agora.', 'error'); return; }
+  const label = grupo === 'colaborador' ? 'colaboradores' : 'visitantes/terceiros';
+  if (!confirm(`Registrar saída para os ${dentro.length} ${label} dentro agora?`)) return;
+  const saida = new Date().toTimeString().slice(0,5);
+  let ok = 0;
+  for (const r of dentro) {
+    try { await updateInFirestore('dados', r._id, { saida }); ok++; } catch(e) {}
+  }
+  showToast(`🚪 Saída registrada para ${ok} ${label}.`);
+}
 
 async function monitorSaida(id) {
   const r = db.dados.find(x => x._id === id);
@@ -5270,11 +5429,44 @@ function renderRelatoriosStats() {
   const acessosHoje = db.dados.filter(r => r.data === hoje).length;
   const dentroPessoal = db.dados.filter(r => r.data === hoje && r.entrada && !r.saida).length;
 
+  // Calcular tendência: acessos ontem vs hoje
+  const ontem = (() => { const d = new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); })();
+  const acessosOntem = db.dados.filter(r => r.data === ontem).length;
+  const tendencia = acessosHoje > acessosOntem ? '▲' : acessosHoje < acessosOntem ? '▼' : '—';
+  const tendClass = acessosHoje > acessosOntem ? 'up' : 'zero';
+  const pctHoje = totalAcessos > 0 ? Math.round((acessosHoje / Math.max(totalAcessos,1)) * 100) : 0;
+  const pctDentro = totalAcessos > 0 ? Math.round((dentroPessoal / Math.max(acessosHoje||1,1)) * 100) : 0;
+  const totalEmpresas = new Set(db.dados.map(r=>(r.empresa||'').toUpperCase()).filter(Boolean)).size;
+
   document.getElementById('stats-relatorios').innerHTML = `
-    <div class="rel-stat-card"><div class="rel-stat-icon">🗂️</div><div class="rel-stat-value">${totalCad}</div><div class="rel-stat-label">Total Cadastros</div></div>
-    <div class="rel-stat-card"><div class="rel-stat-icon">🚪</div><div class="rel-stat-value">${totalAcessos}</div><div class="rel-stat-label">Total Acessos</div></div>
-    <div class="rel-stat-card"><div class="rel-stat-icon">📅</div><div class="rel-stat-value">${acessosHoje}</div><div class="rel-stat-label">Acessos Hoje</div></div>
-    <div class="rel-stat-card"><div class="rel-stat-icon">🟢</div><div class="rel-stat-value">${dentroPessoal}</div><div class="rel-stat-label">Dentro Agora</div></div>
+    <div class="rel-stat-card">
+      <div class="rel-stat-icon-wrap">🗂️</div>
+      <div class="rel-stat-label">Total Cadastros</div>
+      <div class="rel-stat-value">${totalCad}</div>
+      <div class="rel-stat-sub zero">— ${totalEmpresas} empresa${totalEmpresas!==1?'s':''}</div>
+      <div class="rel-stat-bar-track"><div class="rel-stat-bar-fill" style="width:${Math.min(totalCad,100)}%"></div></div>
+    </div>
+    <div class="rel-stat-card">
+      <div class="rel-stat-icon-wrap">🚪</div>
+      <div class="rel-stat-label">Total Acessos</div>
+      <div class="rel-stat-value">${totalAcessos}</div>
+      <div class="rel-stat-sub zero">— todos os períodos</div>
+      <div class="rel-stat-bar-track"><div class="rel-stat-bar-fill" style="width:${Math.min(totalAcessos,100)}%"></div></div>
+    </div>
+    <div class="rel-stat-card">
+      <div class="rel-stat-icon-wrap">📅</div>
+      <div class="rel-stat-label">Acessos Hoje</div>
+      <div class="rel-stat-value">${acessosHoje}</div>
+      <div class="rel-stat-sub ${tendClass}">${tendencia} vs ontem (${acessosOntem})</div>
+      <div class="rel-stat-bar-track"><div class="rel-stat-bar-fill" style="width:${pctHoje}%"></div></div>
+    </div>
+    <div class="rel-stat-card">
+      <div class="rel-stat-icon-wrap">🟢</div>
+      <div class="rel-stat-label">Dentro Agora</div>
+      <div class="rel-stat-value">${dentroPessoal}</div>
+      <div class="rel-stat-sub ${dentroPessoal>0?'up':'zero'}">${pctDentro}% dos acessos de hoje</div>
+      <div class="rel-stat-bar-track"><div class="rel-stat-bar-fill" style="width:${pctDentro}%"></div></div>
+    </div>
   `;
 
   // Simple bar chart - acessos por empresa (top 8)
@@ -5885,6 +6077,54 @@ function histGoPage(tab, pg) {
   if (pg < 1 || pg > max) return;
   histPages[tab] = pg;
   renderHistorico();
+}
+
+function copiarCredenciais() {
+  const cfg = getStoredConfig();
+  const modal = document.getElementById('creds-modal');
+  const overlay = document.getElementById('creds-modal-overlay');
+  const pre = document.getElementById('creds-pre');
+  if (!modal || !pre) return;
+
+  if (!cfg || !cfg.projectId) {
+    alert('Nenhuma credencial Firebase configurada neste dispositivo.');
+    return;
+  }
+
+  const bloco = `const firebaseConfig = {\n  apiKey:            "${cfg.apiKey || ''}",\n  authDomain:        "${cfg.authDomain || ''}",\n  projectId:         "${cfg.projectId || ''}",\n  storageBucket:     "${cfg.storageBucket || ''}",\n  messagingSenderId: "${cfg.messagingSenderId || ''}",\n  appId:             "${cfg.appId || ''}"\n};`;
+
+  pre.textContent = bloco;
+  modal.style.display = 'block';
+  overlay.style.display = 'block';
+  document.getElementById('btn-exec-copiar').textContent = '📋 Copiar';
+}
+
+function fecharCredsModal() {
+  const modal = document.getElementById('creds-modal');
+  const overlay = document.getElementById('creds-modal-overlay');
+  if (modal) modal.style.display = 'none';
+  if (overlay) overlay.style.display = 'none';
+}
+
+async function executarCopiaCredenciais() {
+  const pre = document.getElementById('creds-pre');
+  const btn = document.getElementById('btn-exec-copiar');
+  if (!pre || !btn) return;
+  try {
+    await navigator.clipboard.writeText(pre.textContent);
+    btn.textContent = '✅ Copiado!';
+    btn.style.background = 'rgba(61,186,124,.2)';
+    btn.style.borderColor = 'rgba(61,186,124,.5)';
+    btn.style.color = '#3dba7c';
+    setTimeout(() => {
+      btn.textContent = '📋 Copiar';
+      btn.style.background = 'rgba(0,200,248,.14)';
+      btn.style.borderColor = 'rgba(0,200,248,.4)';
+      btn.style.color = '#00c8f8';
+    }, 2200);
+  } catch(e) {
+    btn.textContent = '⚠️ Selecione manualmente';
+  }
 }
 
 function showResetFirebaseConfirm() {
