@@ -3531,6 +3531,7 @@ function initFirebase() {
       hideLoading();
       setOnline();
       if (document.getElementById('panel-historico').classList.contains('active')) renderHistorico();
+      if (document.getElementById('panel-relatorios').classList.contains('active')) renderRelatoriosStats();
     }, err => { console.error(err); setOffline(); });
 
   // Config collections
