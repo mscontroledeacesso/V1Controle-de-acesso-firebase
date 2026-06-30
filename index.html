@@ -922,6 +922,90 @@
     .monitor-grid { grid-template-columns: 1fr; }
   }
 
+  /* ── LINHA HORIZONTAL COMPACTA (substitui o grid de cards) ── */
+  .monitor-rows { display: flex; flex-direction: column; gap: .55rem; margin-top: 1rem; }
+  .monitor-row {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .65rem .9rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    flex-wrap: wrap;
+    animation: fadeIn .3s ease;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .monitor-row::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; bottom: 0; width: 3px;
+    border-radius: 10px 0 0 10px;
+    background: var(--success);
+  }
+  .monitor-row:hover { border-color: rgba(61,186,124,.4); box-shadow: 0 2px 14px rgba(61,186,124,.08); }
+  .monitor-row.tipo-colaborador::before { background: var(--info); }
+  .monitor-row.tipo-colaborador { border-color: rgba(74,158,255,.25); }
+  .monitor-row.tipo-prestador::before { background: #b07efc; }
+  .monitor-row.tipo-prestador { border-color: rgba(176,126,252,.22); }
+  .monitor-row.tipo-entrega::before { background: #ff9d6e; }
+  .monitor-row.tipo-entrega { border-color: rgba(255,157,110,.22); }
+  .monitor-row.tipo-coleta::before { background: #ffd700; }
+  .monitor-row.tipo-coleta { border-color: rgba(255,215,0,.22); }
+  .monitor-row.tipo-visitante::before { background: var(--muted); }
+
+  .mr-avatar {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--highlight);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .mr-info { min-width: 0; flex: 1 1 200px; }
+  .mr-name { font-weight: 600; font-size: .88rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mr-sub { font-size: .7rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: .1rem; }
+  .mr-badge {
+    display: inline-flex; align-items: center; gap: .2rem;
+    font-size: .58rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    padding: .12rem .4rem; border-radius: 20px; flex-shrink: 0; white-space: nowrap;
+    margin-left: .35rem; vertical-align: middle;
+  }
+  .mr-meta {
+    display: flex; gap: 1.1rem; flex-shrink: 0; flex-wrap: wrap;
+    font-family: 'DM Mono', monospace; font-size: .74rem; color: var(--muted);
+  }
+  .mr-meta b { color: var(--text); font-weight: 500; }
+  .mr-meta .mr-resp b { color: var(--accent); }
+  .mr-action { flex-shrink: 0; display: flex; align-items: center; gap: .5rem; margin-left: auto; }
+  .mr-elapsed {
+    font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--muted); flex-shrink: 0;
+    text-align: right; min-width: 64px;
+  }
+  .mr-elapsed span { color: var(--success); display: block; font-size: .8rem; }
+  .mr-btn-saida {
+    font-size: .78rem; font-weight: 700; letter-spacing: .03em;
+    padding: .48rem 1.1rem; border-radius: 8px;
+    border: 1px solid rgba(245,166,35,.4);
+    background: rgba(245,166,35,.12); color: var(--accent);
+    cursor: pointer; transition: all .15s; white-space: nowrap;
+    display: flex; align-items: center; gap: .35rem;
+  }
+  .mr-btn-saida:hover { background: rgba(245,166,35,.28); transform: translateY(-1px); }
+  .mr-btn-edit {
+    font-size: .82rem; padding: .48rem .6rem; border-radius: 8px;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; transition: all .15s; flex-shrink: 0;
+  }
+  .mr-btn-edit:hover { border-color: var(--accent); color: var(--accent); }
+
+  @media (max-width: 720px) {
+    .monitor-row { flex-direction: column; align-items: stretch; gap: .5rem; }
+    .mr-info { flex: 1 1 auto; }
+    .mr-meta { font-size: .72rem; gap: .7rem; }
+    .mr-action { margin-left: 0; width: 100%; justify-content: space-between; }
+    .mr-btn-saida { flex: 1; justify-content: center; }
+  }
+
   /* ── Seções separadas: Colaboradores vs Visitantes/Terceiros ── */
   .monitor-section { margin-top: 1.75rem; }
   .monitor-section:first-of-type { margin-top: 0; }
@@ -2297,7 +2381,7 @@
           <button class="btn btn-danger" onclick="confirmSaidaGrupo('colaborador')" style="font-size:.75rem;padding:.4rem .8rem;" id="btn-saida-colab">🚪 Saída em Grupo</button>
         </div>
       </div>
-      <div class="monitor-grid" id="monitor-grid-colab"></div>
+      <div class="monitor-rows" id="monitor-grid-colab"></div>
     </div>
 
     <!-- ── SEÇÃO: VISITANTES / COLETAS / ENTREGAS / PRESTADORES ── -->
@@ -2309,7 +2393,7 @@
           <button class="btn btn-danger" onclick="confirmSaidaGrupo('terceiros')" style="font-size:.75rem;padding:.4rem .8rem;" id="btn-saida-terceiros">🚪 Saída em Grupo</button>
         </div>
       </div>
-      <div class="monitor-grid" id="monitor-grid-terceiros"></div>
+      <div class="monitor-rows" id="monitor-grid-terceiros"></div>
     </div>
   </div>
 
@@ -4105,8 +4189,11 @@ function todayStr() {
 }
 
 function getWithinNow() {
-  const hoje = todayStr();
-  return db.dados.filter(r => r.data === hoje && r.entrada && !r.saida);
+  // Não depende mais de comparar a data local do dispositivo: basta ter
+  // entrada registrada e ainda não ter saída. Isso evita que diferenças de
+  // fuso/horário/relógio entre aparelhos façam a pessoa "desaparecer" do
+  // Monitor ao Vivo em um celular enquanto aparece em outro.
+  return db.dados.filter(r => r.entrada && !r.saida);
 }
 
 function elapsedTime(timeStr) {
@@ -4211,48 +4298,34 @@ function renderMonitor() {
   const btnTerc = document.getElementById('btn-saida-terceiros');
   if (btnTerc) btnTerc.disabled = totalTercGeral === 0;
 
-  const cardHtml = (r) => {
+  const rowHtml = (r) => {
     const tipo = getMonitorTipo(r);
     const tipoCls = 'tipo-' + tipo;
+    const badgeMap = {
+      colaborador: { cls:'badge-colab', icon:'👷', label:'Colaborador' },
+      prestador:   { cls:'badge-prest', icon:'🛠️', label:'Prestador' },
+      entrega:     { cls:'badge-entrega', icon:'📦', label:'Entrega' },
+      coleta:      { cls:'badge-coleta', icon:'🔄', label:'Coleta' },
+      visitante:   { cls:'badge-visita', icon:'👤', label:'Visitante' },
+    };
+    const b = badgeMap[tipo] || badgeMap.visitante;
     return `
-    <div class="monitor-card ${tipoCls}" id="mc-${r._id}">
-      <div class="monitor-card-header">
-        <div class="monitor-avatar">${personEmoji(r.cargo)}</div>
-        <div class="monitor-name-block">
-          <div class="monitor-person-name" title="${r.nome}">${r.nome}</div>
-          <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin-top:.2rem;">
-            ${monitorTipoBadge(tipo)}
-          </div>
-          <div class="monitor-person-sub" style="margin-top:.2rem;">${r.cargo || '—'} · ${r.empresa || '—'}</div>
-        </div>
-        <div class="monitor-time-badge">⏰ ${r.entrada}</div>
+    <div class="monitor-row ${tipoCls}" id="mc-${r._id}">
+      <div class="mr-avatar">${personEmoji(r.cargo)}</div>
+      <div class="mr-info">
+        <div class="mr-name" title="${r.nome}">${r.nome}<span class="mr-badge ${b.cls}">${b.icon} ${b.label}</span></div>
+        <div class="mr-sub">${r.cargo || '—'} · ${r.empresa || '—'}</div>
       </div>
-      <div class="monitor-card-details">
-        <div class="monitor-detail">
-          <div class="monitor-detail-label">RG</div>
-          <div class="monitor-detail-value">${r.rg || '—'}</div>
-        </div>
-        <div class="monitor-detail">
-          <div class="monitor-detail-label">CPF</div>
-          <div class="monitor-detail-value">${r.cpf || '—'}</div>
-        </div>
-        <div class="monitor-detail">
-          <div class="monitor-detail-label">Data</div>
-          <div class="monitor-detail-value">${r.data || '—'}</div>
-        </div>
-        <div class="monitor-detail">
-          <div class="monitor-detail-label">Veículo</div>
-          <div class="monitor-detail-value">${r.placa || '—'}</div>
-        </div>
-        <div class="monitor-detail" style="grid-column:1/-1;">
-          <div class="monitor-detail-label" style="color:var(--accent);">👤 Responsável</div>
-          <div class="monitor-detail-value" style="color:var(--accent);">${r.responsavel || '<span style="color:var(--muted);font-style:italic;">Não informado</span>'}</div>
-        </div>
+      <div class="mr-meta">
+        <div>CPF <b>${r.cpf || '—'}</b></div>
+        <div>RG <b>${r.rg || '—'}</b></div>
+        <div>Veíc. <b>${r.placa || '—'}</b></div>
+        <div class="mr-resp">Resp. <b>${r.responsavel || '—'}</b></div>
       </div>
-      <div class="monitor-elapsed">Tempo dentro: <span>${elapsedTime(r.entrada)}</span></div>
-      <div class="monitor-card-actions" style="margin-top:.75rem;">
-        <button class="monitor-btn-saida" onclick="monitorSaida('${r._id}')">🚪 Registrar Saída</button>
-        <button class="monitor-btn-edit" onclick="editRow('dados','${r._id}')">✏️</button>
+      <div class="mr-elapsed">⏰ ${r.entrada}<span>${elapsedTime(r.entrada)}</span></div>
+      <div class="mr-action">
+        <button class="mr-btn-saida" onclick="monitorSaida('${r._id}')">🚪 Registrar Saída</button>
+        <button class="mr-btn-edit" onclick="editRow('dados','${r._id}')">✏️</button>
       </div>
     </div>`;
   };
@@ -4262,7 +4335,7 @@ function renderMonitor() {
     const isEmpty = totalColabGeral === 0;
     gridColab.innerHTML = `<div class="monitor-section-empty">${isEmpty ? '🏁 Nenhum colaborador dentro agora' : '🔍 Nenhum resultado para o filtro'}</div>`;
   } else {
-    gridColab.innerHTML = colaboradores.map(cardHtml).join('');
+    gridColab.innerHTML = colaboradores.map(rowHtml).join('');
   }
 
   // Render Terceiros (Visitantes/Coletas/Entregas/Prestadores)
@@ -4270,7 +4343,7 @@ function renderMonitor() {
     const isEmpty = totalTercGeral === 0;
     gridTerc.innerHTML = `<div class="monitor-section-empty">${isEmpty ? '🏁 Nenhum visitante/terceiro dentro agora' : '🔍 Nenhum resultado para o filtro'}</div>`;
   } else {
-    gridTerc.innerHTML = terceiros.map(cardHtml).join('');
+    gridTerc.innerHTML = terceiros.map(rowHtml).join('');
   }
 }
 
@@ -4278,7 +4351,7 @@ function renderMonitor() {
 setInterval(() => {
   const dentro = getWithinNow();
   dentro.forEach(r => {
-    const el = document.querySelector(`#mc-${r._id} .monitor-elapsed span`);
+    const el = document.querySelector(`#mc-${r._id} .mr-elapsed span`);
     if (el) el.textContent = elapsedTime(r.entrada);
   });
 }, 60000);
