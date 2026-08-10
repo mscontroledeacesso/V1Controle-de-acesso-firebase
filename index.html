@@ -1226,7 +1226,7 @@
   }
   .config-item:last-child { border-bottom: none; }
   .config-item:hover { background: var(--highlight); }
-  .config-item-name { font-size: .88rem; color: var(--text); font-weight: 500; }
+  .config-item-name { font-size: .88rem; color: var(--text); font-weight: 500; flex: 1; min-width: 0; word-break: break-word; padding-right: .5rem; }
   .config-item-del {
     background: none; border: 1px solid transparent;
     color: var(--muted); padding: .2rem .45rem;
@@ -1466,9 +1466,7 @@
 
   /* ── Responsive ── */
   @media (max-width: 700px) {
-    header { padding: 0 .75rem; }
     .logo-text { font-size: 1.1rem; }
-    .header-search-wrap { max-width: 220px; }
     .search-mode-btn { padding: .38rem .5rem; font-size: .68rem; }
     #live-clock { display: none; }
     main { padding: 0 .75rem 4rem; }
@@ -2160,11 +2158,41 @@
   /* ══════════════════════════════
      AJUSTES MOBILE ADICIONAIS (responsividade geral)
   ══════════════════════════════ */
-  @media (max-width: 700px) {
+  @media (max-width: 760px) {
     /* Evita zoom automático do iOS ao focar em campos */
     input, select, textarea { font-size: 16px !important; }
 
-    body { overflow-x: hidden; }
+    html, body { overflow-x: hidden; max-width: 100vw; }
+
+    /* ── Cabeçalho empilha em 2 linhas: (logo+status) / (busca) ──
+       Isso resolve o transbordo horizontal do header no celular,
+       que antes forçava a página inteira a rolar de lado. */
+    header {
+      flex-wrap: wrap;
+      height: auto;
+      min-height: 64px;
+      padding: .55rem .6rem;
+      row-gap: .5rem;
+      column-gap: .5rem;
+    }
+    .logo { order: 1; flex: 1 1 auto; min-width: 0; }
+    .header-right { order: 2; flex: 0 0 auto; }
+    .header-search-wrap {
+      order: 3;
+      flex: 1 1 100%;
+      max-width: 100%;
+      width: 100%;
+    }
+    /* Banner de sincronização acompanha a nova altura do header */
+    #sync-banner { top: 108px; }
+
+    /* Corrige os cards de Relatórios: o HTML define
+       style="grid-template-columns: repeat(2,1fr)" inline, que tem
+       prioridade sobre a media query da classe — por isso o !important
+       abaixo é necessário para forçar 1 coluna no celular. */
+    .rel-export-grid { grid-template-columns: 1fr !important; }
+    .rel-card-body > div:nth-child(2) { flex-wrap: wrap; }
+    .rel-btn { width: 100% !important; }
 
     /* Formulários e modais mais compactos */
     .form-card { padding: 1.1rem .9rem; }
@@ -2207,27 +2235,23 @@
     table { font-size: .78rem; min-width: 520px; }
     th, td { padding: .55rem .6rem !important; }
 
-    /* Área de busca do header mais enxuta */
-    .header-search-wrap { max-width: 160px; gap: .3rem; }
-    .search-mode-btn { padding: .34rem .4rem; font-size: .6rem; }
-    .header-search-input { padding: .45rem .8rem .45rem 2.1rem; font-size: .82rem; }
-    .header-search-icon { left: .65rem; font-size: .8rem; }
+    /* Área de busca do header — agora em linha própria, largura 100% */
+    .header-search-wrap { gap: .35rem; }
+    .search-mode-btn { padding: .4rem .55rem; font-size: .68rem; }
+    .header-search-input { padding: .5rem .9rem .5rem 2.2rem; font-size: .85rem; }
+    .header-search-icon { left: .7rem; font-size: .82rem; }
 
     /* Logo mais compacta */
-    .logo-ms-img { height: 36px; padding: 2px 4px; }
-    .logo-ms-name { font-size: 1rem; }
+    .logo-ms-img { height: 34px; padding: 2px 4px; }
+    .logo-ms-name { font-size: .95rem; }
     .logo-ms-tagline { display: none; }
-    .logo-ms-system { font-size: .72rem; }
-
-    /* Cartões e grades genéricas ocupam 1 coluna */
-    .rel-export-grid { grid-template-columns: 1fr; }
+    .logo-ms-system { font-size: .7rem; }
   }
 
   @media (max-width: 460px) {
-    header { padding: 0 .5rem; gap: .5rem; }
-    .header-search-wrap { max-width: 118px; }
-    .search-mode-btn { padding: .3rem .32rem; font-size: .56rem; }
-    .logo-ms-img { height: 32px; }
+    header { padding: .5rem .5rem; gap: .4rem; }
+    .search-mode-btn { padding: .35rem .45rem; font-size: .6rem; }
+    .logo-ms-img { height: 30px; }
     .logo-ms-name { font-size: .92rem; }
     .logo-ms-system { display: none; }
     main { padding: 0 .5rem 3rem; }
