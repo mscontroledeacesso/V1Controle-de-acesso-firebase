@@ -2156,6 +2156,87 @@
     0%, 100% { box-shadow: 0 0 0 0 rgba(245,166,35,.4); }
     50% { box-shadow: 0 0 0 4px rgba(245,166,35,0); }
   }
+
+  /* ══════════════════════════════
+     AJUSTES MOBILE ADICIONAIS (responsividade geral)
+  ══════════════════════════════ */
+  @media (max-width: 700px) {
+    /* Evita zoom automático do iOS ao focar em campos */
+    input, select, textarea { font-size: 16px !important; }
+
+    body { overflow-x: hidden; }
+
+    /* Formulários e modais mais compactos */
+    .form-card { padding: 1.1rem .9rem; }
+    .modal { padding: 1.1rem .9rem; width: 94vw; max-height: 92vh; border-radius: 12px; }
+    .modal-title { font-size: 1.1rem; margin-bottom: 1rem; padding-right: 1.5rem; }
+    .modal-close { top: .7rem; right: .7rem; padding: .3rem; font-size: 1.3rem; }
+
+    /* Cabeçalhos de seção empilham em telas estreitas */
+    .section-header,
+    .rel-page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: .6rem;
+    }
+    .rel-page-title { font-size: 1.5rem; }
+    .section-title { font-size: 1.3rem; }
+
+    /* Botões: quebram e ocupam largura confortável no toque */
+    .btn-row { gap: .5rem; }
+    .btn-row .btn { flex: 1 1 auto; justify-content: center; min-height: 42px; }
+    .btn { min-height: 40px; }
+
+    /* Barras de filtro/ferramentas em coluna, ocupando 100% */
+    .filter-bar,
+    .colab-filter-bar,
+    .monitor-filter-bar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .filter-select,
+    .colab-filter-select,
+    .monitor-filter-bar select {
+      max-width: 100%;
+      width: 100%;
+    }
+    .search-wrap,
+    .monitor-search { min-width: 0; width: 100%; }
+
+    /* Tabelas mais compactas em telas pequenas */
+    table { font-size: .78rem; min-width: 520px; }
+    th, td { padding: .55rem .6rem !important; }
+
+    /* Área de busca do header mais enxuta */
+    .header-search-wrap { max-width: 160px; gap: .3rem; }
+    .search-mode-btn { padding: .34rem .4rem; font-size: .6rem; }
+    .header-search-input { padding: .45rem .8rem .45rem 2.1rem; font-size: .82rem; }
+    .header-search-icon { left: .65rem; font-size: .8rem; }
+
+    /* Logo mais compacta */
+    .logo-ms-img { height: 36px; padding: 2px 4px; }
+    .logo-ms-name { font-size: 1rem; }
+    .logo-ms-tagline { display: none; }
+    .logo-ms-system { font-size: .72rem; }
+
+    /* Cartões e grades genéricas ocupam 1 coluna */
+    .rel-export-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 460px) {
+    header { padding: 0 .5rem; gap: .5rem; }
+    .header-search-wrap { max-width: 118px; }
+    .search-mode-btn { padding: .3rem .32rem; font-size: .56rem; }
+    .logo-ms-img { height: 32px; }
+    .logo-ms-name { font-size: .92rem; }
+    .logo-ms-system { display: none; }
+    main { padding: 0 .5rem 3rem; }
+    .form-card { padding: .9rem .7rem; }
+    .modal { padding: .9rem .7rem; width: 96vw; }
+    .btn { padding: .6rem .9rem; font-size: .8rem; }
+    .tab-btn { min-width: 64px; font-size: .58rem; padding: .45rem .3rem .4rem; }
+    .tab-btn .tab-icon { font-size: 1rem; }
+  }
 </style>
 </head>
 <body>
