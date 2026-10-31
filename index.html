@@ -230,6 +230,249 @@
     .hsd-name { font-size: .92rem; }
   }
 
+
+
+  /* ══════════════════════════════
+     CADASTRO — BALÃO RESPONSIVO 3D NO MEIO DA TELA
+  ══════════════════════════════ */
+  #inline-cadastro-panel {
+    position: fixed; inset: 0; z-index: 8995;
+    align-items: center; justify-content: center;
+    padding: 3vh 2vw;
+    background: radial-gradient(circle at 50% 40%, rgba(60,45,20,.35), rgba(30,22,10,.6));
+    backdrop-filter: blur(4px);
+    perspective: 1400px;
+    overflow: hidden;
+  }
+  #inline-cadastro-panel .form-card {
+    margin: 0 !important;
+    width: min(780px, 96vw);
+    max-height: 94vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    border: 1px solid rgba(245,166,35,.55) !important;
+    transform-origin: 50% 100%;
+    transform-style: preserve-3d;
+    animation: cadastro3DIn .55s cubic-bezier(.2,.9,.25,1.1) both;
+    box-shadow:
+      0 1px 0 #f3d9a4, 0 2px 0 #ecc98a, 0 3px 0 #e3b872, 0 4px 0 #d9a85c,
+      0 5px 0 #cf9a4a, 0 6px 0 #c58d3b,
+      0 28px 60px rgba(40,28,8,.45),
+      0 0 0 1px rgba(255,255,255,.5) inset;
+  }
+  @keyframes cadastro3DIn {
+    0%   { opacity: 0; transform: translateZ(-420px) rotateX(55deg) scale(.7); }
+    60%  { opacity: 1; transform: translateZ(30px) rotateX(-6deg) scale(1.02); }
+    100% { opacity: 1; transform: translateZ(0) rotateX(0) scale(1); }
+  }
+
+  /* ── Campos do cadastro: grade uniforme de 6 colunas, tudo alinhado ── */
+  #inline-cadastro-panel .cad-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: .9rem 1rem;
+    align-items: start;
+  }
+  #inline-cadastro-panel .cg-2 { grid-column: span 2; }
+  #inline-cadastro-panel .cg-4 { grid-column: span 4; }
+  #inline-cadastro-panel .cg-6 { grid-column: 1 / -1; }
+  #inline-cadastro-panel .cg-v { grid-column: span 3; }
+  #inline-cadastro-panel .cad-grid.has-trailer .cg-v { grid-column: span 2; }
+  #inline-cadastro-panel .form-group { min-width: 0; }
+  #inline-cadastro-panel input[type=text],
+  #inline-cadastro-panel select { width: 100%; min-height: 44px; box-sizing: border-box; }
+  #inline-cadastro-panel .select-manage-wrap { width: 100%; }
+  #inline-cadastro-panel .sel-mgr-btn { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+  #inline-cadastro-panel .sel-mgr-add-lbl { padding: 0 .9rem; font-weight: 700; white-space: nowrap; color: var(--success); border-color: rgba(61,186,124,.45); }
+  @media (max-width: 640px) {
+    #inline-cadastro-panel .cg-2,
+    #inline-cadastro-panel .cg-4,
+    #inline-cadastro-panel .cg-v,
+    #inline-cadastro-panel .cad-grid.has-trailer .cg-v { grid-column: 1 / -1; }
+    #inline-cadastro-panel .sel-mgr-add-lbl { padding: 0 .6rem; font-size: .72rem; }
+  }
+
+  /* ── Harmonia visual do cadastro: mesmo raio, altura, tipografia e ritmo ── */
+  #inline-cadastro-panel .form-card { padding: 1.5rem 1.6rem 1.4rem; }
+  #inline-cadastro-panel .form-card-title { margin-bottom: 1.1rem; }
+  #inline-cadastro-panel .form-card-section-label { margin: 1.35rem 0 .9rem; }
+  #inline-cadastro-panel .form-card-section-label:first-of-type { margin-top: 0; }
+  #inline-cadastro-panel .cad-grid { gap: 1rem 1rem; }
+  #inline-cadastro-panel .form-group { gap: .4rem; }
+  #inline-cadastro-panel .form-group > label {
+    font-size: .72rem; font-weight: 700; letter-spacing: .06em; line-height: 1.2;
+  }
+  #inline-cadastro-panel input[type=text],
+  #inline-cadastro-panel select {
+    height: 46px; min-height: 46px; padding: 0 .9rem;
+    font-size: .95rem; border-radius: 10px;
+  }
+  #inline-cadastro-panel .select-manage-wrap { gap: .5rem; }
+  #inline-cadastro-panel .sel-mgr-btn {
+    height: 46px; min-height: 46px; width: 46px; min-width: 46px; padding: 0;
+    border-radius: 10px; font-size: .95rem;
+  }
+  #inline-cadastro-panel .sel-mgr-add-lbl { width: auto; padding: 0 1rem; font-size: .82rem; }
+  #inline-cadastro-panel .btn-row { margin-top: 1.5rem; gap: .75rem; }
+  #inline-cadastro-panel .btn-row .btn { height: 46px; min-height: 46px; padding: 0 1.4rem; border-radius: 10px; font-size: .9rem; }
+  #inline-cadastro-panel .btn-row .btn-primary { flex: 1 1 auto; justify-content: center; }
+  @media (max-width: 640px) {
+    #inline-cadastro-panel .form-card { padding: 1.1rem 1rem 1rem; }
+    #inline-cadastro-panel .btn-row { flex-direction: column; }
+    #inline-cadastro-panel .btn-row .btn { width: 100%; }
+  }
+
+  /* ── Botão Revisar: verde fluorescente 3D ── */
+  #inline-cadastro-panel #btn-save-cadastro {
+    background: linear-gradient(180deg, #b6ff9e 0%, #39ff14 45%, #1fd400 100%) !important;
+    color: #032b00 !important;
+    font-weight: 800; letter-spacing: .03em;
+    text-shadow: 0 1px 0 rgba(255,255,255,.55);
+    border: 1px solid #b6ff9e !important;
+    border-radius: 12px;
+    position: relative; top: 0;
+    box-shadow:
+      0 6px 0 #139000,
+      0 8px 0 #0c5c00,
+      0 12px 22px rgba(57,255,20,.55),
+      0 0 18px rgba(57,255,20,.45),
+      inset 0 2px 0 rgba(255,255,255,.7),
+      inset 0 -3px 6px rgba(0,120,0,.35) !important;
+    transition: transform .08s, box-shadow .08s, filter .15s;
+    animation: neonPulse 2.2s ease-in-out infinite;
+  }
+  #inline-cadastro-panel #btn-save-cadastro:hover { filter: brightness(1.08) saturate(1.15); }
+  #inline-cadastro-panel #btn-save-cadastro:active {
+    transform: translateY(5px);
+    box-shadow:
+      0 1px 0 #139000,
+      0 3px 0 #0c5c00,
+      0 4px 10px rgba(57,255,20,.5),
+      inset 0 2px 5px rgba(0,100,0,.45) !important;
+    animation: none;
+  }
+  @keyframes neonPulse {
+    0%,100% { filter: drop-shadow(0 0 0 rgba(57,255,20,0)); }
+    50%     { filter: drop-shadow(0 0 8px rgba(57,255,20,.75)); }
+  }
+  #inline-cadastro-panel .btn-row { padding-bottom: 8px; }
+
+  /* ══════════════════════════════
+     BALÃO DE AVISO — campos obrigatórios (centro da tela, 3D, responsivo)
+  ══════════════════════════════ */
+  #cad-alert-overlay {
+    position: fixed; inset: 0; z-index: 9200; display: none;
+    background: rgba(40,20,10,.45); backdrop-filter: blur(4px);
+    perspective: 1200px;
+  }
+  #cad-alert-overlay.open { display: flex; align-items: center; justify-content: center; padding: 4vw; }
+  #cad-alert {
+    width: min(460px, 92vw); max-height: 88vh; overflow-y: auto;
+    background: var(--card);
+    border: 2px solid #ff7a2f; border-radius: 20px;
+    padding: 1.6rem 1.5rem 1.4rem; text-align: center;
+    box-shadow: 0 1px 0 #ffd2b0, 0 3px 0 #ffb17a, 0 5px 0 #ff8f45, 0 7px 0 #e06a1f,
+                0 26px 55px rgba(60,20,0,.5), 0 0 28px rgba(255,122,47,.35);
+    animation: cadAlertIn .45s cubic-bezier(.2,.9,.25,1.15) both;
+  }
+  @keyframes cadAlertIn {
+    0%   { opacity: 0; transform: translateZ(-300px) rotateX(50deg) scale(.7); }
+    100% { opacity: 1; transform: translateZ(0) rotateX(0) scale(1); }
+  }
+  .cad-alert-icon { font-size: 2.6rem; line-height: 1; margin-bottom: .4rem; }
+  .cad-alert-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: .06em;
+    color: #e0561a; margin-bottom: .3rem;
+  }
+  .cad-alert-sub { font-size: .9rem; color: var(--muted); margin-bottom: 1rem; }
+  .cad-alert-list { list-style: none; margin: 0 0 1.25rem; padding: 0; display: grid; gap: .5rem; text-align: left; }
+  .cad-alert-list li {
+    display: flex; align-items: center; gap: .6rem;
+    background: rgba(255,122,47,.1); border: 1px solid rgba(255,122,47,.4);
+    border-radius: 10px; padding: .7rem .9rem;
+    font-size: 1rem; font-weight: 700; color: var(--text);
+  }
+  .cad-alert-list li::before { content: '⚠️'; font-size: 1.1rem; }
+  #cad-alert-ok {
+    width: 100%; height: 48px; border: 1px solid #b6ff9e; border-radius: 12px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 800; color: #032b00;
+    background: linear-gradient(180deg, #b6ff9e 0%, #39ff14 45%, #1fd400 100%);
+    box-shadow: 0 5px 0 #139000, 0 9px 18px rgba(57,255,20,.45), inset 0 2px 0 rgba(255,255,255,.7);
+    transition: transform .08s, box-shadow .08s;
+  }
+  #cad-alert-ok:active { transform: translateY(4px); box-shadow: 0 1px 0 #139000, 0 3px 8px rgba(57,255,20,.4); }
+  .cad-missing { border-color: #ff3b30 !important; box-shadow: 0 0 0 3px rgba(255,59,48,.22) !important; }
+  body.cadastro-open { overflow: hidden; }
+  @media (max-width: 760px) {
+    #inline-cadastro-panel { padding: 1.5vh 2vw; }
+    #inline-cadastro-panel .form-card { max-height: 96vh; border-radius: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #inline-cadastro-panel .form-card { animation: none; }
+  }
+
+  /* ══════════════════════════════
+     BOTÃO 🔎 + BALÃO DE PESQUISA (centralizado, abre do meio para os lados)
+  ══════════════════════════════ */
+  #search-balloon-overlay {
+    position: fixed; inset: 0;
+    background: rgba(60,45,20,.28);
+    backdrop-filter: blur(3px);
+    z-index: 8990;
+    display: none;
+  }
+  #search-balloon-overlay.open { display: block; }
+  #search-balloon {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(620px, 94vw);
+    max-height: 88vh;
+    overflow-y: auto;
+    z-index: 8991;
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: 18px;
+    padding: 1.5rem 1.5rem 1.25rem;
+    box-shadow: 0 24px 64px rgba(60,45,20,.25), 0 0 0 1px rgba(245,166,35,.15);
+    display: none;
+  }
+  #search-balloon.open {
+    display: block;
+    animation: searchBalloonOpen .3s cubic-bezier(.22,1,.36,1) both;
+  }
+  /* abre do centro da tela para os lados */
+  @keyframes searchBalloonOpen {
+    from { clip-path: inset(0 50% 0 50% round 18px); opacity: .4; }
+    to   { clip-path: inset(0 0 0 0 round 18px);     opacity: 1; }
+  }
+  .sb-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.1rem;
+  }
+  .sb-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.45rem; letter-spacing: .07em; color: var(--accent);
+  }
+  #search-balloon .acb-close { font-size: 1.4rem; padding: .3rem .5rem; }
+  #search-balloon .header-search-wrap { max-width: 100%; width: 100%; flex-wrap: wrap; gap: .6rem; }
+  #search-balloon .search-mode-toggle { width: 100%; }
+  #search-balloon .search-mode-btn { flex: 1; font-size: .92rem; padding: .75rem .8rem; }
+  #search-balloon .header-search-inner { flex: 1 1 100%; }
+  #search-balloon .header-search-input {
+    font-size: 1.1rem !important; padding: .9rem 1rem .9rem 2.9rem; border-radius: 12px;
+  }
+  #search-balloon .header-search-icon { left: 1rem; font-size: 1.1rem; }
+  #search-balloon .header-search-dropdown {
+    position: static; display: none; width: 100%; max-width: 100%; min-width: 0;
+    margin-top: .75rem; max-height: 45vh; border-radius: 12px; box-shadow: none;
+  }
+  #search-balloon .header-search-dropdown.open { display: block; }
+  #search-balloon .hsd-item { min-height: 54px; padding: .7rem 1rem; flex-wrap: wrap; }
+  #search-balloon .hsd-name { font-size: 1.02rem; white-space: normal; }
+  #search-balloon .hsd-cpf { font-size: .84rem; }
+  #search-balloon .hsd-no-results { font-size: 1rem; padding: 1.25rem 1rem; }
+  .sb-hint { margin-top: .9rem; font-size: .8rem; color: var(--muted); text-align: center; }
+
   /* ══════════════════════════════
      BALÃO DE AÇÃO — Pessoa encontrada
   ══════════════════════════════ */
@@ -744,12 +987,257 @@
     background: var(--card); border: 1px solid var(--border);
     border-left: 4px solid var(--success); border-radius: 10px;
     padding: .9rem 1.4rem; color: var(--text);
-    font-size: .85rem; font-weight: 500; z-index: 300;
+    font-size: .85rem; font-weight: 500; z-index: 9500;
     transform: translateX(120%); transition: transform .3s ease;
     min-width: 240px; box-shadow: 0 8px 24px rgba(60,45,20,.1);
   }
   #toast.show { transform: translateX(0); }
   #toast.error { border-left-color: var(--danger); }
+
+
+  /* ══════════════════════════════
+     MENSAGENS 3D RESPONSIVAS (diálogos, toast, balões)
+  ══════════════════════════════ */
+  #dlg3d-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    background: radial-gradient(circle at 50% 40%, rgba(60,45,20,.28), rgba(30,22,8,.55));
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    display: none; align-items: center; justify-content: center;
+    padding: 1rem; perspective: 1100px;
+  }
+  #dlg3d-overlay.open { display: flex; animation: dlg3dFade .2s ease-out; }
+  @keyframes dlg3dFade { from { opacity: 0; } to { opacity: 1; } }
+  .dlg3d-card {
+    --dlg-c: #e8891a; --dlg-d: #b8680a;
+    position: relative; width: min(92vw, 420px); max-height: 88vh; overflow-y: auto;
+    padding: 1.6rem 1.4rem 1.3rem; text-align: center;
+    background: linear-gradient(160deg, #fffdf8 0%, var(--card, #fff) 55%, #f3ecdc 100%);
+    border: 1px solid rgba(255,255,255,.9);
+    border-top: 4px solid var(--dlg-c);
+    border-bottom: 7px solid var(--dlg-d);
+    border-radius: 20px;
+    box-shadow:
+      0 2px 0 rgba(255,255,255,.9) inset,
+      0 30px 60px -12px rgba(40,28,8,.45),
+      0 18px 36px -18px rgba(40,28,8,.5),
+      0 0 0 1px rgba(60,45,20,.08);
+    transform-style: preserve-3d;
+    animation: dlg3dPop .45s cubic-bezier(.2,1.3,.4,1) forwards;
+  }
+  .dlg3d-card.danger  { --dlg-c: #e25555; --dlg-d: #a82a2a; }
+  .dlg3d-card.success { --dlg-c: #3dba7c; --dlg-d: #1f8a54; }
+  .dlg3d-card.info    { --dlg-c: #3b82d6; --dlg-d: #245a9e; }
+  @keyframes dlg3dPop {
+    0%   { opacity: 0; transform: translateY(40px) rotateX(28deg) scale(.86); }
+    100% { opacity: 1; transform: translateY(0) rotateX(0) scale(1); }
+  }
+  .dlg3d-icon {
+    width: 72px; height: 72px; margin: -3.1rem auto .7rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.1rem; border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #fff, var(--dlg-c) 120%);
+    border-bottom: 5px solid var(--dlg-d);
+    box-shadow: 0 10px 20px -6px rgba(40,28,8,.5), 0 0 0 4px #fffdf8;
+    transform: translateZ(40px);
+  }
+  .dlg3d-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.45rem; letter-spacing: .07em;
+    color: var(--dlg-d); margin-bottom: .5rem; text-shadow: 0 1px 0 rgba(255,255,255,.9);
+  }
+  .dlg3d-msg { font-size: .92rem; line-height: 1.5; color: var(--text); word-break: break-word; }
+  .dlg3d-detail {
+    margin: .8rem 0 0; padding: .65rem .8rem; font-size: .8rem; line-height: 1.45;
+    font-family: 'DM Mono', monospace; color: var(--muted); text-align: left;
+    background: rgba(60,45,20,.05); border-radius: 10px;
+    box-shadow: inset 0 2px 5px rgba(60,45,20,.12); max-height: 28vh; overflow-y: auto;
+  }
+  .dlg3d-input {
+    width: 100%; margin-top: .9rem; padding: .7rem .9rem; font-size: .95rem;
+    font-family: 'DM Sans', sans-serif; color: var(--text); background: #fff;
+    border: 1px solid rgba(60,45,20,.2); border-radius: 10px; outline: none;
+    box-shadow: inset 0 3px 6px rgba(60,45,20,.12);
+  }
+  .dlg3d-input:focus { border-color: var(--dlg-c); }
+  .dlg3d-actions { display: flex; gap: .7rem; margin-top: 1.3rem; }
+  .dlg3d-btn {
+    flex: 1; font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 700;
+    padding: .8rem 1rem; border: none; border-radius: 12px; cursor: pointer;
+    transition: transform .1s, box-shadow .1s, filter .15s; -webkit-tap-highlight-color: transparent;
+  }
+  .dlg3d-btn.ok {
+    color: #fff; background: linear-gradient(180deg, var(--dlg-c), var(--dlg-d));
+    box-shadow: 0 5px 0 var(--dlg-d), 0 10px 16px -4px rgba(40,28,8,.45), 0 1px 0 rgba(255,255,255,.4) inset;
+  }
+  .dlg3d-btn.cancel {
+    color: var(--muted); background: linear-gradient(180deg, #fff, #ece4d2);
+    box-shadow: 0 5px 0 #c9bea5, 0 10px 16px -4px rgba(40,28,8,.3), 0 1px 0 #fff inset;
+  }
+  .dlg3d-btn:hover { filter: brightness(1.06); }
+  .dlg3d-btn:active { transform: translateY(4px); }
+  .dlg3d-btn.ok:active { box-shadow: 0 1px 0 var(--dlg-d), 0 3px 6px -2px rgba(40,28,8,.4); }
+  .dlg3d-btn.cancel:active { box-shadow: 0 1px 0 #c9bea5; }
+  @media (max-width: 420px) {
+    .dlg3d-card { padding: 1.4rem 1rem 1.1rem; }
+    .dlg3d-actions { flex-direction: column-reverse; }
+    .dlg3d-title { font-size: 1.3rem; }
+  }
+
+  /* Toast 3D */
+  #toast {
+    border: 1px solid rgba(255,255,255,.8) !important;
+    border-left: 6px solid var(--success) !important;
+    border-bottom: 5px solid #1f8a54 !important;
+    border-radius: 14px !important;
+    background: linear-gradient(160deg, #fffdf8, #f3ecdc) !important;
+    box-shadow: 0 1px 0 #fff inset, 0 18px 30px -10px rgba(40,28,8,.45), 0 6px 12px -6px rgba(40,28,8,.35) !important;
+    transform: translateX(120%) rotateY(-18deg); transform-origin: right center;
+    max-width: min(92vw, 420px); line-height: 1.4; pointer-events: none;
+  }
+  #toast.show { transform: translateX(0) rotateY(0); }
+  #toast.error { border-left-color: var(--danger) !important; border-bottom-color: #a82a2a !important; }
+  @media (max-width: 640px) {
+    #toast { left: 1rem; right: 1rem; bottom: 1rem; min-width: 0; max-width: none;
+             transform: translateY(160%) rotateX(35deg); transform-origin: center bottom; }
+    #toast.show { transform: translateY(0) rotateX(0); }
+  }
+
+  /* Balões de confirmação/entrada em 3D */
+  #confirm-entrada-balloon {
+    background: linear-gradient(160deg, #fffdf8, var(--card, #fff) 55%, #f3ecdc) !important;
+    border-bottom: 7px solid #1f8a54 !important; border-top: 4px solid #3dba7c !important;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 1px 0 #fff inset, 0 30px 60px -12px rgba(40,28,8,.45), 0 18px 36px -18px rgba(40,28,8,.5) !important;
+  }
+  @keyframes cebPop {
+    from { opacity:0; transform: translate(-50%,-46%) perspective(900px) rotateX(28deg) scale(.86); }
+    to   { opacity:1; transform: translate(-50%,-50%) perspective(900px) rotateX(0) scale(1); }
+  }
+  .ceb-btn-confirm { box-shadow: 0 5px 0 #1f8a54, 0 10px 16px -4px rgba(40,28,8,.4) !important; }
+  .ceb-btn-confirm:active { transform: translateY(4px) !important; box-shadow: 0 1px 0 #1f8a54 !important; }
+  @media (max-width: 480px) {
+    .ceb-buttons { flex-direction: column; }
+    #confirm-entrada-balloon { padding: 1.4rem 1.1rem; }
+  }
+  .entrada-balloon .balloon-body {
+    box-shadow: 0 1px 0 #fff inset, 0 24px 44px -12px rgba(40,28,8,.45), 0 8px 16px -8px rgba(40,28,8,.35) !important;
+    border-bottom-width: 6px;
+  }
+  @media (max-width: 640px) { .entrada-balloon { right: 1rem !important; left: 1rem !important; bottom: 1rem !important; } }
+
+
+  /* Acesso Rápido — balão maior, centralizado e bem distribuído */
+  #action-balloon {
+    max-width: 540px !important; width: min(94vw, 540px) !important;
+    padding: 2rem 2.25rem 1.75rem !important;
+    max-height: 92vh; overflow-y: auto;
+    border-radius: 22px !important;
+    background: linear-gradient(160deg, #fffdf8, var(--card, #fff) 55%, #f3ecdc) !important;
+    border-top: 4px solid var(--accent) !important; border-bottom: 7px solid #b8680a !important;
+    box-shadow: 0 1px 0 #fff inset, 0 30px 60px -12px rgba(40,28,8,.45), 0 18px 36px -18px rgba(40,28,8,.5) !important;
+  }
+  @keyframes actionBalloonPop {
+    from { opacity: 0; transform: translate(-50%, -46%) perspective(900px) rotateX(24deg) scale(.86); }
+    to   { opacity: 1; transform: translate(-50%, -50%) perspective(900px) rotateX(0) scale(1); }
+  }
+  #action-balloon .acb-header { margin-bottom: 1.25rem; }
+  #action-balloon .acb-title { font-size: 1.4rem; }
+  #action-balloon .acb-close { font-size: 1.4rem; padding: .3rem .5rem; }
+  #action-balloon .acb-person { padding: 1.1rem 1.2rem; margin-bottom: 1.5rem; border-radius: 14px; box-shadow: inset 0 2px 6px rgba(60,45,20,.08); }
+  .acb-person-top { display: flex; align-items: center; gap: .9rem; padding-bottom: .9rem; margin-bottom: .9rem; border-bottom: 1px dashed var(--border); }
+  .acb-avatar {
+    flex: 0 0 54px; width: 54px; height: 54px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: .04em; color: #fff;
+    background: linear-gradient(160deg, #f5a623, #b8680a); border-bottom: 4px solid #8a4e08;
+    box-shadow: 0 6px 12px -4px rgba(40,28,8,.5);
+  }
+  .acb-person-id { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: .4rem; }
+  #action-balloon .acb-person-name { font-size: 1.2rem; line-height: 1.25; margin: 0; word-break: break-word; }
+  #action-balloon .acb-person-meta { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem 1.2rem; font-family: 'DM Sans', sans-serif; }
+  .acb-field { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+  .acb-field-k { font-size: .65rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); }
+  .acb-field-v { font-family: 'DM Mono', monospace; font-size: .88rem; color: var(--text); word-break: break-word; }
+  #action-balloon .acb-actions { gap: .8rem; }
+  #action-balloon .acb-btn-entrada { font-size: 1.05rem; padding: 1rem 1.2rem; border-radius: 14px; box-shadow: 0 5px 0 #1f8a54, 0 12px 18px -6px rgba(40,28,8,.4); }
+  #action-balloon .acb-btn-entrada:active { transform: translateY(4px); box-shadow: 0 1px 0 #1f8a54; }
+  #action-balloon .acb-btn-row { gap: .8rem; }
+  #action-balloon .acb-btn-editar, #action-balloon .acb-btn-cancelar { font-size: .95rem; padding: .85rem 1rem; border-radius: 14px; }
+  #action-balloon .acb-btn-cancelar { min-width: 110px; }
+  #action-balloon .acb-hint { font-size: .8rem; margin-top: 1.1rem; }
+  @media (max-width: 480px) {
+    #action-balloon { padding: 1.5rem 1.15rem 1.3rem !important; }
+    #action-balloon .acb-person-meta { grid-template-columns: 1fr; }
+    #action-balloon .acb-btn-row { flex-direction: column; }
+  }
+
+
+  /* Lista suspensa 3D do sistema */
+  #cs3d-overlay {
+    position: fixed; inset: 0; z-index: 10100; display: none;
+    align-items: center; justify-content: center; padding: 1rem; perspective: 1100px;
+    background: radial-gradient(circle at 50% 40%, rgba(60,45,20,.28), rgba(30,22,8,.55));
+    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  }
+  #cs3d-overlay.open { display: flex; animation: dlg3dFade .15s ease-out; }
+  .cs3d-card {
+    width: min(92vw, 440px); max-height: 78vh; display: flex; flex-direction: column;
+    background: linear-gradient(160deg, #fffdf8, var(--card, #fff) 55%, #f3ecdc);
+    border-top: 4px solid var(--accent); border-bottom: 7px solid #b8680a; border-radius: 20px;
+    padding: 1.1rem 1.1rem 1rem;
+    box-shadow: 0 1px 0 #fff inset, 0 30px 60px -12px rgba(40,28,8,.45), 0 18px 36px -18px rgba(40,28,8,.5);
+    animation: dlg3dPop .35s cubic-bezier(.2,1.3,.4,1) forwards;
+  }
+  .cs3d-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .8rem; }
+  .cs3d-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: .07em; color: #b8680a; }
+  .cs3d-x { background: none; border: none; font-size: 1.3rem; color: var(--muted); cursor: pointer; padding: .2rem .45rem; }
+  .cs3d-search {
+    width: 100%; margin-bottom: .7rem; padding: .7rem .9rem; font-size: .95rem; font-family: 'DM Sans', sans-serif;
+    color: var(--text); background: #fff; border: 1px solid rgba(60,45,20,.2); border-radius: 12px; outline: none;
+    box-shadow: inset 0 3px 6px rgba(60,45,20,.12);
+  }
+  .cs3d-list { overflow-y: auto; display: flex; flex-direction: column; gap: .5rem; padding: .25rem .2rem .5rem; -webkit-overflow-scrolling: touch; }
+  .cs3d-group { font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin: .4rem .3rem 0; }
+  .cs3d-opt {
+    display: flex; align-items: center; justify-content: space-between; gap: .75rem; text-align: left;
+    width: 100%; padding: .9rem 1rem; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600; color: var(--text);
+    background: linear-gradient(180deg, #fff, #f1e9d8); border: 1px solid rgba(255,255,255,.9); border-radius: 13px; cursor: pointer;
+    box-shadow: 0 4px 0 #cdc2a8, 0 8px 12px -4px rgba(40,28,8,.25); transition: transform .08s, box-shadow .08s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cs3d-opt:active { transform: translateY(3px); box-shadow: 0 1px 0 #cdc2a8; }
+  .cs3d-opt.ph { color: var(--muted); font-weight: 500; }
+  .cs3d-opt.sel { color: #fff; background: linear-gradient(180deg, #f5a623, #d9780f); box-shadow: 0 4px 0 #a85d08, 0 8px 12px -4px rgba(40,28,8,.35); }
+  .cs3d-opt:disabled { opacity: .45; cursor: not-allowed; }
+  .cs3d-opt-t { min-width: 0; word-break: break-word; }
+  .cs3d-check { font-size: 1.1rem; font-weight: 800; flex: 0 0 auto; }
+
+  /* Confirmar Entrada — balão maior e bem distribuído */
+  #confirm-entrada-balloon {
+    width: min(94vw, 540px) !important; max-width: 540px !important;
+    padding: 2rem 2.25rem 1.75rem !important; border-radius: 22px !important;
+  }
+  #confirm-entrada-balloon .ceb-icon { font-size: 3.2rem; margin-bottom: .5rem; }
+  #confirm-entrada-balloon .ceb-title { font-size: 1.6rem; margin-bottom: .6rem; }
+  #confirm-entrada-balloon .ceb-name { font-size: 1.3rem; line-height: 1.25; margin-bottom: .9rem; word-break: break-word; }
+  #confirm-entrada-balloon .ceb-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: .8rem 1.2rem; text-align: left;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1rem 1.2rem; margin-bottom: 1.1rem; box-shadow: inset 0 2px 6px rgba(60,45,20,.08);
+    font-family: 'DM Sans', sans-serif;
+  }
+  #confirm-entrada-balloon .ceb-time {
+    display: inline-block; font-size: 1.7rem; padding: .4rem 1.4rem; margin-bottom: 1.3rem;
+    background: rgba(245,166,35,.12); border: 1px solid rgba(245,166,35,.35); border-radius: 14px;
+  }
+  #ceb-responsavel-sel { font-size: 1rem !important; padding: .8rem 1rem !important; border-radius: 12px !important; box-shadow: inset 0 3px 6px rgba(60,45,20,.1); cursor: pointer; }
+  #confirm-entrada-balloon .ceb-buttons { flex-wrap: wrap; gap: .8rem; }
+  #confirm-entrada-balloon .ceb-btn-confirm { flex: 1 1 100%; justify-content: center; font-size: 1.05rem; padding: 1rem 1.2rem; border-radius: 14px; }
+  #confirm-entrada-balloon .ceb-btn-edit, #confirm-entrada-balloon .ceb-btn-cancel { flex: 1 1 0; justify-content: center; font-size: .95rem; padding: .85rem 1rem; border-radius: 14px; }
+  @media (max-width: 480px) {
+    #confirm-entrada-balloon { padding: 1.5rem 1.15rem 1.3rem !important; }
+    #confirm-entrada-balloon .ceb-meta { grid-template-columns: 1fr; }
+    #confirm-entrada-balloon .ceb-buttons { flex-direction: row; }
+  }
 
   /* ── Form section label ── */
   .form-card-section-label {
@@ -767,7 +1255,7 @@
     position: fixed; inset: 0;
     background: rgba(60,45,20,.18);
     backdrop-filter: blur(4px);
-    z-index: 8900;
+    z-index: 9050;
     display: none;
   }
   #review-balloon-overlay.open { display: block; }
@@ -775,7 +1263,7 @@
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0.85);
-    z-index: 8901;
+    z-index: 9051;
     background: var(--card);
     border: 1px solid var(--accent);
     border-radius: 18px;
@@ -1931,7 +2419,7 @@
     position: fixed; inset: 0;
     background: rgba(60,45,20,.16);
     backdrop-filter: blur(4px);
-    z-index: 8000;
+    z-index: 9060;
     display: none;
   }
   #confirm-entrada-overlay.open { display: block; }
@@ -1939,7 +2427,7 @@
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%) scale(0.85);
-    z-index: 8001;
+    z-index: 9061;
     background: var(--card);
     border: 1px solid rgba(61,186,124,.45);
     border-radius: 18px;
@@ -2184,7 +2672,7 @@
       width: 100%;
     }
     /* Banner de sincronização acompanha a nova altura do header */
-    #sync-banner { top: 108px; }
+    #sync-banner { top: 64px; }
 
     /* Corrige os cards de Relatórios: o HTML define
        style="grid-template-columns: repeat(2,1fr)" inline, que tem
@@ -2301,28 +2789,6 @@
     </div>
   </div>
 
-  <!-- BUSCA GLOBAL HEADER -->
-  <div class="header-search-wrap">
-    <div class="search-mode-toggle">
-      <button class="search-mode-btn active" id="smb-cpf" onclick="setSearchMode('cpf')">🪪 CPF</button>
-      <button class="search-mode-btn" id="smb-nome" onclick="setSearchMode('nome')">👤 Nome</button>
-    </div>
-    <div class="header-search-inner">
-      <span class="header-search-icon" id="header-search-icon">🪪</span>
-      <input
-        type="text"
-        class="header-search-input"
-        id="header-search"
-        placeholder="Digite o CPF (ex: 000.000.000-00)..."
-        autocomplete="off"
-        inputmode="numeric"
-        oninput="globalSearchDebounced(this.value)"
-        onkeydown="globalSearchKeyNav(event)"
-      >
-      <div class="header-search-dropdown" id="header-search-dropdown"></div>
-    </div>
-  </div>
-
   <div class="header-right">
     <div id="live-clock">--:--:--</div>
     <div class="badge-status" id="conn-badge">● Conectando...</div>
@@ -2361,6 +2827,10 @@
       <span>Histórico</span>
       <span class="tab-count" id="cnt-historico" style="background:var(--info);">0</span>
     </button>
+    <button type="button" class="tab-btn" id="btn-open-search" onclick="openSearchBalloon()" title="Pesquisar / iniciar cadastro">
+      <span class="tab-icon">🔎</span>
+      <span>Pesquisar</span>
+    </button>
   </div>
 
   <!-- ══ ABA 1: REGISTRO DE ACESSOS ══ -->
@@ -2377,54 +2847,54 @@
 
         <!-- Seção: Dados Pessoais -->
         <div class="form-card-section-label">👤 Dados Pessoais</div>
-        <div class="form-grid">
-          <div class="form-group half">
+        <div class="form-grid cad-grid">
+          <div class="form-group half cg-4">
             <label>Nome Completo <span class="req">*</span></label>
             <input type="text" id="c-nome" placeholder="Nome do visitante" autocomplete="off">
           </div>
-          <div class="form-group">
+          <div class="form-group cg-2">
             <label>RG</label>
             <input type="text" id="c-rg" placeholder="00.000.000-0">
           </div>
-          <div class="form-group">
-            <label>CPF</label>
+          <div class="form-group cg-2">
+            <label>CPF <span class="req">*</span></label>
             <input type="text" id="c-cpf" placeholder="000.000.000-00">
           </div>
-          <div class="form-group half">
-            <label>Cargo / Função</label>
+          <div class="form-group half cg-4">
+            <label>Cargo / Função <span class="req">*</span></label>
             <select id="c-cargo">
               <option value="">Selecione o cargo...</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Empresa</label>
+          <div class="form-group cg-6">
+            <label>Empresa <span class="req">*</span></label>
             <div class="select-manage-wrap">
               <select id="c-empresa">
                 <option value="">Selecione a empresa...</option>
               </select>
-              <button type="button" class="sel-mgr-btn add" title="Adicionar nova empresa" onclick="cfgMiniAbrir('empresa','add')">+</button>
+              <button type="button" class="sel-mgr-btn add sel-mgr-add-lbl" title="Cadastrar nova empresa sem sair desta tela" onclick="cfgMiniAbrir('empresa','add','c-empresa')">＋ Nova empresa</button>
               <button type="button" class="sel-mgr-btn" title="Editar empresa selecionada" onclick="cfgMiniAbrir('empresa','edit','c-empresa')">&#9999;</button>
               <button type="button" class="sel-mgr-btn del" title="Excluir empresa selecionada" onclick="cfgMiniExcluir('empresa','c-empresa')">&#128465;</button>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group cg-6">
             <label>Motivo de Entrada <span class="req">*</span></label>
             <div class="select-manage-wrap">
               <select id="c-motivo">
                 <option value="">Selecione...</option>
               </select>
-              <button type="button" class="sel-mgr-btn add" title="Adicionar novo motivo" onclick="cfgMiniAbrir('motivo','add')">+</button>
+              <button type="button" class="sel-mgr-btn add" title="Adicionar novo motivo" onclick="cfgMiniAbrir('motivo','add','c-motivo')">+</button>
               <button type="button" class="sel-mgr-btn" title="Editar motivo selecionado" onclick="cfgMiniAbrir('motivo','edit','c-motivo')">&#9999;</button>
               <button type="button" class="sel-mgr-btn del" title="Excluir motivo selecionado" onclick="cfgMiniExcluir('motivo','c-motivo')">&#128465;</button>
             </div>
           </div>
-          <div class="form-group half">
+          <div class="form-group half cg-6">
             <label>👤 Responsável pela Liberação <span class="req">*</span></label>
             <div class="select-manage-wrap">
               <select id="c-responsavel-sel" style="border-color:rgba(245,166,35,.5);">
                 <option value="">Selecione o responsável...</option>
               </select>
-              <button type="button" class="sel-mgr-btn add" title="Adicionar novo responsável" onclick="cfgMiniAbrir('responsavel','add')">+</button>
+              <button type="button" class="sel-mgr-btn add" title="Adicionar novo responsável" onclick="cfgMiniAbrir('responsavel','add','c-responsavel-sel')">+</button>
               <button type="button" class="sel-mgr-btn" title="Editar responsável selecionado" onclick="cfgMiniAbrir('responsavel','edit','c-responsavel-sel')">&#9999;</button>
               <button type="button" class="sel-mgr-btn del" title="Excluir responsável selecionado" onclick="cfgMiniExcluir('responsavel','c-responsavel-sel')">&#128465;</button>
             </div>
@@ -2434,8 +2904,8 @@
 
         <!-- Seção: Veículo -->
         <div class="form-card-section-label" style="margin-top:1.25rem;">🚛 Veículo <span style="font-weight:400;font-size:.72rem;color:var(--muted);text-transform:none;letter-spacing:0;">(opcional)</span></div>
-        <div class="form-grid">
-          <div class="form-group">
+        <div class="form-grid cad-grid" id="c-veiculo-grid">
+          <div class="form-group cg-v">
             <label>Tipo de Veículo</label>
             <select id="c-tipo-veiculo" onchange="toggleTrailerField()">
               <option value="">Sem veículo</option>
@@ -2446,12 +2916,12 @@
               <option value="OUTRO">🔧 Outro</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>Placa do Veículo</label>
+          <div class="form-group cg-v">
+            <label id="c-placa-label">Placa do Veículo</label>
             <input type="text" id="c-placa" placeholder="Ex: ABC-1234" maxlength="10" oninput="this.value=this.value.toUpperCase()">
           </div>
-          <div class="form-group" id="c-trailer-wrap" style="display:none;">
-            <label>Placa do Reboque / Trailer</label>
+          <div class="form-group cg-v" id="c-trailer-wrap" style="display:none;">
+            <label>Placa da Carreta / Bitrem</label>
             <input type="text" id="c-placa-trailer" placeholder="Ex: XYZ-5678" maxlength="10" oninput="this.value=this.value.toUpperCase()">
           </div>
         </div>
@@ -2534,6 +3004,7 @@
       <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
         <div class="monitor-count-badge" id="monitor-count-badge">0 dentro</div>
         <button class="btn btn-outline" onclick="renderMonitor()" style="font-size:.8rem;padding:.5rem 1rem;">🔄 Atualizar</button>
+        <button class="btn btn-outline" onclick="limparDuplicadosMonitor()" style="font-size:.8rem;padding:.5rem 1rem;" id="btn-limpar-dup">🧹 Limpar Duplicados</button>
         <button class="btn btn-danger" onclick="confirmSaidaTodos()" style="font-size:.8rem;padding:.5rem 1rem;" id="btn-saida-todos">🚪 Registrar Saída Geral</button>
       </div>
     </div>
@@ -3308,6 +3779,17 @@
   </div>
 </div>
 
+<!-- ══ BALÃO DE AVISO — campos obrigatórios ══ -->
+<div id="cad-alert-overlay" onclick="if(event.target===this) fecharAvisoCampos()">
+  <div id="cad-alert" role="alertdialog" aria-modal="true" aria-labelledby="cad-alert-title">
+    <div class="cad-alert-icon">⚠️</div>
+    <div class="cad-alert-title" id="cad-alert-title">Faltam informações</div>
+    <div class="cad-alert-sub">Preencha o que falta para continuar:</div>
+    <ul class="cad-alert-list" id="cad-alert-list"></ul>
+    <button type="button" id="cad-alert-ok" onclick="fecharAvisoCampos()">Entendi</button>
+  </div>
+</div>
+
 <!-- ══ BALÃO DE REVISÃO DE CADASTRO + ENTRADA ══ -->
 <div id="review-balloon-overlay" onclick="fecharReviewBalloon()"></div>
 <div id="review-balloon">
@@ -3361,6 +3843,36 @@
   </div>
 </div>
 
+<!-- ══ BALÃO DE PESQUISA — início do cadastro ══ -->
+<div id="search-balloon-overlay" onclick="closeSearchBalloon()"></div>
+<div id="search-balloon" role="dialog" aria-modal="true" aria-label="Pesquisar pessoa">
+  <div class="sb-header">
+    <div class="sb-title">🔎 Pesquisar / Iniciar Cadastro</div>
+    <button type="button" class="acb-close" onclick="closeSearchBalloon()" aria-label="Fechar">✕</button>
+  </div>
+  <div class="header-search-wrap">
+    <div class="search-mode-toggle">
+      <button class="search-mode-btn active" id="smb-cpf" onclick="setSearchMode('cpf')">🪪 CPF</button>
+      <button class="search-mode-btn" id="smb-nome" onclick="setSearchMode('nome')">👤 Nome</button>
+    </div>
+    <div class="header-search-inner">
+      <span class="header-search-icon" id="header-search-icon">🪪</span>
+      <input
+        type="text"
+        class="header-search-input"
+        id="header-search"
+        placeholder="Digite o CPF (ex: 000.000.000-00)..."
+        autocomplete="off"
+        inputmode="numeric"
+        oninput="globalSearchDebounced(this.value)"
+        onkeydown="globalSearchKeyNav(event)"
+      >
+    </div>
+  </div>
+  <div class="header-search-dropdown" id="header-search-dropdown"></div>
+  <div class="sb-hint">Se a pessoa não for encontrada, o cadastro é iniciado automaticamente.</div>
+</div>
+
 <!-- ══ BALÃO DE AÇÃO — Pessoa Encontrada ══ -->
 <div id="action-balloon-overlay" onclick="closeActionBalloon()"></div>
 <div id="action-balloon">
@@ -3369,9 +3881,14 @@
     <button class="acb-close" onclick="closeActionBalloon()">✕</button>
   </div>
   <div class="acb-person">
-    <div class="acb-person-name">
-      <span id="acb-name">—</span>
-      <span id="acb-status-badge" class="acb-status-badge acb-status-outside">⬤ FORA</span>
+    <div class="acb-person-top">
+      <div class="acb-avatar" id="acb-avatar">?</div>
+      <div class="acb-person-id">
+        <div class="acb-person-name">
+          <span id="acb-name">—</span>
+        </div>
+        <span id="acb-status-badge" class="acb-status-badge acb-status-outside">⬤ FORA</span>
+      </div>
     </div>
     <div class="acb-person-meta" id="acb-meta">—</div>
   </div>
@@ -3687,6 +4204,8 @@ function initFirebase() {
       filterTable('dados');
       renderStats('dados');
       renderMonitor();
+      renderColaboradores();
+      renderStatsColaboradores();
       hideLoading();
       setOnline();
       if (document.getElementById('panel-historico').classList.contains('active')) renderHistorico();
@@ -3869,7 +4388,27 @@ window.addEventListener('load', () => {
   updateOfflineBadge();
 });
 
+// ── Bloqueio de entrada duplicada ─────────────────────────────
+function _onlyDigits(v){ return String(v||'').replace(/\D/g,''); }
+function _normNome(v){ return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toUpperCase(); }
+function findJaDentro(rec, excludeId) {
+  const cpf = _onlyDigits(rec.cpf), nome = _normNome(rec.nome);
+  return (db.dados||[]).find(x => {
+    if (excludeId && x._id === excludeId) return false;
+    if (!x.entrada || x.saida) return false;
+    const xc = _onlyDigits(x.cpf);
+    if (cpf && xc) return cpf === xc;
+    return nome && _normNome(x.nome) === nome;
+  });
+}
+function assertSemDuplicidade(rec, excludeId) {
+  if (!rec || rec.saida || !rec.entrada) return;
+  const dup = findJaDentro(rec, excludeId);
+  if (dup) throw new Error(`${(dup.nome||'Pessoa')} já está dentro das instalações (entrada ${dup.entrada}). Registre a saída no Monitor antes de uma nova entrada.`);
+}
+
 async function addToFirestore(collection, data) {
+  if (collection === 'dados') assertSemDuplicidade(data);
   if (!navigator.onLine) {
     // Salvar localmente na fila offline
     const localData = { ...data };
@@ -3882,7 +4421,7 @@ async function addToFirestore(collection, data) {
       db[collection] = [...(db[collection]||[]), { _id: fakeId, ...localData }];
       filterTable(collection);
       renderStats(collection);
-      if (collection === 'dados') renderMonitor();
+      if (collection === 'dados') { renderMonitor(); renderColaboradores(); renderStatsColaboradores(); }
     }
     showToast('📦 Salvo localmente — será sincronizado quando houver internet.', 'success');
     return fakeId;
@@ -3902,13 +4441,179 @@ async function updateInFirestore(collection, id, data) {
         db[collection][idx] = { ...db[collection][idx], ...data };
         filterTable(collection);
         renderStats(collection);
-        if (collection === 'dados') renderMonitor();
+        if (collection === 'dados') { renderMonitor(); renderColaboradores(); renderStatsColaboradores(); }
       }
     }
     showToast('📦 Atualização salva localmente — será sincronizada quando houver internet.', 'success');
     return;
   }
   await db_fire.collection(collection).doc(id).update(data);
+}
+
+// ══════════════════════════════════════════════════════
+// LISTAS SUSPENSAS DO SISTEMA (3D) — substitui o seletor nativo do celular
+// ══════════════════════════════════════════════════════
+(function() {
+  let _csSel = null;
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  function eligible(el) {
+    return el && el.tagName === 'SELECT' && !el.multiple && !(el.size > 1) && !el.disabled && !el.dataset.native;
+  }
+  function selectTitle(sel) {
+    let t = sel.getAttribute('aria-label') || '';
+    if (!t && sel.id) { const l = document.querySelector('label[for="' + sel.id + '"]'); if (l) t = l.textContent; }
+    if (!t) { const g = sel.closest('.form-group, .filter-group'); const l = g && g.querySelector('label'); if (l) t = l.textContent; }
+    if (!t && sel.previousElementSibling && sel.previousElementSibling.tagName === 'LABEL') t = sel.previousElementSibling.textContent;
+    if (!t && sel.options.length) t = sel.options[0].text;
+    t = String(t).replace(/[*]/g, '').replace(/\s+/g, ' ').trim();
+    return t || 'Selecione';
+  }
+  function close() {
+    const ov = document.getElementById('cs3d-overlay');
+    if (ov) { ov.classList.remove('open'); ov.innerHTML = ''; }
+    document.removeEventListener('keydown', onKey, true);
+    const el = _csSel; _csSel = null;
+    if (el) { try { el.focus({ preventScroll: true }); } catch(e) {} }
+  }
+  function onKey(e) {
+    if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+  }
+  function pick(sel, idx) {
+    const opt = sel.options[idx];
+    if (!opt || opt.disabled) return;
+    const changed = sel.selectedIndex !== idx;
+    sel.selectedIndex = idx;
+    close();
+    if (changed) {
+      sel.dispatchEvent(new Event('input',  { bubbles: true }));
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+  function open(sel) {
+    if (!eligible(sel)) return;
+    _csSel = sel;
+    let ov = document.getElementById('cs3d-overlay');
+    if (!ov) { ov = document.createElement('div'); ov.id = 'cs3d-overlay'; document.body.appendChild(ov); }
+    const opts = Array.from(sel.options);
+    const many = opts.length > 8;
+    let html = '', lastGroup = null;
+    opts.forEach((o, i) => {
+      const g = o.parentElement && o.parentElement.tagName === 'OPTGROUP' ? o.parentElement.label : null;
+      if (g !== lastGroup) { if (g) html += `<div class="cs3d-group">${esc(g)}</div>`; lastGroup = g; }
+      const isSel = i === sel.selectedIndex;
+      const placeholder = o.value === '' ? ' ph' : '';
+      html += `<button type="button" class="cs3d-opt${isSel ? ' sel' : ''}${placeholder}" data-i="${i}" ${o.disabled ? 'disabled' : ''}>
+        <span class="cs3d-opt-t">${esc(o.text)}</span><span class="cs3d-check">${isSel ? '✓' : ''}</span></button>`;
+    });
+    ov.innerHTML = `
+      <div class="cs3d-card" role="listbox">
+        <div class="cs3d-head"><span class="cs3d-title">${esc(selectTitle(sel))}</span><button type="button" class="cs3d-x" aria-label="Fechar">✕</button></div>
+        ${many ? '<input type="text" class="cs3d-search" placeholder="🔍 Buscar..." autocomplete="off">' : ''}
+        <div class="cs3d-list">${html}</div>
+      </div>`;
+    ov.classList.add('open');
+    const card = ov.querySelector('.cs3d-card');
+    const list = ov.querySelector('.cs3d-list');
+    const selEl = list.querySelector('.sel');
+    if (selEl) setTimeout(() => { list.scrollTop = Math.max(0, selEl.offsetTop - list.clientHeight / 2 + selEl.offsetHeight / 2); }, 30);
+    ov._openedAt = Date.now();
+    ov.onclick = e => {
+      if (e.target === ov && Date.now() - ov._openedAt > 350) close();
+      const b = e.target.closest('.cs3d-opt');
+      if (b && !b.disabled) pick(sel, parseInt(b.dataset.i, 10));
+      if (e.target.closest('.cs3d-x')) close();
+    };
+    const search = ov.querySelector('.cs3d-search');
+    if (search) search.oninput = () => {
+      const q = search.value.toLowerCase().trim();
+      list.querySelectorAll('.cs3d-opt').forEach(b => { b.style.display = b.textContent.toLowerCase().includes(q) ? '' : 'none'; });
+    };
+    document.addEventListener('keydown', onKey, true);
+  }
+  // Impede o seletor nativo e abre o 3D
+  document.addEventListener('mousedown', e => { const s = e.target.closest && e.target.closest('select'); if (eligible(s)) e.preventDefault(); }, true);
+  document.addEventListener('click', e => {
+    const s = e.target.closest && e.target.closest('select');
+    if (eligible(s)) { e.preventDefault(); e.stopPropagation(); open(s); }
+  }, true);
+  document.addEventListener('keydown', e => {
+    const s = e.target && e.target.tagName === 'SELECT' ? e.target : null;
+    if (eligible(s) && (e.key === 'Enter' || e.key === ' ' || (e.altKey && e.key === 'ArrowDown'))) { e.preventDefault(); open(s); }
+  }, true);
+  window.openSelect3D = open;
+})();
+
+// ── Diálogo 3D responsivo (substitui confirm/prompt/alert nativos) ──
+function dlg3d(opts) {
+  opts = opts || {};
+  return new Promise(resolve => {
+    let ov = document.getElementById('dlg3d-overlay');
+    if (!ov) {
+      ov = document.createElement('div');
+      ov.id = 'dlg3d-overlay';
+      document.body.appendChild(ov);
+    }
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const type = opts.type || 'warn';
+    const hasInput = opts.input !== undefined;
+    ov.innerHTML = `
+      <div class="dlg3d-card ${esc(type)}" role="dialog" aria-modal="true">
+        <div class="dlg3d-icon">${opts.icon || '❓'}</div>
+        <div class="dlg3d-title">${esc(opts.title || 'Confirmação')}</div>
+        <div class="dlg3d-msg">${esc(opts.message || '').replace(/\n/g,'<br>')}</div>
+        ${opts.detail ? `<div class="dlg3d-detail">${esc(opts.detail).replace(/\n/g,'<br>')}</div>` : ''}
+        ${hasInput ? `<input class="dlg3d-input" id="dlg3d-input" value="${esc(opts.input)}">` : ''}
+        <div class="dlg3d-actions">
+          ${opts.noCancel ? '' : `<button class="dlg3d-btn cancel" id="dlg3d-cancel">${esc(opts.cancelText || 'Cancelar')}</button>`}
+          <button class="dlg3d-btn ok" id="dlg3d-ok">${esc(opts.confirmText || 'Confirmar')}</button>
+        </div>
+      </div>`;
+    ov.classList.add('open');
+    const inp = document.getElementById('dlg3d-input');
+    const done = v => {
+      ov.classList.remove('open'); ov.innerHTML = '';
+      document.removeEventListener('keydown', onKey, true);
+      resolve(v);
+    };
+    const okVal = () => hasInput ? inp.value : true;
+    const cancelVal = hasInput ? null : false;
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); done(opts.noCancel ? true : cancelVal); }
+      else if (e.key === 'Enter') { e.preventDefault(); done(okVal()); }
+    }
+    document.addEventListener('keydown', onKey, true);
+    document.getElementById('dlg3d-ok').onclick = () => done(okVal());
+    const c = document.getElementById('dlg3d-cancel');
+    if (c) c.onclick = () => done(cancelVal);
+    ov.onclick = e => { if (e.target === ov) done(opts.noCancel ? true : cancelVal); };
+    setTimeout(() => { if (inp) { inp.focus(); inp.select(); } else document.getElementById('dlg3d-ok').focus(); }, 60);
+    if (opts.autoClose) setTimeout(() => { if (ov.classList.contains('open')) done(true); }, opts.autoClose);
+  });
+}
+
+// ── Limpar entradas duplicadas no Monitor (mantém a entrada mais antiga) ──
+async function limparDuplicadosMonitor() {
+  const grupos = {};
+  getWithinNow().forEach(r => {
+    const c = _onlyDigits(r.cpf);
+    const k = c ? 'c' + c : 'n' + _normNome(r.nome);
+    (grupos[k] = grupos[k] || []).push(r);
+  });
+  const remover = [];
+  Object.values(grupos).forEach(g => {
+    if (g.length < 2) return;
+    g.sort((a,b) => (a.entrada||'').localeCompare(b.entrada||''));
+    remover.push(...g.slice(1));
+  });
+  if (!remover.length) { showToast('✅ Nenhuma entrada duplicada no Monitor.'); return; }
+  const nomes = [...new Set(remover.map(r => r.nome))].join(', ');
+  if (!(await dlg3d({ type:'warn', icon:'🧹', title:'Limpar Duplicados', message:`Remover ${remover.length} entrada(s) duplicada(s)? Será mantida a entrada mais antiga de cada pessoa.`, detail: nomes, confirmText:'Remover' }))) return;
+  try {
+    for (const r of remover) await deleteFromFirestore('dados', r._id);
+    showToast(`🧹 ${remover.length} duplicada(s) removida(s).`);
+    renderMonitor();
+  } catch(e) { showToast('❌ Erro ao limpar: ' + e.message, 'error'); }
 }
 
 async function deleteFromFirestore(collection, id) {
@@ -3985,7 +4690,7 @@ async function addConfigItem(tipo) {
 }
 
 async function deleteConfigItem(tipo, id) {
-  if (!confirm('Excluir este item?')) return;
+  if (!(await dlg3d({ type:'danger', icon:'🗑️', title:'Excluir item', message:'Deseja excluir este item?', confirmText:'Excluir' }))) return;
   const fbCol = tipo === 'motivo' ? 'config_motivo' : tipo === 'responsavel' ? 'config_responsavel' : 'config_' + tipo;
   try {
     await deleteFromFirestore(fbCol, id);
@@ -3996,7 +4701,7 @@ async function deleteConfigItem(tipo, id) {
 }
 
 async function editConfigItem(tipo, id, nomeAtual, btnEl) {
-  const novoNome = prompt('Editar nome de "' + nomeAtual + '":', nomeAtual);
+  const novoNome = await dlg3d({ type:'info', icon:'✏️', title:'Editar nome', message:'Editar nome de "' + nomeAtual + '":', input: nomeAtual, confirmText:'Salvar' });
   if (!novoNome || novoNome.trim() === '') return;
   const val = novoNome.trim().toUpperCase();
   if (val === nomeAtual.toUpperCase()) return;
@@ -4309,16 +5014,8 @@ async function globalRegEntradaColab(colaboradorId, e) {
 }
 
 async function globalRegSaida(dadoId, e) {
-  e.stopPropagation();
-  if (!dadoId) { showToast('Nenhum acesso aberto.', 'error'); return; }
-  const r = db.dados.find(x => x._id === dadoId);
-  if (!r || r.saida) { showToast('Saída já registrada.', 'error'); return; }
-  const saida = new Date().toTimeString().slice(0,5);
-  try {
-    await updateInFirestore('dados', dadoId, { saida });
-    showToast(`🚪 Saída de ${r.nome.split(' ')[0]} registrada: ${saida}`);
-    setTimeout(() => globalSearch(document.getElementById('header-search').value), 500);
-  } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+  if (e) e.stopPropagation();
+  showToast('🚪 A saída só pode ser registrada na aba Monitor.', 'error');
 }
 
 function globalSearchKeyNav(e) {
@@ -4332,10 +5029,37 @@ function globalSearchKeyNav(e) {
 }
 
 document.addEventListener('mousedown', function(e) {
-  const wrap = document.querySelector('.header-search-wrap');
+  const wrap = document.getElementById('search-balloon');
   if (wrap && !wrap.contains(e.target)) {
     document.getElementById('header-search-dropdown').classList.remove('open');
   }
+});
+
+
+// ═══════════════════════════════════════════════════════════════
+// BALÃO DE PESQUISA (botão 🔎 do cabeçalho)
+// ═══════════════════════════════════════════════════════════════
+function openSearchBalloon() {
+  document.getElementById('search-balloon').classList.add('open');
+  document.getElementById('search-balloon-overlay').classList.add('open');
+  setSearchMode(searchMode); // limpa o campo e dá foco
+}
+
+function closeSearchBalloon() {
+  const b = document.getElementById('search-balloon');
+  if (!b || !b.classList.contains('open')) return;
+  b.classList.remove('open');
+  document.getElementById('search-balloon-overlay').classList.remove('open');
+  const input = document.getElementById('header-search');
+  if (input) { input.value = ''; input.blur(); }
+  const dd = document.getElementById('header-search-dropdown');
+  if (dd) { dd.classList.remove('open'); dd.innerHTML = ''; }
+  clearTimeout(window._gsDebounce);
+  clearTimeout(window._nfbGlobalTimer);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeSearchBalloon();
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -4520,36 +5244,46 @@ async function confirmSaidaGrupo(grupo) {
   });
   if (!dentro.length) { showToast('Nenhuma pessoa nesse grupo está dentro agora.', 'error'); return; }
   const label = grupo === 'colaborador' ? 'colaboradores' : 'visitantes/terceiros';
-  if (!confirm(`Registrar saída para os ${dentro.length} ${label} dentro agora?`)) return;
+  if (!(await dlg3d({ type:'warn', icon:'🚪', title:'Saída em Grupo', message:`Registrar saída para os ${dentro.length} ${label} dentro agora?`, confirmText:'Registrar Saída' }))) return;
   const saida = new Date().toTimeString().slice(0,5);
   let ok = 0;
   for (const r of dentro) {
     try { await updateInFirestore('dados', r._id, { saida }); ok++; } catch(e) {}
   }
-  showToast(`🚪 Saída registrada para ${ok} ${label}.`);
+  dlg3d({ type:'success', icon:'✅', title:'Saídas Registradas', message:`Saída registrada para ${ok} ${label}.`, noCancel:true, confirmText:'OK', autoClose:2500 });
 }
 
 async function monitorSaida(id) {
   const r = db.dados.find(x => x._id === id);
   if (!r) return;
   if (r.saida) { showToast('Saída já registrada.', 'error'); return; }
+  const horaPrevia = new Date().toTimeString().slice(0,5);
+  const ok = await dlg3d({
+    type:'warn', icon:'🚪', title:'Confirmar Saída',
+    message:`Registrar a saída de ${r.nome}?`,
+    detail:`${[r.cargo, r.empresa].filter(Boolean).join(' · ') || '—'}\nEntrada: ${r.entrada || '—'}  →  Saída: ${horaPrevia}`,
+    confirmText:'Confirmar Saída'
+  });
+  if (!ok) return;
   const saida = new Date().toTimeString().slice(0,5);
   try {
     await updateInFirestore('dados', id, { saida });
-    showToast(`🚪 Saída de ${r.nome.split(' ')[0]} registrada: ${saida}`);
-  } catch(e) { showToast('❌ Erro: ' + e.message, 'error'); }
+    dlg3d({ type:'success', icon:'✅', title:'Saída Registrada', message:`${r.nome} saiu às ${saida}.`, noCancel:true, confirmText:'OK', autoClose:2500 });
+  } catch(e) {
+    dlg3d({ type:'danger', icon:'⛔', title:'Saída não registrada', message: e.message, noCancel:true, confirmText:'OK' });
+  }
 }
 
 async function confirmSaidaTodos() {
   const dentro = getWithinNow();
   if (!dentro.length) { showToast('Ninguém dentro agora.', 'error'); return; }
-  if (!confirm(`Registrar saída para TODAS as ${dentro.length} pessoas dentro agora?`)) return;
+  if (!(await dlg3d({ type:'danger', icon:'🚪', title:'Saída Geral', message:`Registrar saída para TODAS as ${dentro.length} pessoas dentro agora?`, confirmText:'Registrar Saída' }))) return;
   const saida = new Date().toTimeString().slice(0,5);
   let ok = 0;
   for (const r of dentro) {
     try { await updateInFirestore('dados', r._id, { saida }); ok++; } catch(e) {}
   }
-  showToast(`🚪 Saída registrada para ${ok} pessoas.`);
+  dlg3d({ type:'success', icon:'✅', title:'Saídas Registradas', message:`Saída registrada para ${ok} pessoas.`, noCancel:true, confirmText:'OK', autoClose:2500 });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4561,8 +5295,53 @@ let lastCadastroSaved = null;
 function toggleTrailerField() {
   const tipo = document.getElementById('c-tipo-veiculo').value;
   const wrap = document.getElementById('c-trailer-wrap');
-  wrap.style.display = (tipo === 'CARRETA' || tipo === 'CAMINHAO') ? 'flex' : 'none';
+  const grid = document.getElementById('c-veiculo-grid');
+  const lbl  = document.getElementById('c-placa-label');
+  const bitrem = (tipo === 'CARRETA');   // bitrem = 2 placas; demais = só 1
+  wrap.style.display = bitrem ? 'flex' : 'none';
+  if (grid) grid.classList.toggle('has-trailer', bitrem);
+  if (lbl)  lbl.textContent = bitrem ? 'Placa do Cavalo' : 'Placa do Veículo';
+  if (!bitrem) document.getElementById('c-placa-trailer').value = '';
 }
+
+
+// ═══════════════════════════════════════════════════════════════
+// AVISO DE CAMPOS OBRIGATÓRIOS (balão central)
+// ═══════════════════════════════════════════════════════════════
+let _avisoFocoId = null;
+
+function mostrarAvisoCampos(lista) {
+  document.querySelectorAll('.cad-missing').forEach(el => el.classList.remove('cad-missing'));
+  const ul = document.getElementById('cad-alert-list');
+  ul.innerHTML = '';
+  lista.forEach(it => {
+    const li = document.createElement('li');
+    li.textContent = it.label;
+    ul.appendChild(li);
+    const el = document.getElementById(it.id);
+    if (el) {
+      el.classList.add('cad-missing');
+      const limpar = () => { el.classList.remove('cad-missing'); el.removeEventListener('input', limpar); el.removeEventListener('change', limpar); };
+      el.addEventListener('input', limpar); el.addEventListener('change', limpar);
+    }
+  });
+  _avisoFocoId = lista[0].id;
+  document.getElementById('cad-alert-overlay').classList.add('open');
+  setTimeout(() => { const b = document.getElementById('cad-alert-ok'); if (b) b.focus(); }, 60);
+}
+
+function fecharAvisoCampos() {
+  document.getElementById('cad-alert-overlay').classList.remove('open');
+  const el = _avisoFocoId && document.getElementById(_avisoFocoId);
+  if (el) { el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const o = document.getElementById('cad-alert-overlay');
+    if (o && o.classList.contains('open')) fecharAvisoCampos();
+  }
+});
 
 // Abre balão de revisão com todos os dados preenchidos
 let _rvwClockInterval = null;
@@ -4571,9 +5350,18 @@ function revisarCadastro() {
   const nome   = document.getElementById('c-nome').value.trim().toUpperCase();
   const motivo = document.getElementById('c-motivo').value;
   const responsavel = document.getElementById('c-responsavel-sel').value.trim();
-  if (!nome)   { showToast('Preencha o Nome Completo', 'error'); return; }
-  if (!motivo) { showToast('Selecione o Motivo de Entrada', 'error'); return; }
-  if (!responsavel) { showToast('Selecione o Responsável pela Liberação', 'error'); document.getElementById('c-responsavel-sel').focus(); return; }
+  // Valida TODOS os obrigatórios de uma vez e mostra um balão no centro da tela
+  const val = id => (document.getElementById(id).value || '').trim();
+  const faltando = [];
+  if (!nome)               faltando.push({ label: 'Nome Completo',              id: 'c-nome' });
+  const cpfDigitos = val('c-cpf').replace(/\D/g, '');
+  if (!cpfDigitos)             faltando.push({ label: 'CPF',                                   id: 'c-cpf' });
+  else if (cpfDigitos.length !== 11) faltando.push({ label: 'CPF incompleto (precisa ter 11 números — digitou ' + cpfDigitos.length + ')', id: 'c-cpf' });
+  if (!val('c-cargo'))     faltando.push({ label: 'Cargo / Função',             id: 'c-cargo' });
+  if (!val('c-empresa'))   faltando.push({ label: 'Empresa',                    id: 'c-empresa' });
+  if (!motivo)             faltando.push({ label: 'Motivo de Entrada',          id: 'c-motivo' });
+  if (!responsavel)        faltando.push({ label: 'Responsável pela Liberação', id: 'c-responsavel-sel' });
+  if (faltando.length) { mostrarAvisoCampos(faltando); return; }
 
   const rg          = document.getElementById('c-rg').value.trim();
   const cpf         = document.getElementById('c-cpf').value.trim();
@@ -4609,7 +5397,7 @@ function revisarCadastro() {
     set('rvw-tipo-veiculo', tipoLabel);
     set('rvw-placa', placa);
     const trailerItem = document.getElementById('rvw-trailer-item');
-    if (tipoVeiculo === 'CARRETA' || tipoVeiculo === 'CAMINHAO') {
+    if (tipoVeiculo === 'CARRETA') {
       trailerItem.style.display = 'flex';
       set('rvw-placa-trailer', placaTrailer);
     } else {
@@ -4747,6 +5535,7 @@ function clearForm(prefix) {
     document.getElementById('c-empresa').value = '';
     document.getElementById('c-motivo').value = '';
     document.getElementById('c-tipo-veiculo').value = '';
+    toggleTrailerField();
     const trailerWrap = document.getElementById('c-trailer-wrap');
     if (trailerWrap) trailerWrap.style.display = 'none';
   } else {
@@ -4867,7 +5656,6 @@ function renderTable(type) {
         <td>${statusBadge(r)}</td>
         <td class="td-name" style="color:var(--accent);font-size:.8rem;" title="Responsável pela liberação">${r.responsavel || '<span style="color:var(--muted);font-style:italic;font-size:.75rem;">—</span>'}</td>
         <td>
-          <button class="action-btn success-btn" title="Registrar saída" onclick="registerSaida('${r._id}')">🚪</button>
           <button class="action-btn" title="Editar" onclick="editRow('dados','${r._id}')">✏️</button>
           <button class="action-btn del" title="Excluir" onclick="deleteRow('dados','${r._id}')">🗑</button>
         </td>
@@ -4940,7 +5728,7 @@ function renderStats(type) {
 // DELETE
 // ═══════════════════════════════════════════════════════════════
 async function deleteRow(type, id) {
-  if (!confirm('Excluir este registro?')) return;
+  if (!(await dlg3d({ type:'danger', icon:'🗑️', title:'Excluir registro', message:'Deseja excluir este registro?', confirmText:'Excluir' }))) return;
   try {
     await deleteFromFirestore(type, id);
     showToast('Registro excluído.');
@@ -4953,16 +5741,7 @@ async function deleteRow(type, id) {
 // REGISTER SAÍDA
 // ═══════════════════════════════════════════════════════════════
 async function registerSaida(id) {
-  const r = db.dados.find(x => x._id === id);
-  if (!r) return;
-  if (r.saida) { showToast('Saída já registrada.', 'error'); return; }
-  const saida = new Date().toTimeString().slice(0,5);
-  try {
-    await updateInFirestore('dados', id, { saida });
-    showToast(`🚪 Saída de ${r.nome.split(' ')[0]} registrada: ${saida}`);
-  } catch(e) {
-    showToast('❌ Erro: ' + e.message, 'error');
-  }
+  showToast('🚪 A saída só pode ser registrada na aba Monitor.', 'error');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -5048,6 +5827,10 @@ document.getElementById('modal-save-btn').onclick = async function() {
   }
 
   try {
+    if (type !== 'cadastro') {
+      const atual = (db[type]||[]).find(x => x._id === id) || {};
+      if (type === 'dados') assertSemDuplicidade({ ...atual, ...updates }, id);
+    }
     await updateInFirestore(type, id, updates);
     closeModal();
     showToast('✅ Registro atualizado!');
@@ -5205,6 +5988,13 @@ let _pendingEntradaCallback   = null;
 let _pendingEntradaResponsavel = null;
 let _cebClockInterval         = null;
 
+function _cebMeta(fields) {
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  document.getElementById('ceb-meta').innerHTML = fields
+    .filter(f => f[1])
+    .map(([k, v]) => `<div class="acb-field"><span class="acb-field-k">${k}</span><span class="acb-field-v">${esc(v)}</span></div>`).join('') || '—';
+}
+
 function pedirConfirmacaoEntrada(cadastroId, callbackFn) {
   const r = db.cadastro.find(x => x._id === cadastroId);
   if (!r) return;
@@ -5213,9 +6003,8 @@ function pedirConfirmacaoEntrada(cadastroId, callbackFn) {
   _pendingEntradaCallback   = callbackFn;
 
   document.getElementById('ceb-nome').textContent = r.nome;
-  document.getElementById('ceb-meta').textContent =
-    [r.cargo, r.empresa, r.rg ? 'RG: '+r.rg : '', r.cpf ? 'CPF: '+r.cpf : '']
-      .filter(Boolean).join(' · ');
+  _cebMeta([['Cargo', r.cargo], ['Empresa', r.empresa], ['RG', r.rg], ['CPF', r.cpf]]);
+  const _eb = document.querySelector('.ceb-btn-edit'); if (_eb) _eb.style.display = '';
 
   // Relógio ao vivo no balão
   function atualizarHora() {
@@ -5288,9 +6077,7 @@ function pedirConfirmacaoEntradaColab(colaboradorId, callbackFn) {
   _pendingEntradaCallback   = callbackFn;
 
   document.getElementById('ceb-nome').textContent = r.nome;
-  document.getElementById('ceb-meta').textContent =
-    [r.departamento ? 'Depto: '+r.departamento : '', r.cpf ? 'CPF: '+r.cpf : '']
-      .filter(Boolean).join(' · ');
+  _cebMeta([['Departamento', r.departamento], ['CPF', r.cpf]]);
 
   function atualizarHora() {
     document.getElementById('ceb-time').textContent =
@@ -5369,6 +6156,7 @@ let _acbTipo         = 'visitante'; // 'visitante' | 'colaborador'
 
 function openActionBalloon(id, e, tipo) {
   if (e) e.stopPropagation();
+  closeSearchBalloon();
   tipo = tipo || 'visitante';
   _acbTipo = tipo;
 
@@ -5385,7 +6173,8 @@ function openActionBalloon(id, e, tipo) {
   const accessToday = db.dados.filter(d =>
     (d.nome||'').toUpperCase() === (r.nome||'').toUpperCase() && d.data === hoje
   ).sort((a,b) => (b._createdAt?.seconds||0) - (a._createdAt?.seconds||0));
-  const last = accessToday[0];
+  const _aberto = findJaDentro({ cpf: r.cpf, nome: r.nome });
+  const last = _aberto || accessToday[0];
   const isDentro = !!(last && last.entrada && !last.saida);
 
   _acbCadastroId = id;
@@ -5407,10 +6196,14 @@ function openActionBalloon(id, e, tipo) {
     badge.className = 'acb-status-badge acb-status-outside';
   }
 
-  const metaParts = tipo === 'colaborador'
-    ? [r.cpf ? 'CPF: '+r.cpf : '', r.departamento ? 'Depto: '+r.departamento : '', r.telefone||''].filter(Boolean)
-    : [r.cpf ? 'CPF: '+r.cpf : '', r.rg ? 'RG: '+r.rg : '', r.cargo||'', r.empresa||''].filter(Boolean);
-  document.getElementById('acb-meta').textContent = metaParts.join(' · ') || '—';
+  const _esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const metaFields = tipo === 'colaborador'
+    ? [['CPF', r.cpf], ['Departamento', r.departamento], ['Empresa', r.empresa], ['Telefone', r.telefone]]
+    : [['CPF', r.cpf], ['RG', r.rg], ['Cargo', r.cargo], ['Empresa', r.empresa]];
+  document.getElementById('acb-meta').innerHTML = metaFields
+    .map(([k, v]) => `<div class="acb-field"><span class="acb-field-k">${k}</span><span class="acb-field-v">${_esc(v) || '—'}</span></div>`).join('');
+  const _av = document.getElementById('acb-avatar');
+  if (_av) { const ps = String(r.nome||'?').trim().split(/\s+/); _av.textContent = ((ps[0]||'?')[0] + (ps.length > 1 ? ps[ps.length-1][0] : '')).toUpperCase(); }
 
   const btnEntrada = document.getElementById('acb-btn-entrada');
   const hintEl     = document.getElementById('acb-hint');
@@ -5516,6 +6309,7 @@ let _nfbPrefillValue = '';
 let _nfbPrefillType  = 'nome'; // 'nome' | 'rg' | 'cpf'
 
 function showNotFoundBalloon(queryText, searchType) {
+  closeSearchBalloon();
   _nfbPrefillValue = queryText;
   _nfbPrefillType  = searchType || 'nome';
 
@@ -5601,14 +6395,15 @@ function notFoundIrParaCadastro() {
 function abrirCadastroInline() {
   const panel = document.getElementById('inline-cadastro-panel');
   if (panel) {
-    panel.style.display = 'block';
-    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    panel.style.display = 'flex';
+    document.body.classList.add('cadastro-open');
   }
 }
 
 function fecharCadastroInline() {
   const panel = document.getElementById('inline-cadastro-panel');
   if (panel) panel.style.display = 'none';
+  document.body.classList.remove('cadastro-open');
   clearForm('c');
 }
 
@@ -6065,7 +6860,7 @@ async function cfgMiniExcluir(col, selectId) {
   if (!found) { showToast('Item nao encontrado.', 'error'); return; }
 
   const labelMap = { empresa: 'empresas', motivo: 'motivos', responsavel: 'responsáveis', cargo: 'cargos', funcao: 'funções' };
-  if (!confirm('Excluir "' + curNome + '" da lista de ' + (labelMap[col] || col) + '?')) return;
+  if (!(await dlg3d({ type:'danger', icon:'🗑️', title:'Excluir da lista', message:'Excluir "' + curNome + '" da lista de ' + (labelMap[col] || col) + '?', confirmText:'Excluir' }))) return;
 
   const emojiMap = { empresa: '🏢', responsavel: '👤', motivo: '📋' };
   try {
@@ -6316,7 +7111,6 @@ function renderHistAcessos() {
       <td>${statusBadge(r)}</td>
       <td style="font-size:.8rem;color:var(--accent);">${r.responsavel || '<span style="color:var(--muted);font-style:italic;">—</span>'}</td>
       <td>
-        <button class="action-btn success-btn" title="Registrar saída" onclick="registerSaida('${r._id}')" ${r.saida?'disabled style="opacity:.35;"':''}>🚪</button>
         <button class="action-btn" title="Editar" onclick="editRow('dados','${r._id}')">✏️</button>
         <button class="action-btn del" title="Excluir" onclick="deleteRow('dados','${r._id}')">🗑</button>
       </td>
@@ -6361,7 +7155,7 @@ function copiarCredenciais() {
   if (!modal || !pre) return;
 
   if (!cfg || !cfg.projectId) {
-    alert('Nenhuma credencial Firebase configurada neste dispositivo.');
+    dlg3d({ type:'info', icon:'ℹ️', title:'Aviso', message:'Nenhuma credencial Firebase configurada neste dispositivo.', noCancel:true, confirmText:'OK' });
     return;
   }
 
@@ -6516,7 +7310,7 @@ async function salvarColaborador() {
 }
 
 async function excluirColaborador(id) {
-  if (!confirm('Excluir este colaborador?')) return;
+  if (!(await dlg3d({ type:'danger', icon:'🗑️', title:'Excluir colaborador', message:'Deseja excluir este colaborador?', confirmText:'Excluir' }))) return;
   try {
     await deleteFromFirestore('colaboradores', id);
     showToast('Colaborador removido.');
@@ -6553,6 +7347,22 @@ function limparFiltrosColab() {
   renderColaboradores();
 }
 
+// Status do colaborador: aberto (entrada sem saída) em qualquer data = DENTRO, igual ao Monitor
+function buildColabStatusMap(hoje) {
+  const map = {};
+  (db.dados||[]).filter(d => d.data === hoje).forEach(d => {
+    const key = (d.nome||'').toUpperCase();
+    if (!map[key] || (d._createdAt?.seconds||0) > (map[key]._createdAt?.seconds||0)) map[key] = d;
+  });
+  (db.colaboradores||[]).forEach(c => {
+    const key = (c.nome||'').toUpperCase();
+    const aberto = findJaDentro({ cpf: c.cpf, nome: c.nome });
+    if (aberto) map[key] = aberto;
+    else if (map[key] && map[key].entrada && !map[key].saida) delete map[key];
+  });
+  return map;
+}
+
 function renderColaboradores() {
   atualizarFiltrosColab();
 
@@ -6563,13 +7373,7 @@ function renderColaboradores() {
   const hoje    = todayStr();
 
   // Mapa de status hoje para cada colaborador
-  const statusMap = {};
-  db.dados.filter(d => d.data === hoje).forEach(d => {
-    const key = (d.nome||'').toUpperCase();
-    if (!statusMap[key] || (d._createdAt?.seconds||0) > (statusMap[key]._createdAt?.seconds||0)) {
-      statusMap[key] = d;
-    }
-  });
+  const statusMap = buildColabStatusMap(hoje);
 
   let data = db.colaboradores.filter(r => {
     // busca textual
@@ -6643,10 +7447,7 @@ function renderColaboradores() {
 
   tbody.innerHTML = slice.map(r => {
     // Status hoje
-    const accessToday = db.dados.filter(d =>
-      (d.nome||'').toUpperCase() === r.nome.toUpperCase() && d.data === hoje
-    ).sort((a,b) => (b._createdAt?.seconds||0) - (a._createdAt?.seconds||0));
-    const last = accessToday[0];
+    const last = statusMap[r.nome.toUpperCase()];
     const isDentro = !!(last && last.entrada && !last.saida);
     const statusHtml = isDentro
       ? `<span class="badge badge-open">● Dentro</span>`
@@ -6702,10 +7503,8 @@ function renderStatsColaboradores() {
   if (!el) return;
   const hoje = todayStr();
   const total = db.colaboradores.length;
-  const dentro = db.dados.filter(r =>
-    r.data === hoje && r.entrada && !r.saida &&
-    db.colaboradores.some(c => c.nome.toUpperCase() === (r.nome||'').toUpperCase())
-  ).length;
+  const _sm = buildColabStatusMap(hoje);
+  const dentro = db.colaboradores.filter(c => { const l = _sm[(c.nome||'').toUpperCase()]; return l && l.entrada && !l.saida; }).length;
   const saiuHoje = db.dados.filter(r =>
     r.data === hoje && r.entrada && r.saida &&
     db.colaboradores.some(c => c.nome.toUpperCase() === (r.nome||'').toUpperCase())
@@ -6721,6 +7520,20 @@ function renderStatsColaboradores() {
 async function quickEntradaColab(id) {
   const r = db.colaboradores.find(x => x._id === id);
   if (!r) return;
+  const primeiro = (r.nome||'').split(' ')[0];
+  const jaDentro = findJaDentro({ cpf: r.cpf, nome: r.nome });
+  if (jaDentro) {
+    await dlg3d({ type:'warn', icon:'⚠️', title:'Já está dentro', message:`${r.nome} já está dentro das instalações desde as ${jaDentro.entrada}.`, detail:'Registre a saída no Monitor antes de uma nova entrada.', noCancel:true, confirmText:'Entendi' });
+    return;
+  }
+  const horaPrevia = new Date().toTimeString().slice(0,5);
+  const ok = await dlg3d({
+    type:'success', icon:'🟢', title:'Confirmar Entrada',
+    message:`Registrar a entrada de ${r.nome}?`,
+    detail:`${r.departamento || 'FUNCIONÁRIO'} · ${r.empresa || '—'}\nHorário: ${horaPrevia}`,
+    confirmText:'Confirmar Entrada'
+  });
+  if (!ok) return;
   const entrada = new Date().toTimeString().slice(0,5);
   try {
     await addToFirestore('dados', {
@@ -6729,8 +7542,10 @@ async function quickEntradaColab(id) {
       placa: '', placaTrailer: '', entrada, saida: '',
       responsavel: '', tipo: 'COLABORADOR',
     });
-    showToast(`🟢 Entrada de ${r.nome.split(' ')[0]} registrada: ${entrada}`);
-  } catch(err) { showToast('❌ Erro: ' + err.message, 'error'); }
+    dlg3d({ type:'success', icon:'✅', title:'Entrada Registrada', message:`${r.nome} entrou às ${entrada}.`, noCancel:true, confirmText:'OK', autoClose:2500 });
+  } catch(err) {
+    dlg3d({ type:'danger', icon:'⛔', title:'Entrada não registrada', message: err.message, noCancel:true, confirmText:'OK' });
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -6746,12 +7561,7 @@ function _getColabHistoricoData() {
   const fStatus = (document.getElementById('filt-colab-status')     || {}).value || '';
   const hoje    = todayStr();
 
-  const statusMap = {};
-  db.dados.filter(d => d.data === hoje).forEach(d => {
-    const key = (d.nome||'').toUpperCase();
-    if (!statusMap[key] || (d._createdAt?.seconds||0) > (statusMap[key]._createdAt?.seconds||0))
-      statusMap[key] = d;
-  });
+  const statusMap = buildColabStatusMap(hoje);
 
   const filtrados = db.colaboradores.filter(r => {
     if (q && !((r.nome||'').toLowerCase().includes(q) || (r.cpf||'').toLowerCase().includes(q) ||
