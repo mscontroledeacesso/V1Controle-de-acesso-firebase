@@ -2749,6 +2749,23 @@
     .tab-btn { min-width: 64px; font-size: .58rem; padding: .45rem .3rem .4rem; }
     .tab-btn .tab-icon { font-size: 1rem; }
   }
+
+  /* ── ENCOMENDAS ── */
+  .enc-bar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+  .enc-bar .search-wrap{flex:2;min-width:180px}
+  .enc-bar select{flex:1;min-width:140px}
+  .enc-sec{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);margin:1.3rem 0 .8rem;display:flex;align-items:center;gap:.6rem}
+  .enc-sec::after{content:'';flex:1;height:1px;background:var(--border)}
+  .enc-sec.first{margin-top:0}
+  .enc-info{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.35rem;min-height:1.6rem}
+  .enc-chip{background:var(--highlight);border:1px solid var(--border);border-radius:6px;padding:.2rem .6rem;font-size:.74rem}
+  .enc-sum{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;font-size:.85rem;line-height:1.65;margin-bottom:1rem}
+  .enc-box{border-radius:8px;padding:.6rem .8rem;font-size:.8rem;margin-top:.9rem;line-height:1.45}
+  .enc-box.info{background:rgba(29,111,214,.08);border:1px solid rgba(29,111,214,.28);color:var(--info)}
+  .enc-box.warn{background:rgba(210,60,60,.08);border:1px solid rgba(210,60,60,.3);color:var(--danger);display:none}
+  .enc-late{color:var(--danger);font-weight:700}
+  .enc-check{display:flex;align-items:flex-start;gap:.55rem;margin-top:.9rem;font-size:.84rem;text-transform:none;letter-spacing:0;color:var(--text);font-weight:500;cursor:pointer}
+  .enc-check input{width:auto;margin-top:.2rem}
 </style>
 </head>
 <body>
@@ -2826,6 +2843,11 @@
       <span class="tab-icon">🗄️</span>
       <span>Histórico</span>
       <span class="tab-count" id="cnt-historico" style="background:var(--info);">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('encomendas', this)">
+      <span class="tab-icon">📦</span>
+      <span>Encomendas</span>
+      <span class="tab-count" id="cnt-encomendas" style="background:var(--accent);">0</span>
     </button>
     <button type="button" class="tab-btn" id="btn-open-search" onclick="openSearchBalloon()" title="Pesquisar / iniciar cadastro">
       <span class="tab-icon">🔎</span>
@@ -3722,6 +3744,118 @@
     <div class="pagination" id="pg-colaboradores"></div>
   </div>
 
+  <!-- ══ ABA: ENCOMENDAS ══ -->
+  <div id="panel-encomendas" class="tab-panel">
+    <div class="section-header">
+      <div>
+        <div class="section-title">📦 <span>Encomendas</span></div>
+        <div class="section-sub">Recebimento na portaria, vínculo ao colaborador responsável e baixa de retirada (somente colaboradores retiram)</div>
+      </div>
+      <button class="btn btn-primary" onclick="encAbrirForm()">+ Nova Encomenda</button>
+    </div>
+
+    <div class="stats-row" id="stats-encomendas"></div>
+
+    <div id="enc-form-panel" style="display:none;">
+      <div class="form-card" style="margin-bottom:1.5rem;">
+        <div class="form-card-title" style="display:flex;align-items:center;justify-content:space-between;">
+          <span id="enc-form-title">📦 Nova Encomenda</span>
+          <button onclick="encFecharForm()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;" title="Fechar">✕</button>
+        </div>
+        <input type="hidden" id="enc-edit-id" value="">
+
+        <div class="enc-sec first">1 · Vínculo — colaborador responsável</div>
+        <div class="form-grid">
+          <div class="form-group half">
+            <label>Colaborador destinatário <span class="req">*</span></label>
+            <select id="enc-dest" onchange="encInfoDest()"></select>
+            <div class="enc-info" id="enc-dest-info"></div>
+          </div>
+        </div>
+
+        <div class="enc-sec">2 · Dados da encomenda</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Tipo <span class="req">*</span></label>
+            <select id="enc-tipo"><option value="">Selecione...</option></select></div>
+          <div class="form-group"><label>Qtd. volumes <span class="req">*</span></label>
+            <input type="number" id="enc-qtd" min="1" value="1"></div>
+          <div class="form-group"><label>Condição ao receber</label>
+            <select id="enc-cond"><option>PERFEITA</option><option>AVARIADA</option><option>VIOLADA</option></select></div>
+          <div class="form-group half"><label>Remetente / Origem <span class="req">*</span></label>
+            <input type="text" id="enc-remetente" placeholder="Loja, empresa ou pessoa que enviou" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="form-group"><label>Transportadora / Entregador</label>
+            <input type="text" id="enc-transp" placeholder="Correios, Mercado Livre, motoboy..." oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="form-group"><label>Cód. rastreio / Nota fiscal</label>
+            <input type="text" id="enc-rastreio" placeholder="Rastreio ou nº da NF" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="form-group"><label>Local de guarda</label>
+            <input type="text" id="enc-local" placeholder="Ex: Prateleira B2" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="form-group full"><label>Descrição</label>
+            <input type="text" id="enc-desc" placeholder="Ex: Caixa média lacrada, etiqueta azul"></div>
+          <div class="form-group full"><label>Observações</label>
+            <textarea id="enc-obs" rows="2" placeholder="Perecível, frágil, valor declarado..."></textarea></div>
+        </div>
+
+        <div class="enc-sec">3 · Recebimento na portaria</div>
+        <div class="form-grid">
+          <div class="form-group"><label>Recebido por (porteiro) <span class="req">*</span></label>
+            <input type="text" id="enc-recebido" list="enc-resp-list" placeholder="Selecione ou digite" oninput="this.value=this.value.toUpperCase()">
+            <datalist id="enc-resp-list"></datalist></div>
+          <div class="form-group"><label>Data / hora do recebimento</label>
+            <input type="text" id="enc-datahora" readonly></div>
+        </div>
+        <div class="enc-box info">🔒 Esta encomenda só poderá ser retirada por um <b>colaborador cadastrado</b>. A baixa registra quem retirou, quem liberou, data e hora.</div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="enc-btn-save" onclick="encSalvar()">💾 Registrar Encomenda</button>
+          <button class="btn btn-outline" onclick="encFecharForm()">✕ Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="enc-bar">
+      <div class="search-wrap"><span class="search-icon">🔍</span>
+        <input type="text" id="enc-search" placeholder="Buscar protocolo, destinatário, remetente, rastreio..." oninput="encPage=1;renderEncomendas()"></div>
+      <select id="enc-f-status" class="filter-select" onchange="encPage=1;renderEncomendas()">
+        <option value="">📍 Todos os status</option><option value="aguardando">⏳ Aguardando retirada</option><option value="retirada">✅ Retiradas</option></select>
+      <select id="enc-f-tipo" class="filter-select" onchange="encPage=1;renderEncomendas()"><option value="">📦 Todos os tipos</option></select>
+      <button class="btn btn-outline" onclick="encExportCSV()" title="Exportar CSV">📊 CSV</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Protocolo</th><th>Recebimento</th><th>Destinatário</th><th>Encomenda</th><th>Local</th>
+          <th>Recebido por</th><th>Status / Retirada</th><th style="width:150px;">Ações</th>
+        </tr></thead>
+        <tbody id="tbody-encomendas"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pg-encomendas"></div>
+
+    <!-- Modal de baixa -->
+    <div class="modal-overlay" id="enc-baixa-overlay">
+      <div class="modal">
+        <button class="modal-close" onclick="encFecharBaixa()">✕</button>
+        <div class="modal-title">📤 Dar Baixa — Retirada</div>
+        <div class="enc-sum" id="enc-baixa-sum"></div>
+        <div class="form-grid" style="grid-template-columns:1fr;">
+          <div class="form-group"><label>Retirado por (colaborador) <span class="req">*</span></label>
+            <select id="enc-ret" onchange="encBaixaChange()"></select></div>
+          <div class="form-group"><label>Baixa realizada por (porteiro) <span class="req">*</span></label>
+            <input type="text" id="enc-baixa-por" list="enc-resp-list" placeholder="Selecione ou digite" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="form-group"><label id="enc-baixa-obs-lbl">Observações da retirada</label>
+            <textarea id="enc-baixa-obs" rows="2" placeholder="Opcional"></textarea></div>
+        </div>
+        <div class="enc-box warn" id="enc-baixa-warn">⚠ Retirada por colaborador <b>diferente do destinatário</b>. Informe a justificativa nas observações.</div>
+        <label class="enc-check"><input type="checkbox" id="enc-baixa-doc"> Conferi o crachá/documento do colaborador que está retirando</label>
+        <div class="btn-row">
+          <button class="btn btn-primary" id="enc-btn-baixa" onclick="encConfirmarBaixa()">✅ Confirmar Baixa</button>
+          <button class="btn btn-outline" onclick="encFecharBaixa()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- ══ MODAL (edit) ══ -->
@@ -3974,7 +4108,7 @@ const db_fire = firebase.firestore();
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
-let db = { cadastro: [], dados: [], cargo: [], empresa: [], funcao: [], motivo: [], responsavel: [], colaboradores: [] };
+let db = { cadastro: [], dados: [], cargo: [], empresa: [], funcao: [], motivo: [], responsavel: [], colaboradores: [], encomendas: [] };
 let filtered = { cadastro: [], dados: [] };
 let sortState = { cadastro: { col: -1, asc: true }, dados: { col: -1, asc: true } };
 const PAGE_SIZE = 12;
@@ -4253,6 +4387,14 @@ function initFirebase() {
       const cnt = document.getElementById('cnt-colaboradores');
       if (cnt) cnt.textContent = db.colaboradores.length;
     }, err => console.error('colaboradores', err));
+
+  // Listener para encomendas
+  unsubscribers['encomendas'] = db_fire.collection('encomendas')
+    .orderBy('_createdAt', 'desc')
+    .onSnapshot(snapshot => {
+      db.encomendas = snapshot.docs.map(doc => ({ _id: doc.id, ...doc.data() }));
+      renderEncomendas();
+    }, err => console.error('encomendas', err));
 }
 
 function setOnline() {
@@ -4656,6 +4798,7 @@ function switchTab(name, btn) {
   if (name === 'config') renderAllConfigLists();
   if (name === 'relatorios') renderRelatoriosStats();
   if (name === 'historico') renderHistorico();
+  if (name === 'encomendas') renderEncomendas();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -7792,6 +7935,276 @@ function notFoundIrParaColaborador() {
     }
   }, 250);
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ENCOMENDAS — recebimento, vínculo ao colaborador e baixa
+// ═══════════════════════════════════════════════════════════════
+const ENC_PAGE_SIZE = 12;
+const ENC_TIPOS = ['CAIXA','PACOTE','ENVELOPE','DOCUMENTO','MALOTE','FRÁGIL','PERECÍVEL','OUTROS'];
+let encPage = 1, encBaixaId = null;
+const encEsc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const encVal = id => ((document.getElementById(id) || {}).value || '').trim();
+const encHora = () => new Date().toTimeString().slice(0,5);
+
+function encDias(dataStr) {
+  const p = String(dataStr||'').split('/');
+  if (p.length !== 3) return 0;
+  const d = new Date(+p[2], +p[1]-1, +p[0]), h = new Date();
+  h.setHours(0,0,0,0);
+  return Math.max(0, Math.round((h - d) / 86400000));
+}
+function encProximoProtocolo() {
+  const ano = new Date().getFullYear();
+  const max = (db.encomendas||[]).reduce((m, r) => {
+    const x = /^ENC-(\d{4})-(\d+)$/.exec(r.protocolo||'');
+    return x && +x[1] === ano ? Math.max(m, +x[2]) : m;
+  }, 0);
+  return `ENC-${ano}-${String(max+1).padStart(4,'0')}`;
+}
+function encColabOpts(sel) {
+  return '<option value="">Selecione o colaborador...</option>' +
+    [...(db.colaboradores||[])].sort((a,b) => (a.nome||'').localeCompare(b.nome||'')).map(c =>
+      `<option value="${c._id}" ${c._id===sel?'selected':''}>${encEsc(c.nome)}${c.departamento?' — '+encEsc(c.departamento):''}</option>`).join('');
+}
+function encRefreshLists() {
+  const dl = document.getElementById('enc-resp-list');
+  if (dl) dl.innerHTML = (db.responsavel||[]).map(x => `<option value="${encEsc(x.nome)}">`).join('');
+  const ft = document.getElementById('enc-f-tipo');
+  if (ft && ft.options.length <= 1) ft.innerHTML += ENC_TIPOS.map(t => `<option>${t}</option>`).join('');
+}
+function encInfoDest() {
+  const c = (db.colaboradores||[]).find(x => x._id === encVal('enc-dest'));
+  document.getElementById('enc-dest-info').innerHTML = c
+    ? [c.departamento && '🗂 '+c.departamento, c.empresa && '🏢 '+c.empresa, c.telefone && '📞 '+c.telefone, c.cpf && 'CPF '+c.cpf]
+        .filter(Boolean).map(t => `<span class="enc-chip">${encEsc(t)}</span>`).join('')
+    : '';
+}
+
+function encAbrirForm(id) {
+  const r = id ? db.encomendas.find(x => x._id === id) : null;
+  if (r && r.status === 'retirada') { showToast('Encomenda já retirada — não pode ser editada.', 'error'); return; }
+  encRefreshLists();
+  document.getElementById('enc-dest').innerHTML = encColabOpts(r ? r.destId : '');
+  document.getElementById('enc-tipo').innerHTML = '<option value="">Selecione...</option>' +
+    ENC_TIPOS.map(t => `<option ${r && r.tipo===t?'selected':''}>${t}</option>`).join('');
+  const set = (k, v) => { document.getElementById(k).value = v || ''; };
+  document.getElementById('enc-edit-id').value = r ? r._id : '';
+  set('enc-qtd', r ? r.qtd : 1); set('enc-cond', r ? r.condicao : 'PERFEITA');
+  set('enc-remetente', r && r.remetente); set('enc-transp', r && r.transportadora);
+  set('enc-rastreio', r && r.rastreio); set('enc-local', r && r.local);
+  set('enc-desc', r && r.descricao); set('enc-obs', r && r.obs); set('enc-recebido', r && r.recebidoPor);
+  set('enc-datahora', r ? `${r.dataRecebimento} ${r.horaRecebimento}` : `${todayStr()} ${encHora()}`);
+  document.getElementById('enc-form-title').textContent = r ? `✏️ Editar ${r.protocolo}` : '📦 Nova Encomenda';
+  document.getElementById('enc-btn-save').textContent = r ? '💾 Salvar Alterações' : '💾 Registrar Encomenda';
+  encInfoDest();
+  const p = document.getElementById('enc-form-panel');
+  p.style.display = 'block';
+  p.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function encFecharForm() { document.getElementById('enc-form-panel').style.display = 'none'; }
+
+async function encSalvar() {
+  const editId = encVal('enc-edit-id');
+  const colab = (db.colaboradores||[]).find(c => c._id === encVal('enc-dest'));
+  const qtd = parseInt(encVal('enc-qtd'), 10) || 0;
+  const falta = [];
+  if (!colab) falta.push(['enc-dest','colaborador destinatário']);
+  if (!encVal('enc-tipo')) falta.push(['enc-tipo','tipo']);
+  if (qtd < 1) falta.push(['enc-qtd','quantidade']);
+  if (!encVal('enc-remetente')) falta.push(['enc-remetente','remetente']);
+  if (!encVal('enc-recebido')) falta.push(['enc-recebido','recebido por']);
+  if (falta.length) {
+    showToast('⚠ Preencha: ' + falta.map(f => f[1]).join(', '), 'error');
+    const el = document.getElementById(falta[0][0]); if (el) el.focus();
+    return;
+  }
+  const base = {
+    destId: colab._id, destinatario: colab.nome, destCpf: colab.cpf||'', destDepto: colab.departamento||'',
+    destEmpresa: colab.empresa||'', destTelefone: colab.telefone||'',
+    tipo: encVal('enc-tipo'), qtd, condicao: encVal('enc-cond'), remetente: encVal('enc-remetente'),
+    transportadora: encVal('enc-transp'), rastreio: encVal('enc-rastreio'), local: encVal('enc-local'),
+    descricao: encVal('enc-desc'), obs: encVal('enc-obs'), recebidoPor: encVal('enc-recebido')
+  };
+  const btn = document.getElementById('enc-btn-save'); btn.disabled = true;
+  try {
+    if (editId) {
+      await updateInFirestore('encomendas', editId, base);
+      showToast('✅ Encomenda atualizada!');
+    } else {
+      const rec = { ...base, protocolo: encProximoProtocolo(), dataRecebimento: todayStr(), horaRecebimento: encHora(), status: 'aguardando' };
+      const id = await addToFirestore('encomendas', rec);
+      if (String(id).startsWith('local_')) { db.encomendas.unshift({ _id: id, ...rec }); }
+      showToast(`📦 ${rec.protocolo} registrada para ${colab.nome.split(' ')[0]}!`);
+    }
+    encFecharForm(); renderEncomendas();
+  } catch (e) { showToast('❌ Erro: ' + e.message, 'error'); }
+  finally { btn.disabled = false; }
+}
+
+// ── Baixa (retirada) ──
+function encAbrirBaixa(id) {
+  const r = db.encomendas.find(x => x._id === id);
+  if (!r || r.status === 'retirada') return;
+  if (!(db.colaboradores||[]).length) { showToast('Cadastre colaboradores antes de dar baixa.', 'error'); return; }
+  encBaixaId = id; encRefreshLists();
+  document.getElementById('enc-baixa-sum').innerHTML =
+    `<b>${encEsc(r.protocolo)}</b> · ${encEsc(r.tipo)} (${r.qtd} vol.)<br>` +
+    `Destinatário: <b>${encEsc(r.destinatario)}</b>${r.destDepto?' — '+encEsc(r.destDepto):''}<br>` +
+    `Remetente: ${encEsc(r.remetente)}${r.local?' · Local: '+encEsc(r.local):''}<br>Recebida em ${encEsc(r.dataRecebimento)} às ${encEsc(r.horaRecebimento)} por ${encEsc(r.recebidoPor)}`;
+  document.getElementById('enc-ret').innerHTML = encColabOpts(r.destId);
+  document.getElementById('enc-baixa-por').value = '';
+  document.getElementById('enc-baixa-obs').value = '';
+  document.getElementById('enc-baixa-doc').checked = false;
+  encBaixaChange();
+  document.getElementById('enc-baixa-overlay').classList.add('open');
+}
+function encFecharBaixa() { document.getElementById('enc-baixa-overlay').classList.remove('open'); encBaixaId = null; }
+function encBaixaChange() {
+  const r = db.encomendas.find(x => x._id === encBaixaId); if (!r) return;
+  const terceiro = !!encVal('enc-ret') && encVal('enc-ret') !== r.destId;
+  document.getElementById('enc-baixa-warn').style.display = terceiro ? 'block' : 'none';
+  document.getElementById('enc-baixa-obs-lbl').innerHTML = terceiro ? 'Justificativa da retirada <span class="req">*</span>' : 'Observações da retirada';
+}
+async function encConfirmarBaixa() {
+  const r = db.encomendas.find(x => x._id === encBaixaId); if (!r) return;
+  if (r.status === 'retirada') { showToast('Esta encomenda já recebeu baixa.', 'error'); encFecharBaixa(); return; }
+  const colab = (db.colaboradores||[]).find(c => c._id === encVal('enc-ret'));
+  if (!colab) { showToast('⚠ Somente colaboradores cadastrados podem retirar. Selecione o colaborador.', 'error'); return; }
+  const terceiro = colab._id !== r.destId, obs = encVal('enc-baixa-obs');
+  if (terceiro && obs.length < 5) { showToast('⚠ Informe a justificativa da retirada por outro colaborador.', 'error'); return; }
+  if (!encVal('enc-baixa-por')) { showToast('⚠ Informe quem está dando a baixa (porteiro).', 'error'); return; }
+  if (!document.getElementById('enc-baixa-doc').checked) { showToast('⚠ Confirme a conferência do crachá/documento.', 'error'); return; }
+  const btn = document.getElementById('enc-btn-baixa'); btn.disabled = true;
+  try {
+    await updateInFirestore('encomendas', r._id, {
+      status: 'retirada', retiradoPorId: colab._id, retiradoPor: colab.nome, retiradoCpf: colab.cpf||'',
+      retiradoDepto: colab.departamento||'', retiradoTerceiro: terceiro, docConferido: true,
+      baixaPor: encVal('enc-baixa-por'), obsRetirada: obs, dataRetirada: todayStr(), horaRetirada: encHora()
+    });
+    showToast(`✅ Baixa registrada — retirada por ${colab.nome.split(' ')[0]}.`);
+    encFecharBaixa(); renderEncomendas();
+  } catch (e) { showToast('❌ Erro: ' + e.message, 'error'); }
+  finally { btn.disabled = false; }
+}
+
+async function encExcluir(id) {
+  const r = db.encomendas.find(x => x._id === id); if (!r) return;
+  if (!(await dlg3d({ type:'danger', icon:'🗑️', title:'Excluir encomenda', message:`Excluir ${r.protocolo} (${r.destinatario})?`, detail:'Esta ação não pode ser desfeita.', confirmText:'Excluir' }))) return;
+  try {
+    await deleteFromFirestore('encomendas', id);
+    db.encomendas = db.encomendas.filter(x => x._id !== id);
+    renderEncomendas(); showToast('Encomenda excluída.');
+  } catch (e) { showToast('❌ Erro: ' + e.message, 'error'); }
+}
+
+function encAvisar(id) {
+  const r = db.encomendas.find(x => x._id === id); if (!r) return;
+  let n = String(r.destTelefone||'').replace(/\D/g, '');
+  if (n.length < 10) { showToast('Colaborador sem telefone válido cadastrado.', 'error'); return; }
+  if (n.length <= 11) n = '55' + n;
+  const msg = `Olá, ${r.destinatario.split(' ')[0]}! Chegou uma encomenda para você na portaria.\nProtocolo: ${r.protocolo}\nRemetente: ${r.remetente}${r.local?'\nLocal: '+r.local:''}\nA retirada é feita somente por colaboradores, com crachá/documento.`;
+  window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function encComprovante(id) {
+  const r = db.encomendas.find(x => x._id === id); if (!r) return;
+  const e = encEsc, ret = r.status === 'retirada';
+  const w = window.open('', '_blank'); if (!w) { showToast('Permita pop-ups para imprimir.', 'error'); return; }
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${e(r.protocolo)}</title><style>
+    body{font-family:Arial,sans-serif;padding:28px;color:#222;max-width:680px;margin:auto}
+    h1{font-size:18px;border-bottom:3px solid #e8891a;padding-bottom:8px}h1 span{color:#e8891a}
+    table{width:100%;border-collapse:collapse;margin:14px 0}td{padding:6px 8px;border-bottom:1px solid #ddd;font-size:13px}
+    td:first-child{color:#777;width:34%;text-transform:uppercase;font-size:11px}
+    .sig{margin-top:50px;display:flex;gap:30px}.sig div{flex:1;border-top:1px solid #222;text-align:center;font-size:11px;padding-top:4px}
+    .f{margin-top:28px;font-size:10px;color:#999;text-align:center}</style></head><body>
+    <h1>📦 COMPROVANTE DE <span>${ret?'RETIRADA':'RECEBIMENTO'}</span> — ${e(r.protocolo)}</h1>
+    <table>
+      <tr><td>Destinatário</td><td><b>${e(r.destinatario)}</b> ${e(r.destDepto)} ${r.destEmpresa?'· '+e(r.destEmpresa):''}</td></tr>
+      <tr><td>Encomenda</td><td>${e(r.tipo)} · ${r.qtd} volume(s) · Condição: ${e(r.condicao)}</td></tr>
+      <tr><td>Remetente / Transp.</td><td>${e(r.remetente)} ${r.transportadora?'/ '+e(r.transportadora):''}</td></tr>
+      <tr><td>Rastreio / NF</td><td>${e(r.rastreio)||'—'}</td></tr>
+      <tr><td>Descrição / Obs.</td><td>${e(r.descricao)} ${e(r.obs)}</td></tr>
+      <tr><td>Recebida em</td><td>${e(r.dataRecebimento)} às ${e(r.horaRecebimento)} por ${e(r.recebidoPor)}${r.local?' · Local: '+e(r.local):''}</td></tr>
+      ${ret?`<tr><td>Retirada em</td><td>${e(r.dataRetirada)} às ${e(r.horaRetirada)}</td></tr>
+      <tr><td>Retirado por</td><td><b>${e(r.retiradoPor)}</b> ${e(r.retiradoDepto)} ${r.retiradoTerceiro?'(outro colaborador — '+e(r.obsRetirada)+')':''}</td></tr>
+      <tr><td>Baixa por (portaria)</td><td>${e(r.baixaPor)}</td></tr>`:''}
+    </table>
+    <div class="sig"><div>Portaria${ret?' — '+e(r.baixaPor):' — '+e(r.recebidoPor)}</div>${ret?`<div>Colaborador — ${e(r.retiradoPor)}</div>`:''}</div>
+    <div class="f">PJ Tecnologia e Sistemas · Controle de Acesso · emitido em ${new Date().toLocaleString('pt-BR')}</div>
+    </body></html>`);
+  w.document.close(); w.focus(); setTimeout(() => w.print(), 400);
+}
+
+function encExportCSV() {
+  if (!db.encomendas.length) { showToast('Nenhuma encomenda para exportar.', 'error'); return; }
+  const cols = [['protocolo','PROTOCOLO'],['dataRecebimento','DATA RECEB.'],['horaRecebimento','HORA RECEB.'],['destinatario','DESTINATÁRIO'],['destDepto','DEPTO'],['tipo','TIPO'],['qtd','VOLUMES'],['remetente','REMETENTE'],['transportadora','TRANSPORTADORA'],['rastreio','RASTREIO/NF'],['local','LOCAL'],['recebidoPor','RECEBIDO POR'],['status','STATUS'],['dataRetirada','DATA RETIRADA'],['horaRetirada','HORA RETIRADA'],['retiradoPor','RETIRADO POR'],['baixaPor','BAIXA POR'],['obsRetirada','OBS RETIRADA']];
+  const q = v => `"${String(v == null ? '' : v).replace(/"/g, '""')}"`;
+  const csv = [cols.map(c => c[1]).join(';'), ...db.encomendas.map(r => cols.map(c => q(r[c[0]])).join(';'))].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `encomendas_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  showToast('📊 CSV exportado!');
+}
+
+function renderEncomendas() {
+  const lista = db.encomendas || [];
+  const hoje = todayStr();
+  const aguard = lista.filter(r => r.status !== 'retirada');
+  const el = document.getElementById('stats-encomendas');
+  if (el) el.innerHTML = `
+    <div class="stat-card"><div class="stat-value" style="color:var(--accent)">${aguard.length}</div><div class="stat-label">Aguardando Retirada</div></div>
+    <div class="stat-card"><div class="stat-value">${lista.filter(r => r.dataRecebimento === hoje).length}</div><div class="stat-label">Recebidas Hoje</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--success)">${lista.filter(r => r.dataRetirada === hoje).length}</div><div class="stat-label">Retiradas Hoje</div></div>
+    <div class="stat-card"><div class="stat-value" style="color:var(--danger)">${aguard.filter(r => encDias(r.dataRecebimento) >= 3).length}</div><div class="stat-label">Paradas há 3+ dias</div></div>`;
+  const cnt = document.getElementById('cnt-encomendas'); if (cnt) cnt.textContent = aguard.length;
+
+  const q = encVal('enc-search').toLowerCase(), fs = encVal('enc-f-status'), ft = encVal('enc-f-tipo');
+  const data = lista.filter(r => {
+    if (fs === 'aguardando' && r.status === 'retirada') return false;
+    if (fs === 'retirada' && r.status !== 'retirada') return false;
+    if (ft && r.tipo !== ft) return false;
+    return !q || [r.protocolo, r.destinatario, r.remetente, r.rastreio, r.descricao, r.retiradoPor, r.transportadora]
+      .some(v => String(v||'').toLowerCase().includes(q));
+  }).sort((a, b) => (a.status === 'retirada') - (b.status === 'retirada'));
+
+  const tb = document.getElementById('tbody-encomendas'); if (!tb) return;
+  const pgEl = document.getElementById('pg-encomendas');
+  if (!data.length) {
+    tb.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">Nenhuma encomenda encontrada.</div></div></td></tr>';
+    if (pgEl) pgEl.innerHTML = ''; return;
+  }
+  const pages = Math.ceil(data.length / ENC_PAGE_SIZE);
+  if (encPage > pages) encPage = pages;
+  const start = (encPage - 1) * ENC_PAGE_SIZE;
+  tb.innerHTML = data.slice(start, start + ENC_PAGE_SIZE).map(r => {
+    const ret = r.status === 'retirada', d = encDias(r.dataRecebimento);
+    const status = ret
+      ? `<span class="badge badge-in">✅ Retirada</span><div style="font-size:.74rem;margin-top:.25rem;">${encEsc(r.retiradoPor)}${r.retiradoTerceiro?' <span title="Retirada por outro colaborador" style="color:var(--accent2)">⚠</span>':''}<br><span style="color:var(--muted)">${encEsc(r.dataRetirada)} ${encEsc(r.horaRetirada)} · baixa: ${encEsc(r.baixaPor)}</span></div>`
+      : `<span class="badge badge-open">⏳ Aguardando</span><div style="font-size:.74rem;margin-top:.25rem;" class="${d>=3?'enc-late':''}">${d===0?'chegou hoje':d+' dia(s) parada'}</div>`;
+    return `<tr>
+      <td class="td-mono"><b>${encEsc(r.protocolo)}</b></td>
+      <td class="td-mono">${encEsc(r.dataRecebimento)}<br>${encEsc(r.horaRecebimento)}</td>
+      <td class="td-name">${encEsc(r.destinatario)}<div style="font-size:.74rem;color:var(--muted);font-weight:400;">${encEsc(r.destDepto)}</div></td>
+      <td>${encEsc(r.tipo)} · ${r.qtd} vol.<div style="font-size:.74rem;color:var(--muted);">${encEsc(r.remetente)}${r.rastreio?' · '+encEsc(r.rastreio):''}</div>${r.condicao&&r.condicao!=='PERFEITA'?`<div class="enc-late" style="font-size:.72rem;">${encEsc(r.condicao)}</div>`:''}</td>
+      <td>${encEsc(r.local)||'—'}</td>
+      <td>${encEsc(r.recebidoPor)}</td>
+      <td>${status}</td>
+      <td>${ret ? '' : `<button class="action-btn success-btn" title="Dar baixa" onclick="encAbrirBaixa('${r._id}')" style="color:var(--success);">📤</button>
+        <button class="action-btn" title="Avisar no WhatsApp" onclick="encAvisar('${r._id}')">📲</button>`}
+        <button class="action-btn" title="Comprovante" onclick="encComprovante('${r._id}')">🖨</button>
+        ${ret ? '' : `<button class="action-btn" title="Editar" onclick="encAbrirForm('${r._id}')">✏️</button>`}
+        <button class="action-btn del" title="Excluir" onclick="encExcluir('${r._id}')">🗑</button></td>
+    </tr>`;
+  }).join('');
+  if (pgEl) {
+    if (pages <= 1) { pgEl.innerHTML = ''; return; }
+    let b = '';
+    for (let i = 1; i <= pages; i++) b += `<button class="page-btn ${i===encPage?'active':''}" onclick="encPage=${i};renderEncomendas()">${i}</button>`;
+    pgEl.innerHTML = `<div class="page-info">Exibindo ${start+1}–${Math.min(encPage*ENC_PAGE_SIZE,data.length)} de ${data.length} encomendas</div><div class="page-btns">${b}</div>`;
+  }
+}
+document.getElementById('enc-baixa-overlay').addEventListener('click', function(e) { if (e.target === this) encFecharBaixa(); });
+encRefreshLists();
 
 initFirebase();
 renderFirebaseInfoBox();
