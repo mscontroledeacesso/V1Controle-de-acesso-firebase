@@ -3798,8 +3798,10 @@
         <div class="enc-sec">3 · Recebimento na portaria</div>
         <div class="form-grid">
           <div class="form-group"><label>Recebido por (porteiro) <span class="req">*</span></label>
-            <input type="text" id="enc-recebido" list="enc-resp-list" placeholder="Selecione ou digite" oninput="this.value=this.value.toUpperCase()">
-            <datalist id="enc-resp-list"></datalist></div>
+            <div style="display:flex;gap:.5rem;align-items:stretch;">
+              <select id="enc-recebido" style="flex:1;min-width:0;"><option value="">Selecione o porteiro...</option></select>
+              <button type="button" class="btn btn-outline" onclick="encAddPorteiro()" title="Adicionar porteiro" style="padding:0 1rem;font-size:1.1rem;font-weight:700;">+</button>
+            </div></div>
           <div class="form-group"><label>Data / hora do recebimento</label>
             <input type="text" id="enc-datahora" readonly></div>
         </div>
@@ -7941,7 +7943,7 @@ function notFoundIrParaColaborador() {
 // ═══════════════════════════════════════════════════════════════
 const ENC_PAGE_SIZE = 12;
 const ENC_TIPOS = ['CAIXA','PACOTE','ENVELOPE','DOCUMENTO','MALOTE','FRÁGIL','PERECÍVEL','OUTROS'];
-const ENC_REMETENTES = ['Correios','Mercado Livre','Amazon','Shopee','iFood','Outros'];
+const ENC_REMETENTES = ['Mercado Livre','Amazon','Shopee','Magazine Luiza','Shein','AliExpress','iFood','Fornecedor','Banco','Outros'];
 const ENC_REM_KEY = 'enc_remetentes_extra';
 function encRemExtras() { try { return JSON.parse(localStorage.getItem(ENC_REM_KEY) || '[]'); } catch (e) { return []; } }
 function encRemLista(extra) {
@@ -7960,8 +7962,31 @@ function encRemOpts(sel) {
   return '<option value="">Selecione...</option>' +
     encRemLista(sel).map(n => `<option value="${encEsc(n)}" ${n.toLowerCase()===String(sel||'').toLowerCase()?'selected':''}>${encEsc(n)}</option>`).join('');
 }
-function encAddRemetente() {
-  const nome = (prompt('Novo remetente / origem:') || '').trim();
+async function encPorteiroOpts(sel) {
+  const vistos = new Set(), nomes = [];
+  [...(db.responsavel||[]).map(x => x.nome), sel].forEach(n => {
+    n = String(n || '').trim(); const k = n.toUpperCase();
+    if (n && !vistos.has(k)) { vistos.add(k); nomes.push(n); }
+  });
+  nomes.sort((a,b) => a.localeCompare(b));
+  return '<option value="">Selecione o porteiro...</option>' +
+    nomes.map(n => `<option value="${encEsc(n)}" ${n.toUpperCase()===String(sel||'').toUpperCase()?'selected':''}>${encEsc(n)}</option>`).join('');
+}
+async function encAddPorteiro() {
+  const nome = String(await dlg3d({ type:'info', icon:'🧑‍✈️', title:'Novo porteiro', message:'Nome do porteiro:', input:'', confirmText:'Adicionar' }) || '').trim().toUpperCase();
+  if (!nome) return;
+  const ja = (db.responsavel||[]).some(x => (x.nome||'').toUpperCase() === nome);
+  if (!ja) {
+    try { await addToFirestore('config_responsavel', { nome }); }
+    catch (e) { showToast('❌ Erro: ' + e.message, 'error'); return; }
+    if (!(db.responsavel||[]).some(x => (x.nome||'').toUpperCase() === nome)) db.responsavel = [...(db.responsavel||[]), { _id: 'local_' + Date.now(), nome }];
+  }
+  const sel = document.getElementById('enc-recebido');
+  sel.innerHTML = encPorteiroOpts(nome); sel.value = nome;
+  showToast(ja ? 'Porteiro já cadastrado — selecionado.' : '✅ Porteiro adicionado!');
+}
+async function encAddRemetente() {
+  const nome = String(await dlg3d({ type:'info', icon:'➕', title:'Novo remetente / origem', message:'Loja, empresa ou pessoa que enviou:', input:'', confirmText:'Adicionar' }) || '').trim();
   if (!nome) return;
   const ja = encRemLista().find(n => n.toLowerCase() === nome.toLowerCase());
   if (!ja) {
@@ -7972,7 +7997,7 @@ function encAddRemetente() {
   sel.value = ja || nome;
   showToast(ja ? 'Já existe na lista — selecionado.' : '✅ Remetente adicionado!');
 }
-const ENC_TRANSPORTADORAS = ['Correios','Mercado Livre','Amazon','Shopee','iFood','Motoboy','Outros'];
+const ENC_TRANSPORTADORAS = ['Correios','Jadlog','Loggi','Total Express','Sequoia','Azul Cargo','Motoboy','Entregador próprio','Outros'];
 const ENC_TRANSP_KEY = 'enc_transportadoras_extra';
 function encTrExtras() { try { return JSON.parse(localStorage.getItem(ENC_TRANSP_KEY) || '[]'); } catch (e) { return []; } }
 function encTrLista(extra) {
@@ -7991,8 +8016,8 @@ function encTrOpts(sel) {
   return '<option value="">Selecione...</option>' +
     encTrLista(sel).map(n => `<option value="${encEsc(n)}" ${n.toLowerCase()===String(sel||'').toLowerCase()?'selected':''}>${encEsc(n)}</option>`).join('');
 }
-function encAddTransp() {
-  const nome = (prompt('Nova transportadora / entregador:') || '').trim();
+async function encAddTransp() {
+  const nome = String(await dlg3d({ type:'info', icon:'➕', title:'Nova transportadora / entregador', message:'Nome da transportadora ou entregador:', input:'', confirmText:'Adicionar' }) || '').trim();
   if (!nome) return;
   const ja = encTrLista().find(n => n.toLowerCase() === nome.toLowerCase());
   if (!ja) {
@@ -8029,8 +8054,8 @@ function encColabOpts(sel) {
       `<option value="${c._id}" ${c._id===sel?'selected':''}>${encEsc(c.nome)}${c.departamento?' — '+encEsc(c.departamento):''}</option>`).join('');
 }
 function encRefreshLists() {
-  const dl = document.getElementById('enc-resp-list');
-  if (dl) dl.innerHTML = (db.responsavel||[]).map(x => `<option value="${encEsc(x.nome)}">`).join('');
+  const sp = document.getElementById('enc-recebido');
+  if (sp) sp.innerHTML = encPorteiroOpts(sp.value);
   const ft = document.getElementById('enc-f-tipo');
   if (ft && ft.options.length <= 1) ft.innerHTML += ENC_TIPOS.map(t => `<option>${t}</option>`).join('');
 }
@@ -8056,6 +8081,7 @@ function encAbrirForm(id) {
   document.getElementById('enc-transp').innerHTML = encTrOpts(r ? r.transportadora : '');
   set('enc-remetente', r && r.remetente); set('enc-transp', r && r.transportadora);
   set('enc-rastreio', r && r.rastreio); set('enc-local', r && r.local);
+  document.getElementById('enc-recebido').innerHTML = encPorteiroOpts(r ? r.recebidoPor : '');
   set('enc-desc', r && r.descricao); set('enc-obs', r && r.obs); set('enc-recebido', r && r.recebidoPor);
   set('enc-datahora', r ? `${r.dataRecebimento} ${r.horaRecebimento}` : `${todayStr()} ${encHora()}`);
   document.getElementById('enc-form-title').textContent = r ? `✏️ Editar ${r.protocolo}` : '📦 Nova Encomenda';
